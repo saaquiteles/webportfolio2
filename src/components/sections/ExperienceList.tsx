@@ -1,10 +1,11 @@
-import { formatMonth } from '@/lib/dates';
 import type { Experience } from '@/lib/types';
+import { DateRange } from './DateRange';
 
 interface ExperienceListProps {
   entries: Experience[];
 }
 
+// Each role is an h3 because the page supplies the h2 "Experience" above this list.
 export function ExperienceList({ entries }: ExperienceListProps) {
   return (
     <ul>
@@ -12,11 +13,7 @@ export function ExperienceList({ entries }: ExperienceListProps) {
         <li key={`${entry.org}-${entry.start}`}>
           <h3>{entry.role}</h3>
           <p>{entry.org}</p>
-          <p>
-            <time dateTime={entry.start}>{formatMonth(entry.start)}</time>
-            {' – '}
-            {entry.end ? <time dateTime={entry.end}>{formatMonth(entry.end)}</time> : 'Present'}
-          </p>
+          <DateRange start={entry.start} end={entry.end} />
           <p>{entry.summary}</p>
         </li>
       ))}

@@ -1,10 +1,11 @@
-import { formatMonth } from '@/lib/dates';
 import type { Education } from '@/lib/types';
+import { DateRange } from './DateRange';
 
 interface EducationListProps {
   entries: Education[];
 }
 
+// Each degree is an h3 because the page supplies the h2 "Education" above this list.
 export function EducationList({ entries }: EducationListProps) {
   return (
     <ul>
@@ -12,11 +13,7 @@ export function EducationList({ entries }: EducationListProps) {
         <li key={`${entry.school}-${entry.start}`}>
           <h3>{entry.degree}</h3>
           <p>{entry.school}</p>
-          <p>
-            <time dateTime={entry.start}>{formatMonth(entry.start)}</time>
-            {' – '}
-            {entry.end ? <time dateTime={entry.end}>{formatMonth(entry.end)}</time> : 'Present'}
-          </p>
+          <DateRange start={entry.start} end={entry.end} />
         </li>
       ))}
     </ul>
