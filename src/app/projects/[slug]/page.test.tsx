@@ -68,8 +68,9 @@ describe('Case study page', () => {
     render(await Page({ params: Promise.resolve({ slug: 'buriccat' }) }));
 
     const main = within(screen.getByRole('main'));
-    expect(main.getByText(/React 19, Vite, React Three Fiber, GSAP and Vitest/)).toBeInTheDocument();
-    expect(main.getByText(/111 tests/)).toBeInTheDocument();
+    expect(
+      main.getByText('React 19, Vite, React Three Fiber and GSAP, tested with Vitest.'),
+    ).toBeInTheDocument();
     expect(main.getByRole('link', { name: 'Source code on GitHub' })).toHaveAttribute(
       'href',
       'https://github.com/saaquiteles/baccarat',
