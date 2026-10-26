@@ -6,4 +6,4 @@ description: Checklist for adding a portfolio project (data entry plus MDX case 
 2. Add `content/projects/<slug>.mdx` with frontmatter matching the schema.
 3. Put the cover image in `public/` with meaningful `alt` text (`A11Y-04`).
 4. Use `TODO(human)` for any fact you do not have.
-5. Run `/test`; the build must pass.
+5. Run `npm run check`; the build must pass.

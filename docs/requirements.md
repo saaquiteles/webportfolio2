@@ -33,4 +33,4 @@ Comments, a CMS, user accounts, a server-side contact form, analytics.
 ## Open questions for the human
 - Name, tagline, and the real list of projects and posts?
 - Custom domain, or `<user>.github.io/<repo>` (which needs a `basePath`)?
-- Visual direction (mood, colours, fonts)? Run `/design` to settle this before building pages.
+- Visual direction (mood, colours, fonts)? Run `/start-story design` to settle this before building pages.
