@@ -1,6 +1,6 @@
 # ADR 0016: A paper link on Project
 
-Status: Proposed (the human decides). Raised when the thesis paper became the first project.
+Status: Accepted by the human on 2026-10-26, with the recommended option (a). Raised when the thesis paper became the first project.
 
 ## Gap
 `docs/spec.md` fixes `Project.links` as `{ live?: string; repo?: string }`. The thesis project has a published paper (`https://ebooks.iospress.nl/doi/10.3233/ATDE251126`), which is neither a live demo nor a code repository, and its code is not published yet.
