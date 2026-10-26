@@ -19,3 +19,17 @@ export interface Experience {
   end?: string;
   summary: string;
 }
+
+export interface Education {
+  degree: string;
+  school: string;
+  start: string;
+  end?: string;
+}
+
+export interface Highlight {
+  title: string;
+  org: string;
+  date: string;
+  summary?: string;
+}

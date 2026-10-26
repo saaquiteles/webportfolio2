@@ -1,5 +1,7 @@
+import { EducationList } from '@/components/sections/EducationList';
 import { ExperienceList } from '@/components/sections/ExperienceList';
-import { experience } from '@/data/experience';
+import { HighlightList } from '@/components/sections/HighlightList';
+import { education, experience, highlights } from '@/data/experience';
 import { profile } from '@/data/profile';
 
 export default function About() {
@@ -9,6 +11,10 @@ export default function About() {
       <p>{profile.intro}</p>
       <h2>Experience</h2>
       <ExperienceList entries={experience} />
+      <h2>Education</h2>
+      <EducationList entries={education} />
+      <h2>Also</h2>
+      <HighlightList items={highlights} />
     </main>
   );
 }

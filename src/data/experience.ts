@@ -1,4 +1,4 @@
-import type { Experience } from '@/lib/types';
+import type { Education, Experience, Highlight } from '@/lib/types';
 
 export const experience: Experience[] = [
   {
@@ -15,5 +15,29 @@ export const experience: Experience[] = [
     end: '2025-07',
     summary:
       'Built responsive UI components and RESTful backend features for a MERN stack application, with 100% successful integration of email verification and password reset. Unit tested and debugged the code, wrote documentation and presented updates in weekly sprints in an Agile environment.',
+  },
+];
+
+export const education: Education[] = [
+  {
+    degree: 'BS Computer Engineering (UNIX Administration specialization)',
+    school: 'Mapúa University',
+    start: '2018-08',
+    end: '2026-01',
+  },
+];
+
+export const highlights: Highlight[] = [
+  {
+    title: 'Associate Data Engineer certification',
+    org: 'DataCamp',
+    date: '2026-08',
+  },
+  {
+    title: 'International Technology Site Visits, Japan',
+    org: 'Toyota Technological Institute and Omron Corporation',
+    date: '2024-11',
+    summary:
+      'Site visits in Nagoya, Osaka and Kyoto on automation and sensing technologies, and seminars on robotics and smart manufacturing.',
   },
 ];
