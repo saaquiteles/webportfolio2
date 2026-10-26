@@ -22,3 +22,4 @@ This turns a judgement rule ("never publish the phone number or address") into a
 - **Limitation:** it cannot detect the home address without writing the address in the test, which would publish it. The address stays a review-only check.
 - A false alarm is possible, for example a long number that looks like a phone number. The test should print the file and the match, so it is quick to judge.
 - It is a new pattern, so the story's first task is full flow and needs the human's contract in writing, which approving the plan provides.
+- **Text only:** it reads text files and skips binary ones, so it cannot see hidden data inside an image (camera or GPS metadata in a photo). Strip image metadata before adding a photo (ADR 0010) and check it by hand; the published photo was checked this way.
