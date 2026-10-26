@@ -1,6 +1,6 @@
-# ADR draft 0005: Tailwind v4, configured in CSS
+# ADR 0005: Tailwind v4, configured in CSS
 
-Status: Draft (the human decides). Raised by T5.
+Status: Proposed (the human decides). Raised by T5.
 
 ## Gap
 `docs/spec.md` says only "Tailwind CSS". The architecture notes this project started from list a `tailwind.config.ts`. Tailwind v4 has no such file by default: it is configured in the CSS.

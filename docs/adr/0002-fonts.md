@@ -1,6 +1,6 @@
-# ADR draft 0002: Self-host fonts with next/font
+# ADR 0002: Self-host fonts with next/font
 
-Status: Draft (the human decides)
+Status: Proposed (the human decides)
 
 ## Gap
 `docs/spec.md` names no fonts. The design needs Bricolage Grotesque, Inter and JetBrains Mono.
@@ -12,4 +12,4 @@ Load all three with `next/font/google`. At build time it downloads the files and
 Keeps the export self-contained and privacy-friendly, avoids layout shift, and all three are under the SIL Open Font Licence.
 
 ## Consequences
-New dependency-free but build-time network access to Google Fonts. Credit the licences in the site footer or a `/licenses` note. Level 3 when applied (touches the whole site).
+New dependency-free but build-time network access to Google Fonts. Credit the licences in the site footer or a `/licenses` note. Full flow when applied (touches the whole site).

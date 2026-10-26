@@ -1,12 +1,12 @@
-# ADR draft 0006: Root tooling files, their owner, and the static-export choices
+# ADR 0006: Root tooling files, their owner, and the static-export choices
 
-Status: Draft (the human decides). Raised by T1 to T7.
+Status: Proposed (the human decides). Raised by T1 to T7.
 
 ## Gap
 `docs/spec.md` lists the app folders but not the files at the repo root, and the area map in `CLAUDE.md` gives them no owner. The scaffold created them under a one-off permission for `app-dev`.
 
 ## Proposal
-**1. Name the files and give them an owner.** `app-dev` owns, in addition to `src/app`, `next.config.mjs`, `public/` and `.github/`:
+**1. Name the files and give them an owner.** The `builder`, working in the app area, owns, in addition to `src/app`, `next.config.mjs`, `public/` and `.github/`:
 `package.json`, `package-lock.json`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts`, `vitest.setup.ts`, `postcss.config.mjs`, `.gitignore`, and the root-level `next.config.test.ts`. Add them to `docs/spec.md` and the area map. Tests sit next to the code they test (`src/app/page.test.tsx`), except the config test, which sits next to `next.config.mjs`. `velite.config.ts` and `src/lib/types.ts` are still not created: they arrive with the content story.
 
 **2. Record the static-export choices** (from `next.config.mjs`):
@@ -21,7 +21,7 @@ Status: Draft (the human decides). Raised by T1 to T7.
 - Next rewrote the file on the first build: it added `allowJs: true`, `esModuleInterop: true` and `.next/dev/types/**/*.ts`. A repeat build leaves it byte-identical. `allowJs` does not change what is type-checked, because `include` lists no `.js` or `.mjs`, so `postcss.config.mjs`, `eslint.config.mjs`, `next.config.mjs` and the hook scripts stay untyped. Commit the Next-rewritten file as it stands.
 
 ## Why
-A file nobody owns gets changed by whoever is nearest. Writing down the static-export choices means a later change to `basePath` or the root is a decision, not an accident (Level 3 per `CLAUDE.md`).
+A file nobody owns gets changed by whoever is nearest. Writing down the static-export choices means a later change to `basePath` or the root is a decision, not an accident (full flow per `CLAUDE.md`).
 
 ## Consequences
 - A local-only trap: if `.next/` is deleted but `next-env.d.ts` is kept, `typecheck` fails until one build. A fresh checkout is fine, because `next-env.d.ts` is git-ignored.

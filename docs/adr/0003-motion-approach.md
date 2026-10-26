@@ -1,6 +1,6 @@
-# ADR draft 0003: How the drawn-in sketches and custom cursor are built
+# ADR 0003: How the drawn-in sketches and custom cursor are built
 
-Status: Draft (the human decides)
+Status: Proposed (the human decides)
 
 ## Gap
 `docs/spec.md` lists animation wrappers but names none. The design needs scroll-drawn SVG, a crosshair cursor with a live readout, tilt and peel cards, and kinetic headline text.
@@ -19,4 +19,4 @@ Every wrapper reads one shared `useReducedMotion` helper and renders its finishe
 One place for motion makes reviews easy and keeps pages thin (`ST-04`). Drawing paths with `pathLength` needs no extra library.
 
 ## Consequences
-Sketches are hand-made inline SVGs, which is the main effort. Add a `docs/spec.md` line listing the wrappers once approved. Level 3 for the first wrapper (new pattern), Level 2 for later ones.
+Sketches are hand-made inline SVGs, which is the main effort. Add a `docs/spec.md` line listing the wrappers once approved. Full flow for the first wrapper (new pattern); later wrappers copy the first one.

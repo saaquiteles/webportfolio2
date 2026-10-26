@@ -53,6 +53,6 @@ All motion lives in wrappers under `src/components/animations/` (`ST-02`).
 - Test scroll effects on a mid-range phone before adding more.
 
 ## Not yet decided
-- Dark theme (R-10, "should have"): see `.claude/logs/adr-drafts/0004-dark-theme.md`.
+- Dark theme (R-10, "should have"): see `docs/adr/0004-dark-theme.md`.
 - Real name, tagline, projects and photos: waiting on the human's resume.
 - Hosting: undecided. Default is no `basePath`, controlled by one env var.

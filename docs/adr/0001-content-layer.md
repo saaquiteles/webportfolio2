@@ -9,4 +9,4 @@ Use Velite to turn `content/**/*.mdx` into typed data.
 Contentlayer is no longer actively maintained and has compatibility problems with newer Next.js versions. Velite does the same job (typed frontmatter, MDX compile) and is maintained. Check this is still true when the project is scaffolded.
 
 ## Consequences
-The content schema lives in `velite.config.ts`. Schema changes are Level 3.
+The content schema lives in `velite.config.ts`. Schema changes are full flow.

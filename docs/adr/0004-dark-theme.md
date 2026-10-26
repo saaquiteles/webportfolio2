@@ -1,6 +1,6 @@
-# ADR draft 0004: Dark theme for the Lab Notebook
+# ADR 0004: Dark theme for the Lab Notebook
 
-Status: Draft (the human decides). Requirement R-10 is "should have".
+Status: Proposed (the human decides). Requirement R-10 is "should have".
 
 ## Gap
 The approved palette is light only.

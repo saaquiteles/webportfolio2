@@ -1,6 +1,6 @@
-# ADR draft 0008: Pinned toolchain and linting
+# ADR 0008: Pinned toolchain and linting
 
-Status: Draft (the human decides). Raised by T0 to T7.
+Status: Proposed (the human decides). Raised by T0 to T7.
 
 ## Gap
 `docs/spec.md` lists tools but no versions, and several of the latest versions do not work together yet.
@@ -22,5 +22,5 @@ Each pin has a reason that was found by checking, not guessed. The goal is that 
 - **ESLint 10 against three plugins that list support only up to ESLint 9** (`eslint-plugin-import`, `jsx-a11y`, `react`). `npm ls` marks ESLint 10 "invalid" and `npm ci` prints "overriding peer dependency" warnings. Lint works and `npm ci --dry-run` passes. If a plugin update crashes, pin `eslint@^9`.
 - **npm blocks the `unrs-resolver` install script** (`allowScripts`). Harmless: the platform binaries are prebuilt and lint passes without it, on a clean Windows install and expected the same on the Linux runner.
 - **Accessibility rules are warnings only.** `jsx-a11y/alt-text` and `@next/next/no-img-element` come from the preset as warnings, so they never fail lint or CI. Promote `jsx-a11y/alt-text` to `error` in the ui story if `A11Y-04` should block a build.
-- **`TS-04`** (unused exports, commented-out code) is checked in review only. A tool such as `knip` could automate it, but a new dependency is a Level 3 decision and needs its own ADR.
+- **`TS-04`** (unused exports, commented-out code) is checked in review only. A tool such as `knip` could automate it, but a new dependency is a full-flow decision and needs its own ADR.
 - **Vitest runs with globals off**, so tests import `describe`, `it`, `expect` and `vi` explicitly. The default test environment is jsdom, and `// @vitest-environment node` is used per file where no DOM is needed (`layout.test.tsx`, `next.config.test.ts`).

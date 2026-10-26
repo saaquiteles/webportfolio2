@@ -1,6 +1,6 @@
-# ADR draft 0007: CI gate before deploy, and how Pages is deployed
+# ADR 0007: CI gate before deploy, and how Pages is deployed
 
-Status: Draft (the human decides). Raised by T7.
+Status: Proposed (the human decides). Raised by T7.
 
 ## Gap
 `docs/spec.md` says only "GitHub Actions + Pages", and requirement R-09 says deploy on a push to `main`. Nothing says the checks must pass first.
