@@ -11,22 +11,18 @@
       "Bash(npm test:*)",
       "Bash(npm run typecheck:*)",
       "Bash(npm run lint:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm run check:*)"
     ],
     "deny": [
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(**/env)"
     ]
   },
   "hooks": {
     "PreToolUse": [
       { "matcher": "Bash", "hooks": [{ "type": "command", "command": "node .claude/hooks/guard-bash.js" }] },
       { "matcher": "Write|Edit", "hooks": [{ "type": "command", "command": "node .claude/hooks/guard-paths.js" }] }
-    ],
-    "PostToolUse": [
-      { "matcher": "Write|Edit|Bash", "hooks": [{ "type": "command", "command": "node .claude/hooks/track.js" }] }
-    ],
-    "Stop": [
-      { "hooks": [{ "type": "command", "command": "node .claude/hooks/remind-tests.js" }] }
     ]
   }
 }

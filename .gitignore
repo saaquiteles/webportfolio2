@@ -25,7 +25,6 @@ Thumbs.db
 .idea
 
 # machine-local Claude files (the rest of .claude/ is tracked)
-.claude/logs/state.json
 .claude/settings.local.json
 .claude/logs/learning/*
 !.claude/logs/learning/TEMPLATE.md
