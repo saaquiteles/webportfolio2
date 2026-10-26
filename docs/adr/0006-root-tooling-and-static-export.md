@@ -1,6 +1,6 @@
 # ADR 0006: Root tooling files, their owner, and the static-export choices
 
-Status: Proposed (the human decides). Raised by T1 to T7.
+Status: Accepted by the human on 2026-10-26. Raised by T1 to T7.
 
 ## Gap
 `docs/spec.md` lists the app folders but not the files at the repo root, and the area map in `CLAUDE.md` gives them no owner. The scaffold created them under a one-off permission for `app-dev`.

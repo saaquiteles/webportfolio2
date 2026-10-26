@@ -1,6 +1,6 @@
 # ADR 0008: Pinned toolchain and linting
 
-Status: Proposed (the human decides). Raised by T0 to T7.
+Status: Accepted by the human on 2026-10-26. Raised by T0 to T7.
 
 ## Gap
 `docs/spec.md` lists tools but no versions, and several of the latest versions do not work together yet.
