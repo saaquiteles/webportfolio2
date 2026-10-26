@@ -2,20 +2,21 @@ import { formatMonth } from '@/lib/dates';
 import type { Highlight } from '@/lib/types';
 
 interface HighlightListProps {
-  items: Highlight[];
+  highlights: Highlight[];
 }
 
-export function HighlightList({ items }: HighlightListProps) {
+// Each highlight is an h3 because the page supplies the h2 "Also" above this list.
+export function HighlightList({ highlights }: HighlightListProps) {
   return (
     <ul>
-      {items.map((item) => (
-        <li key={`${item.title}-${item.date}`}>
-          <h3>{item.title}</h3>
-          <p>{item.org}</p>
+      {highlights.map((highlight) => (
+        <li key={`${highlight.title}-${highlight.date}`}>
+          <h3>{highlight.title}</h3>
+          <p>{highlight.org}</p>
           <p>
-            <time dateTime={item.date}>{formatMonth(item.date)}</time>
+            <time dateTime={highlight.date}>{formatMonth(highlight.date)}</time>
           </p>
-          {item.summary && <p>{item.summary}</p>}
+          {highlight.summary && <p>{highlight.summary}</p>}
         </li>
       ))}
     </ul>

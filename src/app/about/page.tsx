@@ -16,7 +16,7 @@ export default function About() {
       <h2>Education</h2>
       <EducationList entries={education} />
       <h2>Also</h2>
-      <HighlightList items={highlights} />
+      <HighlightList highlights={highlights} />
     </main>
   );
 }

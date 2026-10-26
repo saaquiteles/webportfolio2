@@ -5,6 +5,7 @@ interface ProjectCardProps {
   project: Project;
 }
 
+// The title is an h2 because the page supplies the h1 above its list of cards.
 export function ProjectCard({ project }: ProjectCardProps) {
   const { slug, title, summary, tags, links } = project;
 
