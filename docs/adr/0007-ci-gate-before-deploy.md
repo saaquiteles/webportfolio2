@@ -31,5 +31,5 @@ Checks before publishing is the cheapest way to keep a broken build off the live
 ## Amendment, 2026-10-26 (human decision after `/review whole app`)
 - **Push trigger paused.** Deploying is on hold and Pages is off, so every push produced a red run. The workflow now starts only by hand (`workflow_dispatch`). When deploying resumes, re-add `push:` with `branches: [main]` under `on:`. Requirement R-09 (deploy on push) holds again from that moment.
 - **The build job runs `npm run check`** (typecheck, lint, tests, hook self-test, build) with `NEXT_PUBLIC_BASE_PATH` set, so CI runs exactly what a developer runs. Its build writes the `out/` that is uploaded.
-- **Known trap before the first run:** the hook self-test case "a file outside the workspace is blocked" uses a Windows path (`C:/Users/...`), which Linux treats as a relative path, so it would fail on the runner. The human fixes it in `.claude/hooks/guards.test.mjs` (a locked file).
+- **Trap found and fixed:** the hook self-test case "a file outside the workspace is blocked" used a Windows path (`C:/Users/...`), which Linux treats as a relative path, so it would have failed on the runner. The human changed it to the project's parent folder (`path.resolve(root, '..', ...)`), which is outside the workspace on every system.
 - Rollback: `git revert` of the commit that made this change.
