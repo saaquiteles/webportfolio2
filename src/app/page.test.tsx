@@ -27,6 +27,22 @@ describe('Home page', () => {
     expect(screen.getByText('Sean Argie A. Quiteles')).toBeInTheDocument();
   });
 
+  it('links to email, LinkedIn and GitHub', () => {
+    render(<Home />);
+    expect(screen.getByRole('link', { name: 'seanargieq@gmail.com' })).toHaveAttribute(
+      'href',
+      'mailto:seanargieq@gmail.com',
+    );
+    expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+      'href',
+      'https://linkedin.com/in/saaquiteles',
+    );
+    expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/saaquiteles',
+    );
+  });
+
   it('has a main landmark', () => {
     render(<Home />);
     expect(screen.getByRole('main')).toBeInTheDocument();
