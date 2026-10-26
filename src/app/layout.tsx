@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import { profile } from '@/data/profile';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'TODO(human): site title',
-  description: 'TODO(human): site description',
+  title: profile.name,
+  description: profile.headline,
 };
 
 interface RootLayoutProps {

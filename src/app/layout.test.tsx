@@ -4,10 +4,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import RootLayout, { metadata } from './layout';
 
 describe('RootLayout', () => {
-  it('has a non-empty page title', () => {
-    const { title } = metadata;
-    if (typeof title !== 'string') throw new Error('title must be a string');
-    expect(title.length).toBeGreaterThan(0);
+  it('uses the profile name as the page title', () => {
+    expect(metadata.title).toBe('Sean Argie A. Quiteles');
+  });
+
+  it('uses the headline as the page description, with no placeholder left', () => {
+    expect(metadata.description).toBe('I build full-stack apps with Spring Boot and React.');
+    expect(JSON.stringify(metadata)).not.toContain('TODO(human)');
   });
 
   it('declares the page language on the html element', () => {
