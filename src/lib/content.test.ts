@@ -3,17 +3,23 @@ import { describe, it, expect } from 'vitest';
 import { caseStudies } from '#site/content';
 
 describe('case-study collection', () => {
-  it('contains buriccat with title, slug, summary, date and tags', () => {
-    const buriccat = caseStudies.find((study) => study.slug === 'buriccat');
-
-    expect(buriccat).toBeDefined();
-    expect(buriccat?.title).toMatch(/\S/);
-    expect(buriccat?.slug).toBe('buriccat');
-    expect(buriccat?.summary).toMatch(/\S/);
-    expect(buriccat?.date).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
-    expect(Array.isArray(buriccat?.tags)).toBe(true);
-    expect(buriccat?.tags.length).toBeGreaterThan(0);
-    expect(buriccat?.tags.every((tag) => typeof tag === 'string' && tag.length > 0)).toBe(true);
-    expect(buriccat?.body).toMatch(/\S/);
+  it('contains the three case studies', () => {
+    expect(caseStudies.map((study) => study.slug).sort()).toEqual([
+      'buriccat',
+      'cockatiel-recognition',
+      'portfolio',
+    ]);
   });
+
+  it.each(caseStudies.map((study) => [study.slug, study] as const))(
+    '%s has a title, summary, YYYY-MM date, tags and a body',
+    (_slug, study) => {
+      expect(study.title).toMatch(/\S/);
+      expect(study.summary).toMatch(/\S/);
+      expect(study.date).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
+      expect(study.tags.length).toBeGreaterThan(0);
+      expect(study.tags.every((tag) => typeof tag === 'string' && tag.length > 0)).toBe(true);
+      expect(study.body).toMatch(/\S/);
+    },
+  );
 });
