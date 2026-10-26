@@ -1,21 +1,26 @@
 # Plan: <story>
-Flow: <level>, because <reasons>
-Triggers checked: <list, including those that did not apply>
+Flow: <short path | full flow>, because <one line>
+Door and blast radius: <two-way or one-way door; what breaks if it is wrong>
+Status: Draft | Approved
 
 ## Tasks
-| # | Task | Builder | Files | First failing test | Rules |
-|---|---|---|---|---|---|
+Each task is a vertical slice: it works end to end when it is done.
+| # | Task | First failing test | Acceptance criteria | Blocked by |
+|---|---|---|---|---|
 
-## Test seams
-<seams>
+Add the sections below only when they have something in them.
 
-## New decisions (ADR drafts)
-<none or list>
+## Contracts
+<full flow: where each test touches the code; the human confirms these in writing before the first test>
 
-## Rollback (Level 3)
-<how to undo>
+## Decisions (ADRs)
+<new decisions, each written to `docs/adr/` with `Status: Proposed`>
+
+## Out of scope
+<what this story deliberately does not do>
+
+## Rollback
+<full flow: how to undo each risky step>
 
 ## Questions
-<list>
-
-Status: Draft | Approved
+<anything unclear, or where the docs disagree>

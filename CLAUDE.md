@@ -1,51 +1,52 @@
 # Web Portfolio
 
-A personal portfolio: a motion-heavy creative showcase plus a general site (about, projects, blog). Static export hosted on GitHub Pages.
+A personal portfolio: a motion-heavy creative showcase plus a general site (about, projects, blog). Static export for GitHub Pages; deploying is on hold for now.
 
 ## Working agreement (read first)
-- Work ONLY inside this workspace. Never write outside it.
+- Work ONLY inside this workspace. Never write outside it, except this project's Claude memory folder, which the hook allows.
 - Git writes (commit, add, etc.) only when the human explicitly asks. Never push, force-push or `reset --hard` unprompted.
 - Requirements come from `docs/`. Read `docs/requirements.md` and `docs/spec.md` before coding.
+- Use the words in `docs/glossary.md` exactly. Propose new or fuzzy words; add them only after the human says yes.
 - The human is learning: explain plans in plain language and get approval before writing code.
 - Explain everything as if to a beginner (define terms, everyday example, why before how, a short summary at the end).
-- After each task passes its tests, write a learning note (see `.claude/rules/learning.md`).
+- After each task passes its checks and review, write a learning note (see `.claude/rules/learning.md`).
 - Anything that must never happen is a hook, not a rule. See `.claude/settings.json`.
 
 ## Area map
-| Area | Stack | Folder | Test command |
-|---|---|---|---|
-| app | Next.js App Router, static export, GitHub Actions, root tooling (owner proposed in ADR draft 0006) | `src/app`, `public/`, `next.config.mjs`, `.github/`, root config files (`package.json`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts`, `postcss.config.mjs`, `.gitignore`) | `npm run typecheck && npm run lint && npm test && npm run build` |
-| ui | Tailwind, shadcn/Radix, Framer Motion | `src/components` | `npm test` |
-| content | MDX via Velite, typed data | `content/`, `src/data`, `src/lib` | `npm test` |
+| Area | Stack | Folder |
+|---|---|---|
+| app | Next.js App Router, static export, GitHub Actions, root tooling (owner proposed in ADR 0006) | `src/app`, `public/`, `next.config.mjs`, `.github/`, root config files (`package.json`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts`, `postcss.config.mjs`, `.gitignore`) |
+| ui | Tailwind, shadcn/Radix, Framer Motion | `src/components` |
+| content | MDX via Velite, typed data | `content/`, `src/data`, `src/lib` |
 
-Full check before saying "done": `npm run typecheck && npm run lint && npm test && npm run build`. The build is the real proof, because a static export fails on anything that needs a server.
+Full check before saying "done": `npm run check` (typecheck, lint, tests, build). The build is the real proof, because a static export fails on anything that needs a server.
 
-## Agents
-`planner` (read-only), builders: `app-dev`, `ui-dev`, `content-dev`, `designer` (presentation only), helpers: `test-writer`, `reviewer` (read-only).
+Agents live in `.claude/agents/`, commands in `.claude/commands/`, short rule summaries in `.claude/rules/`.
 
 ## Fixed (do not change)
-- `docs/requirements.md`, `docs/spec.md`, `docs/standards.md`, `docs/glossary.md`: the human owns these. Propose changes as an ADR draft in `.claude/logs/adr-drafts/`.
-- `.claude/settings.json` and `.claude/hooks/`: the locks. Never loosen them.
+- `docs/requirements.md`, `docs/spec.md`, `docs/standards.md`: the human owns these. Propose changes as an ADR in `docs/adr/` with `Status: Proposed`.
+- `docs/glossary.md`: the human owns it. The agent proposes words and adds them only after the human's yes.
+- `.claude/settings.json` and `.claude/hooks/`: the locks, edited only by the human.
 - Names fixed by the spec (routes, data shapes, content frontmatter fields).
 
 ## Flow
-Step 0: say "Flow: <level>, because <reasons>" and wait for approval. Highest triggered level wins; if unsure, go one up.
+Step 0: choose the level with one question: can this be undone with `git revert`, and how much breaks if it is wrong? Say "Flow: <level>, because <one line>" and wait for approval. If unsure, take full flow.
 
 | Level | Use it when | Flow |
 |---|---|---|
-| 1. Short path | ALL true: one area, one or two files, under about 30 lines, no visible behaviour change (or an obvious local bug, a copy fix, a style tweak) | 1-2 sentence approval, one test first, change, `/test`, short learning note, `/review` |
-| 2. Full flow | Anything that is not 1 or 3 | The full loop |
-| 3. Full flow, extra care | ANY true: changes `next.config.mjs`, the deploy workflow or `basePath`; a new dependency or pattern; a change to the spec or content schema; more than one area; personal data (contact details, photos of people); anything affecting accessibility of the whole site | Full loop plus seams confirmed in writing, rollback named in the plan, `/apply-review` for every must-fix, whole-area review at the end, ADR draft for new decisions, stop and ask when unclear |
+| Short path | Easy to undo AND small: one area, one or two files, about 30 lines, no visible behaviour change (a copy fix, a style tweak, an obvious local bug) | One-line approval, one test first, change, `npm run check`, short learning note, quick checklist review in the main session |
+| Full flow | Anything else, and always when it is hard to undo or reaches wide: changes to `next.config.mjs`, the deploy workflow or `basePath`; a new dependency or pattern; a change to the spec or content schema; more than one area; personal data (contact details, photos of people); whole-site accessibility | The full loop below, plus contracts confirmed in writing before the first test, a rollback named in the plan, a whole-area review at the end, an ADR (`Status: Proposed`) for any new decision, and a stop to ask whenever something is unclear |
 
 Full loop:
 ```
-/start-story -> /plan -> (human approves) -> build ONE small task, test-first
-  -> /test -> draft learning note -> /review
-  -> /apply-review (only the findings the human picks)
-  -> /test -> final learning note -> next task
-End of each story: /review whole <area> for every area the story changed
+/start-story -> /plan -> (human approves)
+-> per task: build test-first -> /test -> /review (Spec, then Standards) -> apply the recommended fixes
+   -> learning note -> /clear -> next task
+End of each story: /review whole <area>, then /retro
 ```
-Never skipped: human approval, a test first, `/test`, a learning note, `/review`, every guardrail.
+After `/review`, apply the recommended fixes unless the human says skip. Ask first about behaviour changes and anything outside the task.
+
+Never skipped: human approval, a test first, the full check, a learning note, a review, every guardrail.
 
 ## Standards
-Numbered rules live in `docs/standards.md` (IDs like `TS-01`, `A11Y-02`). Rule files in `.claude/rules/` are summaries; the originals win.
+Numbered rules live in `docs/standards.md` (IDs like `TS-01`, `A11Y-02`), each tagged tool or review. Short rule files in `.claude/rules/` cover git, comments, testing, learning and portfolio safety; where a rule file and `docs/standards.md` differ, the standards win.

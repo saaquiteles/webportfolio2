@@ -1,27 +1,22 @@
 # Learning note: <task>
-Status: Draft | Final
+Status: Final
 
-## Who did what (summary list)
-**Builder: the `<agent>` agent** (<flow level>, any one-off permission). In order, it:
-- <what it read>
-- <the failing test or check it ran first, and the real result>
-- <each file it wrote or changed>
-- <each command it ran and the real result>
-- <the learning note it wrote>
-- Did NOT: <things it was told not to do, or that it left alone>
+Write it once, after the review. About 40 lines when filled in. Short for a short-path task.
 
-(If a task had several steps or agents, such as a test-writer then a builder, give each its own short paragraph.)
-
-**Reviewer: the `reviewer` agent** (read-only). <must-fix count and the main findings, then the nice-to-haves in a few words>
-
-**Main session, checks it ran itself:**
-- <what it re-ran or re-read to verify the agent's report>
-- <which review changes it applied, and what it re-checked afterwards>
+## Who did what (about six bullets in total)
+**Builder:** <who built it, what it did in order, what it did NOT do>
+**Reviewer:** <must-fix count and the main findings, or "inline checklist" for a short-path task>
+**Main session checks:** <what was re-run or re-read, which review fixes were applied>
 
 ## What was built
 ## Why this way
 ## Key terms (plain words, with an everyday example)
 ## Follow the flow through the files
 ## What the tests prove
-## What the review changed (add at Final)
+**Red:** <the failing result before the change>
+**Green:** <the passing result after it>
+**Not proven:** <what these checks do not show>
+## What the review changed
 ## 3 likely questions
+## Summary
+<two lines: what changed and why it matters>
