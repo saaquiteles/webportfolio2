@@ -23,7 +23,7 @@ const edit = (file_path) => ({ tool_input: { file_path } });
 const shell = (command) => ({ tool_input: { command } });
 
 const pathCases = [
-  ['a file outside the workspace is blocked', edit('C:/Users/someone/Desktop/evil.txt'), 2],
+  ['a file outside the workspace is blocked', edit(path.resolve(root, '..', 'outside-the-workspace.txt')), 2],
   ['a hook script is a lock file', edit('.claude/hooks/guard-bash.js'), 2],
   ['settings.json is a lock file', edit('.claude/settings.json'), 2],
   ['settings.local.json is a lock file', edit('.claude/settings.local.json'), 2],
