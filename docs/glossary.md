@@ -6,9 +6,10 @@ The human owns this file. During `/start-story` the agent may propose new words;
 | Term | Meaning | Avoid |
 |---|---|---|
 | Showcase | The visual, motion-heavy pages (home and case studies). | gallery |
-| Project | One portfolio piece: a record in `src/data/projects.ts` (once created) plus its case study. | work, item |
-| Experience entry | One role, with its organisation and dates, in the experience history (`src/data/experience.ts`, once created). | job, position |
-| Education entry | One degree or course of study, with its school and dates, in `src/data/experience.ts` (once created). | schooling |
+| Project | One portfolio piece: a record in `src/data/projects.ts` plus its case study. | work, item |
+| Profile | The one record in `src/data/profile.ts` holding the name, headline, tagline, intro, contact links and photo. Everything in it is public. | bio, about data |
+| Experience entry | One role, with its organisation and dates, in the experience history (`src/data/experience.ts`). | job, position |
+| Education entry | One degree or course of study, with its school and dates, in `src/data/experience.ts`. | schooling |
 | Highlight | One short item in the "Also" section of About, such as a certification or a site visit, with a date. | extra, achievement item |
 | Case study | One MDX page describing a single project. | project page |
 | Post | One MDX blog page. | article, entry |
