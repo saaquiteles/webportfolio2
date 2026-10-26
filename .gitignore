@@ -31,3 +31,6 @@ Thumbs.db
 
 # a separate git repo kept here for reading only, not part of this project
 /agentic-workflow-matt/
+
+# personal source material (resume, original photos): never published
+/private/
