@@ -8,9 +8,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build",
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:hooks && npm run build",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:hooks": "node --test .claude/hooks/guards.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

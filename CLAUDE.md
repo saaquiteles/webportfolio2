@@ -19,7 +19,7 @@ A personal portfolio: a motion-heavy creative showcase plus a general site (abou
 | ui | Tailwind, shadcn/Radix, Framer Motion | `src/components` |
 | content | MDX via Velite, typed data | `content/`, `src/data`, `src/lib` |
 
-Full check before saying "done": `npm run check` (typecheck, lint, tests, build). The build is the real proof, because a static export fails on anything that needs a server.
+Full check before saying "done": `npm run check` (typecheck, lint, tests, hook self-test, build). The build is the real proof, because a static export fails on anything that needs a server.
 
 Agents live in `.claude/agents/`, commands in `.claude/commands/`, short rule summaries in `.claude/rules/`.
 
