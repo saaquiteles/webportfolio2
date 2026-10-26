@@ -12,13 +12,14 @@ describe('SiteHeader', () => {
 
   // next/link adds the trailing slash from next.config.mjs only in the real build (the built
   // pages link to /about/ and /contact/), so the test environment sees the slashless form.
-  it('links to Home, About and Contact', () => {
+  it('links to Home, About, Projects and Contact', () => {
     render(<SiteHeader />);
 
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
     expect(within(nav).getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
+    expect(within(nav).getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects');
     expect(within(nav).getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/contact');
-    expect(within(nav).getAllByRole('link')).toHaveLength(3);
+    expect(within(nav).getAllByRole('link')).toHaveLength(4);
   });
 });
