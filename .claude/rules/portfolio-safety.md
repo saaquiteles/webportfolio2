@@ -1,5 +1,6 @@
 # Portfolio safety
 - Never publish personal data (phone, home address, ID numbers, photos of other people) without the human's explicit approval in this session.
+- Personal source files (the resume, original photos) live in `private/`, which git ignores. Publish only what the human approves in the interview; never copy the phone number or home address into a tracked file.
 - Never invent facts about the human: jobs, dates, results, quotes, testimonials. Use `TODO(human)` placeholders.
 - Never use third-party content (images, fonts, code) without checking its licence and noting the credit.
 - Always keep the site buildable as a static export: no server-only features (`SE-01`).
