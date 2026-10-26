@@ -7,12 +7,17 @@
   },
   "scripts": {
     "dev": "next dev",
+    "predev": "npm run content",
     "build": "next build",
+    "prebuild": "npm run content",
     "check": "npm run typecheck && npm run lint && npm test && npm run test:hooks && npm run build",
+    "content": "velite build --strict",
     "lint": "eslint .",
     "test": "vitest run",
+    "pretest": "npm run content",
     "test:hooks": "node --test .claude/hooks/guards.test.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pretypecheck": "npm run content"
   },
   "dependencies": {
     "next": "^16.4.3",
@@ -33,7 +38,13 @@
     "jsdom": "^30.1.3",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
+    "velite": "^0.4.0",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "velite": {
+      "sharp": "^0.35.5"
+    }
   }
 }

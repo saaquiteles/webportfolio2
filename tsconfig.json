@@ -26,6 +26,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "#site/content": [
+        "./.velite/index.js"
       ]
     },
     "allowJs": true,

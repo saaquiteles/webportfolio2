@@ -24,5 +24,6 @@ export default defineConfig([
     "node_modules/**",
     "next-env.d.ts",
     "coverage/**",
+    ".velite/**",
   ]),
 ]);

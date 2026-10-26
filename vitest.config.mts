@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '#site/content': fileURLToPath(new URL('./.velite/index.js', import.meta.url)),
     },
   },
   test: {
