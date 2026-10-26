@@ -25,11 +25,13 @@ Grid lines behind text stay very faint so they never hurt legibility (`A11Y-05`)
 ## Home page hero
 A graph-paper page with a huge headline and a hand-drawn arrow pointing at the tagline. Small mono margin notes read like "fig. 1". Project cards sit taped on at slight angles.
 
-Placeholders (never invent facts about the human, see `portfolio-safety.md`):
-- Headline: `TODO(human): headline`
-- Tagline: `TODO(human): tagline`
+Copy (text approved by the human; never invent facts about the human, see `portfolio-safety.md`). It lives in `src/data/profile.ts` and `src/data/projects.ts`, which are the source of truth:
+- Headline: "I build full-stack apps with Spring Boot and React."
+- Tagline: "Programmer/Analyst · Spring Boot, React and React Three Fiber · Metro Manila"
+- Project cards: the real project titles, thesis first (see `src/data/projects.ts`)
+
+Still a placeholder until the human supplies the text:
 - Margin notes: `TODO(human): fig. 1 caption`
-- Project cards: `TODO(human): project title` (replace once the resume arrives)
 
 ## Motion
 | Priority | What it does |
