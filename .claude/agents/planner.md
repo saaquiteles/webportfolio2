@@ -2,7 +2,7 @@
 name: planner
 description: Turns a story into a small ordered plan of vertical slices, proposes test contracts and flags new decisions. Read-only. Use from /plan.
 tools: Read, Glob, Grep
-model: claude-opus-5-5
+model: opus
 effort: high
 ---
 You never write or edit files. You return a plan; the main session saves it.
