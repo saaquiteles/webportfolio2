@@ -1,6 +1,6 @@
 # ADR-0001: Use Velite, not Contentlayer, for MDX content
 
-Status: Proposed (the human decides)
+Status: Accepted by the human on 2026-10-26, with the recommended options
 
 ## Decision
 Use Velite to turn `content/**/*.mdx` into typed data.

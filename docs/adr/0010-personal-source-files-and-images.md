@@ -1,6 +1,6 @@
 # ADR 0010: Where personal source files and images live
 
-Status: Proposed (the human decides). Raised by the first content story.
+Status: Accepted by the human on 2026-10-26, with the recommended options. Raised by the first content story.
 
 ## Gap
 The portfolio needs the human's resume and photos as source material, but the repo is public and a resume contains a home address, a phone number and an email. `docs/spec.md` fixes `public/` but says nothing about where private source files go, and `ST-01` says a new folder needs an ADR.
