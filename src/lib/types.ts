@@ -34,3 +34,14 @@ export interface Highlight {
   date: string;
   summary?: string;
 }
+
+export interface Project {
+  slug: string;
+  title: string;
+  summary: string;
+  year: number;
+  tags: string[];
+  cover?: { src: string; alt: string };
+  links?: { live?: string; repo?: string; paper?: string };
+  featured: boolean;
+}
