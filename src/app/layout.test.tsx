@@ -21,6 +21,6 @@ describe('RootLayout', () => {
   it('renders children without adding a second main landmark', () => {
     const markup = renderToStaticMarkup(<RootLayout>x</RootLayout>);
     expect(markup).not.toContain('<main');
-    expect(markup).toContain('<body>x</body>');
+    expect(markup).toMatch(/<body><header.*<\/header>x<footer.*<\/footer><\/body>/);
   });
 });

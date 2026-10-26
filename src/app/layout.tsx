@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { SiteFooter } from '@/components/global/SiteFooter';
+import { SiteHeader } from '@/components/global/SiteHeader';
 import { profile } from '@/data/profile';
 import './globals.css';
 
@@ -14,7 +16,11 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SiteHeader />
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }
