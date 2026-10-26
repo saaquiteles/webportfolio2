@@ -10,6 +10,7 @@ export interface Profile {
   intro: string;
   email: string;
   links: { linkedin: string; github: string };
+  photo?: { src: string; alt: string };
 }
 
 export interface Experience {
