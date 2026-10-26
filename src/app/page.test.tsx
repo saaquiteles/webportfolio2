@@ -8,9 +8,23 @@ describe('Home page', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   });
 
-  it('marks the headline as a TODO(human) placeholder until the resume arrives', () => {
+  it('uses the approved headline as the level-1 heading', () => {
     render(<Home />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('TODO(human)');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'I build full-stack apps with Spring Boot and React.',
+    );
+  });
+
+  it('shows the approved tagline', () => {
+    render(<Home />);
+    expect(
+      screen.getByText('Programmer/Analyst · Spring Boot, React and React Three Fiber · Metro Manila'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows the name', () => {
+    render(<Home />);
+    expect(screen.getByText('Sean Argie A. Quiteles')).toBeInTheDocument();
   });
 
   it('has a main landmark', () => {

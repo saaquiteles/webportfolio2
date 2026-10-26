@@ -1,8 +1,11 @@
+import { profile } from '@/data/profile';
+
 export default function Home() {
   return (
     <main className="p-8">
-      <h1>TODO(human): headline</h1>
-      <p>TODO(human): tagline</p>
+      <p>{profile.name}</p>
+      <h1>{profile.headline}</h1>
+      <p>{profile.tagline}</p>
     </main>
   );
 }
