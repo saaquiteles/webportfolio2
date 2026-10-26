@@ -114,6 +114,7 @@ Only three things change: the **areas**, the **safety rule** and the **check com
 - **State a standard once and tag it.** *Tool* means a command fails; *review* means only a reader catches it. When a reader catches the same mistake twice, make it a tool check.
 - **Re-check agent reports yourself.** They are usually right, and sometimes wrong in small ways (a miscount, an unverified claim). Run the key check again.
 - **Run the same check locally and in CI.** The first push is the first real test on another operating system.
+- **Agent-file edits take effect on the next turn.** After changing an agent's model or tools, test it in a new turn. Edited and tested in the same turn, a planner still ran as the old model; the identical check one turn later ran as the new one.
 - **Use a light review for tiny changes.** A full review agent on a one-line change is wasted effort.
 - **Never commit a repo inside a repo.** Ignore it or move it.
 
