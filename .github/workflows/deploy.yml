@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Deploying is on hold (ADR 0007), so this runs only when started by hand.
+# Re-add `push:` with `branches: [main]` under `on:` when deploying resumes.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -23,10 +23,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      - run: npm run check
         env:
           # Leave the variable unset for user.github.io or a custom domain.
           # Set it to /<repo> for a project page (user.github.io/<repo>).
