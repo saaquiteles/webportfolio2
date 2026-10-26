@@ -21,6 +21,16 @@ describe('About page', () => {
     expect(screen.getByText('Software Developer Intern')).toBeInTheDocument();
   });
 
+  it('shows the profile photo with alt text and no placeholder', () => {
+    render(<About />);
+
+    const photo = screen.getByRole('img', {
+      name: 'Sean Argie A. Quiteles in a Mapúa University graduation gown',
+    });
+    expect(photo).toHaveAttribute('src', '/images/sean-quiteles.webp');
+    expect(screen.queryByText('TODO(human): photo')).not.toBeInTheDocument();
+  });
+
   it('lists Education with the degree, school, specialization and dates', () => {
     render(<About />);
 
