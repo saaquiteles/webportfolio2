@@ -11,7 +11,7 @@ Status: Accepted by the human on 2026-10-26, with the recommended options. Raise
   - (a) add `kind: 'work' | 'education' | 'certification' | 'other'` to `Experience`;
   - (b) keep `Experience` for roles only and add separate lists in `src/data/experience.ts`: `Education { degree, school, start, end? }` and `Highlight { title, org, date, summary? }`.
 - **Recommendation: (b).** The glossary defines an Experience entry as "one role", so (a) would stretch the word, and (b) needs no new file. It needs two glossary words (for example "Education entry" and "Highlight"), which the human accepts.
-- **Dates are stored as `YYYY-MM` strings** and formatted in UTC, so no date shifts by a month in another time zone.
+- **Dates are stored as `YYYY-MM` strings** and parsed directly (no `Date` object is built), so no date shifts by a month in another time zone.
 
 ## Why
 One `Profile` record means a typo or a change is made once, and a test can assert the exact approved strings. Keeping each type to one meaning keeps the glossary honest.
