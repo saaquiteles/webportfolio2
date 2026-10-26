@@ -1,6 +1,6 @@
 # ADR 0009: Add a .gitattributes file for line endings
 
-Status: Proposed (the human decides). Raised by the T1 review.
+Status: Accepted by the human on 2026-10-26. Raised by the T1 review.
 
 ## Gap
 The project is developed on Windows, where git may convert line endings to CRLF depending on each machine's `core.autocrlf` setting. Nothing in the repo fixes this.
@@ -17,4 +17,4 @@ There is no CRLF in the repo today: `package-lock.json`, the `.claude/hooks/*.js
 Add a root `.gitattributes` containing `* text=auto eol=lf`. Text files are stored and checked out with LF endings. If a narrower change is preferred, use `*.sh text eol=lf` only.
 
 ## Consequences
-New file at the repo root, so it needs an owner (see ADR 0006). The first commit is already made and the files are stored with LF (checked), so no renormalise is needed now. Add it when you want the rule written down; it is a full-flow change, because it affects every file.
+New file at the repo root, so it needs an owner (see ADR 0006). The files are already stored with LF (checked), so no renormalise was needed. `src/lib/repo-hygiene.test.ts` checks the rule and that no tracked file is stored with CRLF.

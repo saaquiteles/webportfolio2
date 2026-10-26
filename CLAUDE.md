@@ -15,7 +15,7 @@ A personal portfolio: a motion-heavy creative showcase plus a general site (abou
 ## Area map
 | Area | Stack | Folder |
 |---|---|---|
-| app | Next.js App Router, static export, GitHub Actions, root tooling (owner proposed in ADR 0006) | `src/app`, `public/`, `next.config.mjs`, `.github/`, root config files (`package.json`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts`, `postcss.config.mjs`, `.gitignore`) |
+| app | Next.js App Router, static export, GitHub Actions, root tooling (owner proposed in ADR 0006) | `src/app`, `public/`, `next.config.mjs`, `.github/`, root config files (`package.json`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts`, `postcss.config.mjs`, `.gitignore`, `.gitattributes`) |
 | ui | Tailwind, shadcn/Radix, Framer Motion | `src/components` |
 | content | MDX via Velite, typed data | `content/`, `src/data`, `src/lib` |
 
