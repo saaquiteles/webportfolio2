@@ -24,18 +24,24 @@ Next.js (App Router) with `output: 'export'`, TypeScript (strict), Tailwind CSS,
 ## Folder layout
 ```
 content/blog/*.mdx        content/projects/*.mdx
-src/app/                  src/components/{animations,ui,global}/
-src/data/projects.ts      src/data/experience.ts
+src/app/                  src/components/{animations,ui,global,sections}/
+src/data/{profile,projects,experience}.ts
 src/lib/
-public/                   .github/workflows/deploy.yml
+public/, public/images/   (web-sized images only)
+private/                  (git-ignored: resume and original photos, ADR 0010)
+.github/workflows/deploy.yml
 ```
 
 ## Data shapes
-`Project` (in `src/data/projects.ts`): `slug`, `title`, `summary`, `year`, `tags: string[]`, `cover` (path under `/public`), `links?: { live?: string; repo?: string }`, `featured: boolean`.
+`Project` (in `src/data/projects.ts`): `slug`, `title`, `summary`, `year`, `tags: string[]`, `cover?: { src: string; alt: string }` (path under `/public`; optional, ADR 0012), `links?: { live?: string; repo?: string; paper?: string }` (`paper`: ADR 0016), `featured: boolean`. The list order is the display order.
 
 MDX frontmatter, project: `title`, `slug`, `summary`, `date`, `tags`. Blog post: `title`, `slug`, `summary`, `date`, `tags`, `draft?: boolean`.
 
-`Experience` (in `src/data/experience.ts`): `role`, `org`, `start`, `end?`, `summary`.
+`Experience` (in `src/data/experience.ts`): `role`, `org`, `start`, `end?`, `summary`. The same file holds `Education` (`degree`, `school`, `start`, `end?`) and `Highlight` (`title`, `org`, `date`, `summary?`).
+
+`Profile` (in `src/data/profile.ts`): `name`, `headline`, `tagline`, `intro`, `email`, `links: { linkedin, github }`, `photo?: { src, alt }`. Everything in it is public.
+
+Dates in data and frontmatter are `YYYY-MM` strings (ADR 0011). Shared types live in `src/lib/types.ts`.
 
 ## Animation components (in `src/components/animations/`)
 Wrappers are the only place that imports `framer-motion`; pages use the wrappers. Each wrapper honours reduced motion.
