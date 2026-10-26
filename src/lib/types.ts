@@ -7,6 +7,15 @@ export interface Profile {
   name: string;
   headline: string;
   tagline: string;
+  intro: string;
   email: string;
   links: { linkedin: string; github: string };
+}
+
+export interface Experience {
+  role: string;
+  org: string;
+  start: string;
+  end?: string;
+  summary: string;
 }
