@@ -17,4 +17,14 @@ describe('ExperienceList', () => {
       expect(screen.getByText(entry.summary)).toBeInTheDocument();
     }
   });
+
+  it('shows each date range with machine-readable months', () => {
+    const { container } = render(<ExperienceList entries={experience} />);
+
+    const items = screen.getAllByRole('listitem');
+    expect(items[0]).toHaveTextContent('Jun 2026 – Present');
+    expect(items[1]).toHaveTextContent('May 2025 – Jul 2025');
+    const stamps = [...container.querySelectorAll('time')].map((t) => t.getAttribute('datetime'));
+    expect(stamps).toEqual(['2026-06', '2025-05', '2025-07']);
+  });
 });
