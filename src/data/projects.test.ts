@@ -4,8 +4,12 @@ import { caseStudies } from '#site/content';
 import { projects } from './projects';
 
 describe('projects data', () => {
-  it('lists the thesis first and Buriccat second', () => {
-    expect(projects.map((project) => project.slug)).toEqual(['cockatiel-recognition', 'buriccat']);
+  it('lists the thesis first, then Buriccat, then the portfolio', () => {
+    expect(projects.map((project) => project.slug)).toEqual([
+      'cockatiel-recognition',
+      'buriccat',
+      'portfolio',
+    ]);
   });
 
   it('has a case study for every project, with the same slug, title, summary and tags', () => {
@@ -40,5 +44,6 @@ describe('projects data', () => {
   it('links the thesis to its published paper and Buriccat to its repository', () => {
     expect(projects[0].links?.paper).toBe('https://ebooks.iospress.nl/doi/10.3233/ATDE251126');
     expect(projects[1].links?.repo).toBe('https://github.com/saaquiteles/baccarat');
+    expect(projects[2].links?.repo).toBe('https://github.com/saaquiteles/webportfolio2');
   });
 });

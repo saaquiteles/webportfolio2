@@ -76,6 +76,22 @@ describe('Case study page', () => {
     );
   });
 
+  it('shows the portfolio case study, its repository and the credit to Matt Pocock', async () => {
+    render(await Page({ params: Promise.resolve({ slug: 'portfolio' }) }));
+
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('This portfolio');
+    const main = within(screen.getByRole('main'));
+    expect(main.getByRole('link', { name: 'Source code on GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/saaquiteles/webportfolio2',
+    );
+    expect(main.getByRole('heading', { level: 2, name: 'Credits' })).toBeInTheDocument();
+    expect(main.getByRole('link', { name: "Matt Pocock's skills" })).toHaveAttribute(
+      'href',
+      'https://github.com/mattpocock/skills',
+    );
+  });
+
   it('does not render a page for an unknown slug', async () => {
     await expect(Page({ params: Promise.resolve({ slug: 'does-not-exist' }) })).rejects.toThrow(
       'NEXT_HTTP_ERROR_FALLBACK;404',

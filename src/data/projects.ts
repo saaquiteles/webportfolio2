@@ -19,4 +19,13 @@ export const projects: Project[] = [
     links: { repo: 'https://github.com/saaquiteles/baccarat' },
     featured: true,
   },
+  {
+    slug: 'portfolio',
+    title: 'This portfolio',
+    summary: 'A static Next.js site built test-first with an agentic Claude Code workflow.',
+    year: 2026,
+    tags: ['nextjs', 'typescript', 'tailwind', 'velite', 'vitest', 'claude-code'],
+    links: { repo: 'https://github.com/saaquiteles/webportfolio2' },
+    featured: true,
+  },
 ];
