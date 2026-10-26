@@ -112,3 +112,10 @@ Written to `docs/adr/` with `Status: Proposed`. Prerequisites the human still ha
 ADR 0013 is accepted with option A (npm `pre` scripts), still subject to the spike (T11 and T12) proving it.
 
 Status: Approved
+
+## Amendment, 2026-10-26: the thesis is the first project (approved by the human, "yes to all, name the co-authors")
+- New project `cockatiel-recognition` (the thesis paper), listed first in `src/data/projects.ts`; `buriccat` second. Added to T13, with its case study (`content/projects/cockatiel-recognition.mdx`) and its credits (the text is approved before commit, as in T15). Date `2025-10` (publisher record: 13 Oct 2025).
+- `Project.links` gains an optional `paper` (ADR 0016, Proposed). The "source code soon" line is left out.
+- The case study names the two co-authors, as the publisher lists them.
+- Tags: python, opencv, pytorch, raspberry-pi, cnn, squeezenet. `featured: true`.
+- T13 tests now cover two projects: drift, unique slugs, one `h1` each, and the order (thesis first).
