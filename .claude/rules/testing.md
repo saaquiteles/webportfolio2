@@ -4,3 +4,5 @@
 - Full check: `npm run check` (typecheck, lint, tests, hook self-test, build). The static build is a test (`TE-03`).
 - Report real results only. If something fails or was not run, say so.
 - On the short path, one test first still applies.
+- The red run must fail for the stated reason: quote the failing message in the learning note. A syntax error or a missing import is not a red for the behaviour under test.
+- A test that passes on its first run (a guard, a branch test) needs a deliberate break, to prove it can fail. Restore the code afterwards.

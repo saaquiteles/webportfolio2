@@ -6,6 +6,8 @@ Arguments: $ARGUMENTS
 - **Short path:** do a quick checklist in the main session, with no reviewer agent. Spec: does the change do what was asked, and nothing more? Standards: which rule IDs apply, and does `npm run check` pass?
 - **Full flow:** use the `reviewer` agent. With no argument it reviews the current change (`git diff` plus new files). With `whole <area>` it reviews the whole area folder for drift (see the area map in `CLAUDE.md`).
 
+Brief the `reviewer` with: the result of `npm run check` you already ran (with counts), the red-run evidence (the failing message), and what the human approved this session. Tell it not to re-run the full check (`npm test` is enough to confirm something), because it cannot see the session and otherwise reports those as unverified.
+
 The review has two passes, Spec then Standards, and ends with "Recommended to apply".
 
 Then apply the recommended fixes unless I say skip:
