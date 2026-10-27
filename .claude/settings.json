@@ -25,5 +25,7 @@
       { "matcher": "Bash", "hooks": [{ "type": "command", "command": "node .claude/hooks/guard-bash.js" }] },
       { "matcher": "Write|Edit", "hooks": [{ "type": "command", "command": "node .claude/hooks/guard-paths.js" }] }
     ]
-  }
+  },
+  "statusLine": { "type": "command", "command": "node .claude/statusline.mjs" },
+  "env": { "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "65" }
 }
