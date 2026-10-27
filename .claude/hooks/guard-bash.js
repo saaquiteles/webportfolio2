@@ -18,6 +18,7 @@ process.stdin.on('end', () => {
     [/\bnpm\s+publish\b/, 'npm publish is blocked.'],
     [/\brm\s+(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r)\b/, 'rm -rf is blocked. Delete specific files instead.'],
     [/\b(cat|type|Get-Content|more|less|head|tail)\b[^|;&]*\.env(\.[\w-]+)?\b(?!\.example)/, 'Reading real .env files is blocked.'],
+    [/(^|[\s;&|(])python3?(\.exe)?(\s|$)/, 'python is blocked here: on this machine it opens a stub that hangs. Use node.'],
   ];
 
   for (const [pattern, message] of rules) {

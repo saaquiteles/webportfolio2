@@ -59,6 +59,9 @@ const shellCases = [
   ['npm run check is allowed', shell('npm run check'), 0],
   ['an empty input is allowed', {}, 0],
   ['invalid JSON is allowed (the hook does not crash)', 'not json', 0],
+  ['python3 is blocked (it opens a stub that hangs)', shell('python3 -c "print(1)"'), 2],
+  ['python is blocked', shell('python script.py'), 2],
+  ['a command that only mentions the word python in a path is allowed', shell('git log -- docs/python-notes.md'), 0],
 ];
 
 for (const [name, input, expected] of shellCases) {
