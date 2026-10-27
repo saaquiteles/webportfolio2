@@ -16,3 +16,24 @@ describe('line endings (ADR 0009)', () => {
     expect(bad).toEqual([]);
   });
 });
+
+describe('plans are working notes, not published (like learning notes)', () => {
+  it('ignores every plan except the template', () => {
+    const ignored = (file: string) => {
+      try {
+        git('check-ignore', '--no-index', '-q', '--', file);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    expect(ignored('.claude/logs/plans/2026-10-26-real-content.md')).toBe(true);
+    expect(ignored('.claude/logs/plans/TEMPLATE.md')).toBe(false);
+  });
+
+  it('tracks no plan other than the template', () => {
+    const tracked = git('ls-files', '.claude/logs/plans').split('\n').filter(Boolean);
+    expect(tracked).toEqual(['.claude/logs/plans/TEMPLATE.md']);
+  });
+});

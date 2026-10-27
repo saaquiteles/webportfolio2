@@ -28,6 +28,8 @@ Thumbs.db
 .claude/settings.local.json
 .claude/logs/learning/*
 !.claude/logs/learning/TEMPLATE.md
+.claude/logs/plans/*
+!.claude/logs/plans/TEMPLATE.md
 
 # a separate git repo kept here for reading only, not part of this project
 /agentic-workflow-matt/
