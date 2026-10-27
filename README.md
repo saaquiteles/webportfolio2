@@ -1,6 +1,6 @@
 # webportfolio2
 
-My personal web portfolio: a creative showcase plus a general site (about, projects, contact). It is a static Next.js site built for GitHub Pages.
+My personal web portfolio: a creative showcase plus a general site (about, projects, contact).
 
 **Status:** in development. The home, about, contact and projects pages and the case studies are written. The blog, motion and final styling are planned, and the deployment to GitHub Pages is on hold.
 
