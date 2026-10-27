@@ -20,7 +20,8 @@ describe('Case study page', () => {
     expect(headings).toHaveLength(1);
     expect(headings[0]).toHaveTextContent('Buriccat');
     expect(screen.getByRole('main')).toBeInTheDocument();
-    expect(screen.getByText('A fun project to try out React Three Fiber.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Built with' })).toBeInTheDocument();
+    expect(screen.queryByText('A fun project to try out React Three Fiber.')).not.toBeInTheDocument();
   });
 
   it.each(caseStudies.map((study) => study.slug))('%s renders exactly one h1', async (slug) => {
@@ -82,6 +83,8 @@ describe('Case study page', () => {
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('This portfolio');
     const main = within(screen.getByRole('main'));
+    expect(main.getByText(/built so it can be hosted on GitHub Pages/)).toBeInTheDocument();
+    expect(main.queryByText(/exported for GitHub Pages/)).not.toBeInTheDocument();
     expect(main.getByRole('link', { name: 'Source code on GitHub' })).toHaveAttribute(
       'href',
       'https://github.com/saaquiteles/webportfolio2',
