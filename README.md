@@ -28,6 +28,7 @@ You need Node 22.12 or a newer 22.x, or Node 24.
 npm install
 npm run dev      # start the dev server at http://localhost:3000
 npm run check    # type check, lint, tests, hook self-test and the static build
+npm run publish-review   # the diff against origin/main of everything that becomes public
 ```
 
 `npm run content` turns the MDX files into typed data in `.velite/`. It runs by itself before `dev`, `build`, `test` and `typecheck`. The static site is written to `out/`.

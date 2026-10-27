@@ -12,6 +12,7 @@
     "prebuild": "npm run content",
     "check": "npm run typecheck && npm run lint && npm test && npm run test:hooks && npm run build",
     "content": "velite build --strict",
+    "publish-review": "git diff origin/main -- content src/data src/app src/components public README.md",
     "lint": "eslint .",
     "test": "vitest run",
     "pretest": "npm run content",
