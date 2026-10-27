@@ -9,6 +9,8 @@ export default defineConfig([
     rules: {
       // pins TS-01 even if the preset's default changes
       "@typescript-eslint/no-explicit-any": "error",
+      // A11Y-04: an image without alt text must fail the check (an image exists now)
+      "jsx-a11y/alt-text": "error",
     },
   },
   {
