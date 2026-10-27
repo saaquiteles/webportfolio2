@@ -25,7 +25,7 @@ Don't ask the AI to "build the app". Write down what you want in words you both 
 | 1. Sources of truth | Requirements, spec, numbered standards (each tagged *tool* or *review*), glossary, ADRs | `docs/` |
 | 2. Rules | `CLAUDE.md` plus a few short rule files | `CLAUDE.md`, `.claude/rules/` |
 | 3. Agents | planner, builder, reviewer | `.claude/agents/` |
-| 4. Commands | `/start-story`, `/plan`, `/test`, `/review`, `/retro`, `/explain` | `.claude/commands/` |
+| 4. Commands | `/start-story`, `/plan`, `/review`, `/retro`, `/explain` | `.claude/commands/` |
 | 5. Hooks + permissions | Automatic locks and allow/deny lists | `.claude/settings.json`, `.claude/hooks/` |
 
 **Golden rule:** anything that must never happen belongs in layer 5, not layer 2. A rule can be forgotten. A hook cannot. State each rule **once**, and point at it from everywhere else.
@@ -46,16 +46,15 @@ docs/      requirements, spec, standards, glossary, adr/
 
 ```
 /start-story -> /plan -> (human approves)
--> per task: build test-first -> /test -> /review (Spec, then Standards) -> apply the recommended fixes
-   -> learning note -> /clear -> next task
+-> per task: build test-first -> the full check -> /review (Spec, then Standards) -> apply the recommended fixes
+   -> learning note -> next task (at a story boundary, or when the context is getting full, first write the next step and the approvals into the plan file, then the human runs /clear or /compact)
 End of each story: /review whole <area>, then /retro
 ```
 | Step | What happens |
 |---|---|
 | `/start-story` | An interview, not a form: numbered questions in rounds, each with a recommended answer ("yes" accepts it). The agent looks up facts itself and asks only decisions. It proposes glossary words and flags where the story, requirements and spec disagree. It also reads the follow-ups list (`docs/follow-ups.md`, tracked, parked items each with when to do it) and says which items the story would finish or touch. No code. |
 | `/plan` | State the level. Small ordered tasks, each a **vertical slice** that works end to end: task, first failing test, acceptance criteria, blocked by. Optional sections only when needed: contracts, ADRs, out of scope, rollback. Hard stop for approval. |
-| Build | One task at a time. Failing test first, then just enough code, one test at a time. |
-| `/test` | One command that runs everything (typecheck, lint, tests, build). Report real results only. |
+| Build | One task at a time. Failing test first, then just enough code, one test at a time. Then run the one full check command (typecheck, lint, tests, build) and report real results only; there is no separate command for it. |
 | `/review` | Two passes by a fresh, read-only reviewer. **Spec:** is anything missing, added without being asked, or done wrong while looking done? **Standards:** the numbered rules. Findings are numbered and marked behaviour change or refactor. The recommended fixes are applied; ask first about behaviour changes and anything outside the task. |
 | Note | One learning note, written after the review. |
 | `/retro` | Looks back at what happened and suggests changes to the *setup*, not the code. Sorts each problem: **mechanical** (a tool can check it, so add a hook, lint rule or test) or **judgement** (a reader must check it, so add it to the standards). Also flags a bloated `CLAUDE.md` and instructions that change nothing. It only suggests; the human decides. |
