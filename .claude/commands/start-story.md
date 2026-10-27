@@ -4,7 +4,7 @@ argument-hint: <story, requirement IDs, or "design" to settle the visual directi
 ---
 Story: $ARGUMENTS
 
-1. Read `docs/requirements.md`, `docs/spec.md`, `docs/standards.md`, `docs/glossary.md` and `docs/adr/`. Look facts up yourself in the files and the code. Never ask me what the repo can tell you.
+1. Read `docs/requirements.md`, `docs/spec.md`, `docs/standards.md`, `docs/glossary.md` and `docs/adr/`. Look facts up yourself in the files and the code. Never ask me what the repo can tell you. Also read `docs/follow-ups.md` and say which parked items this story would finish or touch, so they are planned with it and removed from the file when done.
 2. Interview me in rounds. Each round asks every question that is ready to answer, numbered, each with your **recommended answer** ("yes" accepts it). Ask only decisions. The next round asks what depended on my earlier answers. Stop when nothing is left to ask.
 3. Say where the story, the requirements and the spec disagree.
 4. Propose new or fuzzy words for the glossary (term, meaning, words to avoid). Add them to `docs/glossary.md` only after I say yes.
