@@ -40,13 +40,13 @@ Step 0: choose the level with one question: can this be undone with `git revert`
 Full loop:
 ```
 /start-story -> /plan -> (human approves)
--> per task: build test-first -> /test -> /review (Spec, then Standards) -> apply the recommended fixes
-   -> learning note -> /clear -> next task
-End of each story: /review whole <area>, then /retro
+-> per task: build test-first -> `npm run check` -> /review (Spec, then Standards) -> apply the recommended fixes
+   -> learning note -> next task (at a story boundary, or when the status line says "compact soon", first write the next step and the approvals into the plan file, then the human runs /clear or /compact)
+End of each story: /review whole <area>, then /retro. Before the first push the human reads `npm run publish-review` (the diff of all public text) and `docs/follow-ups.md`.
 ```
 After `/review`, apply the recommended fixes unless the human says skip. Ask first about behaviour changes and anything outside the task.
 
 Never skipped: human approval, a test first, the full check, a learning note, a review, every guardrail.
 
 ## Standards
-Numbered rules live in `docs/standards.md` (IDs like `TS-01`, `A11Y-02`), each tagged tool or review. Short rule files in `.claude/rules/` cover git, comments, testing, learning and portfolio safety; where a rule file and `docs/standards.md` differ, the standards win.
+Numbered rules live in `docs/standards.md` (IDs like `TS-01`, `A11Y-02`), each tagged tool or review. Short rule files in `.claude/rules/` cover git, shell and edits, comments, testing, learning and portfolio safety; where a rule file and `docs/standards.md` differ, the standards win.
