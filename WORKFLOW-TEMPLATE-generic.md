@@ -52,7 +52,7 @@ End of each story: /review whole <area>, then /retro
 ```
 | Step | What happens |
 |---|---|
-| `/start-story` | An interview, not a form: numbered questions in rounds, each with a recommended answer ("yes" accepts it). The agent looks up facts itself and asks only decisions. It proposes glossary words and flags where the story, requirements and spec disagree. No code. |
+| `/start-story` | An interview, not a form: numbered questions in rounds, each with a recommended answer ("yes" accepts it). The agent looks up facts itself and asks only decisions. It proposes glossary words and flags where the story, requirements and spec disagree. It also reads the follow-ups list (`docs/follow-ups.md`, tracked, parked items each with when to do it) and says which items the story would finish or touch. No code. |
 | `/plan` | State the level. Small ordered tasks, each a **vertical slice** that works end to end: task, first failing test, acceptance criteria, blocked by. Optional sections only when needed: contracts, ADRs, out of scope, rollback. Hard stop for approval. |
 | Build | One task at a time. Failing test first, then just enough code, one test at a time. |
 | `/test` | One command that runs everything (typecheck, lint, tests, build). Report real results only. |
@@ -89,7 +89,7 @@ Lessons that cost time on the first project:
 The human's job is to learn the product, not only ship it. One note per task, written **once, after the review**, about 40 lines: who did what, what was built, why this way, key terms (each in plain words with an everyday example), follow the flow through the files, what the tests prove (the red result, the green result, and what is **not** proven), what the review changed, 3 likely questions, a two-line summary. Short on the short path.
 
 ## 8. Starting a new project
-1. **Sources of truth first:** requirements, spec, standards with rule IDs (`ST-01`) each tagged tool or review, the glossary. On a brand-new project, add a design step that produces the spec and first ADRs.
+1. **Sources of truth first:** requirements, spec, standards with rule IDs (`ST-01`) each tagged tool or review, the glossary, and an empty `docs/follow-ups.md` for anything parked on purpose (tracked, because learning notes are usually git-ignored). On a brand-new project, add a design step that produces the spec and first ADRs.
 2. **`CLAUDE.md`:** where the AI may write, no unprompted git writes, the human approves, an area map, the one check command, the flow, the levels.
 3. **Rules:** git, comments, testing, learning, and one safety rule for your domain (section 9).
 4. **Agents:** planner, builder, reviewer, each with narrow limits and a pattern to copy.
