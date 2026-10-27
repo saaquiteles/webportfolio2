@@ -85,6 +85,7 @@ describe('Case study page', () => {
     const main = within(screen.getByRole('main'));
     expect(main.getByText(/built so it can be hosted on GitHub Pages/)).toBeInTheDocument();
     expect(main.queryByText(/exported for GitHub Pages/)).not.toBeInTheDocument();
+    expect(main.getByText(/Every code change is made test first with Claude Code\./)).toBeInTheDocument();
     expect(main.getByRole('link', { name: 'Source code on GitHub' })).toHaveAttribute(
       'href',
       'https://github.com/saaquiteles/webportfolio2',
