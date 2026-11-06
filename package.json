@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "pretest": "npm run content",
-    "test:hooks": "node --test .claude/hooks/guards.test.mjs",
+    "test:hooks": "node --test \".claude/hooks/*.test.mjs\"",
     "typecheck": "tsc --noEmit",
     "pretypecheck": "npm run content"
   },

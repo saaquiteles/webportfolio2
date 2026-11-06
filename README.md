@@ -43,7 +43,7 @@ npm run publish-review   # the diff against origin/main of everything that becom
 | `src/lib` | Shared types and small helpers |
 | `content/projects` | MDX case studies |
 | `docs` | Requirements, spec, standards, glossary and decision records (`docs/adr`) |
-| `.claude` | Rules, agents, commands and hooks for the Claude Code workflow |
+| `.claude` | Not published: the author's local rules, agents, commands and hooks for the Claude Code workflow |
 
 ## How it is built
 

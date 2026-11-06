@@ -24,12 +24,8 @@ Thumbs.db
 .vscode
 .idea
 
-# machine-local Claude files (the rest of .claude/ is tracked)
-.claude/settings.local.json
-.claude/logs/learning/*
-!.claude/logs/learning/TEMPLATE.md
-.claude/logs/plans/*
-!.claude/logs/plans/TEMPLATE.md
+# the Claude Code setup (agents, hooks, rules, skills, plans, notes) stays on this machine
+.claude/
 
 # a separate git repo kept here for reading only, not part of this project
 /agentic-workflow-matt/

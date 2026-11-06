@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const ANSI = /\u001b\[[0-9;]*m/g;
@@ -14,7 +15,8 @@ function statusline(input: unknown) {
 
 const usage = (used_percentage: number | null) => ({ context_window: { used_percentage } });
 
-describe('the context status line', () => {
+// .claude is not published, so a fresh clone has no status line to test.
+describe.skipIf(!existsSync('.claude/statusline.mjs'))('the context status line', () => {
   it('shows the used percentage', () => {
     expect(statusline(usage(42)).text).toBe('ctx 42%');
   });
