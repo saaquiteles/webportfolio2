@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme {
+  --color-*: initial;
+  --color-paper: #FBF5E9;
+  --color-surface: #FFFFFF;
+  --color-ink: #1E1B18;
+  --color-tomato: #C8321E;
+  --color-blueprint: #1F5FA8;
+  --color-muted: #5C544B;
+  --color-rule: #D8CDB8;
+  --color-grid: #E4E7EC;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
+}
