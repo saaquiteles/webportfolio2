@@ -111,6 +111,7 @@ A spike is never a way around the flow. If it touches real data, auth, money or 
 
 - **Before committing, inspect the staged diff and run the module's required checks again.** Confirm the staged changes belong to the completed module and do not contain unrelated work, accidental deletions, secrets, build output, ignored learning files or a nested repo.
 - **No automatic commits.** The agent proposes the module commit and message; it runs `git add` and `git commit` only after the human explicitly authorizes it. The human pushes.
+- **No AI attribution lines.** Do not add `Co-Authored-By`, "Generated with ..." or similar lines to commit messages or pull request descriptions, unless your team asks for them. If your tool adds one by default, switch that off and put the rule in the project's git rule file, so the human's wish overrides the tool's default.
 - **No commit-splitting skill.** This workflow does not create commits per small edit or per task. It commits once per completed, verified module.
 
 ## 5. The agents
