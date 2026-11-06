@@ -31,6 +31,15 @@ describe('RootLayout', () => {
   it('renders children without adding a second main landmark', () => {
     const markup = renderToStaticMarkup(<RootLayout>x</RootLayout>);
     expect(markup).not.toContain('<main');
-    expect(markup).toMatch(/<body><header.*<\/header>x<footer.*<\/footer><\/body>/);
+    expect(markup).toMatch(/<body><a [^>]*>Skip to content<\/a><header.*<\/header>x<footer.*<\/footer><\/body>/);
+  });
+
+  it('starts the body with a skip link to the main content, hidden until it has focus', () => {
+    const markup = renderToStaticMarkup(<RootLayout>x</RootLayout>);
+    const firstLink = markup.match(/<body>.*?(<a [^>]*>)/)?.[1] ?? '';
+
+    expect(firstLink).toContain('href="#main-content"');
+    expect(firstLink).toMatch(/class="[^"]*\bsr-only\b/);
+    expect(firstLink).toMatch(/class="[^"]*\bfocus:not-sr-only\b/);
   });
 });
