@@ -45,6 +45,15 @@ describe('SiteHeader', () => {
     expect(currentLinks('/')).toEqual(['Home']);
   });
 
+  it('styles the current link differently from the others', () => {
+    router.pathname = '/about/';
+    render(<SiteHeader />);
+
+    for (const name of ['Home', 'About', 'Projects', 'Contact']) {
+      expect(screen.getByRole('link', { name }).className).toContain('aria-[current=page]:underline');
+    }
+  });
+
   it('marks Projects and Contact as current on their own pages', () => {
     expect(currentLinks('/projects/')).toEqual(['Projects']);
     cleanup();

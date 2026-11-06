@@ -11,6 +11,10 @@
   --color-rule: #D8CDB8;
   --color-grid: #E4E7EC;
   --container-page: 70rem;
+  --text-hero: 2.875rem;
+  --text-hero--line-height: 1;
+  --text-display: 5.75rem;
+  --text-display--line-height: 0.98;
 }
 
 @theme inline {
@@ -22,6 +26,49 @@
 @layer base {
   body {
     background-color: var(--color-paper);
+    background-image:
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size: 32px 32px;
     color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: 2.875rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.625rem;
+  }
+
+  @media (min-width: 48rem) {
+    h2 {
+      font-size: 2.5rem;
+    }
+  }
+
+  a {
+    color: var(--color-blueprint);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-blueprint);
+    outline-offset: 3px;
   }
 }

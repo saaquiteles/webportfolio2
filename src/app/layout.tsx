@@ -21,7 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body>
         <a
           href={`#${MAIN_CONTENT_ID}`}
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-md focus:border-2 focus:border-ink focus:bg-surface focus:px-4 focus:font-semibold focus:text-ink focus:outline-3 focus:outline-offset-3 focus:outline-blueprint"
+          className="sr-only no-underline focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-md focus:border-2 focus:border-ink focus:bg-surface focus:px-4 focus:font-semibold focus:text-ink focus:outline-3 focus:outline-offset-3 focus:outline-blueprint"
         >
           Skip to content
         </a>

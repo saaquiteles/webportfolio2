@@ -17,7 +17,11 @@ export function NavLink({ href, children }: NavLinkProps) {
   const isCurrent = pathname !== null && withoutTrailingSlash(pathname) === withoutTrailingSlash(href);
 
   return (
-    <Link href={href} aria-current={isCurrent ? 'page' : undefined}>
+    <Link
+      href={href}
+      aria-current={isCurrent ? 'page' : undefined}
+      className="inline-flex min-h-11 items-center px-1 font-medium text-ink no-underline aria-[current=page]:font-bold aria-[current=page]:underline aria-[current=page]:decoration-tomato aria-[current=page]:decoration-4 aria-[current=page]:underline-offset-8"
+    >
       {children}
     </Link>
   );

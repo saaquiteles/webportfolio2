@@ -69,7 +69,7 @@ describe('the colour tokens in globals.css', () => {
     expect(contrast(color(name), color('surface'))).toBeGreaterThanOrEqual(4.5);
   });
 
-  it.each(['ink', 'muted'])('keeps %s text at 4.5 or more on the grid colour', (name) => {
+  it.each(['ink', 'muted', 'blueprint'])('keeps %s text at 4.5 or more on the grid colour', (name) => {
     expect(contrast(color(name), color('grid'))).toBeGreaterThanOrEqual(4.5);
   });
 
@@ -90,5 +90,24 @@ describe('the font tokens in globals.css', () => {
     ['mono', jetbrainsMono],
   ])('maps --font-%s to the loaded font variable', (name, font) => {
     expect(css).toContain(`--font-${name}: var(${font.variable});`);
+  });
+});
+
+describe('the base styles in globals.css', () => {
+  it('draws a visible focus ring in the blueprint colour', () => {
+    expect(css).toMatch(/:focus-visible\s*\{[^}]*outline:\s*3px solid var\(--color-blueprint\)/);
+  });
+
+  it('underlines links, so they still look like links after the reset', () => {
+    expect(css).toMatch(/(^|\n)\s*a\s*\{[^}]*text-decoration:\s*underline/);
+  });
+
+  it('sets headings in the heading font', () => {
+    expect(css).toMatch(/h1,[^{]*\{[^}]*font-family:\s*var\(--font-heading\)/);
+  });
+
+  it('paints a 32 px graph-paper grid from the grid colour', () => {
+    expect(css).toMatch(/background-image:[^;]*var\(--color-grid\)/);
+    expect(css).toMatch(/background-size:\s*32px 32px/);
   });
 });
