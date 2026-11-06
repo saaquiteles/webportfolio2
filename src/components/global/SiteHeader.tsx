@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { NavLink } from './NavLink';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -14,7 +14,7 @@ export function SiteHeader() {
         <ul>
           {NAV_LINKS.map(({ href, label }) => (
             <li key={href}>
-              <Link href={href}>{label}</Link>
+              <NavLink href={href}>{label}</NavLink>
             </li>
           ))}
         </ul>
