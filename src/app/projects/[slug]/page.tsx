@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { caseStudies } from '#site/content';
+import { PageShell } from '@/components/global/PageShell';
 import { MdxContent } from '@/components/sections/MdxContent';
 
 interface CaseStudyPageProps {
@@ -18,9 +19,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   if (!caseStudy) notFound();
 
   return (
-    <main>
+    <PageShell>
       <h1>{caseStudy.title}</h1>
       <MdxContent code={caseStudy.body} />
-    </main>
+    </PageShell>
   );
 }

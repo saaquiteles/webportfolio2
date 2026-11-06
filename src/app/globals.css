@@ -10,6 +10,7 @@
   --color-muted: #5C544B;
   --color-rule: #D8CDB8;
   --color-grid: #E4E7EC;
+  --container-page: 70rem;
 }
 
 @theme inline {
