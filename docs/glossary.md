@@ -17,6 +17,9 @@ The human owns this file. During `/start-story` the agent may propose new words;
 | Placeholder | Text marked `TODO(human)` that stands in for a fact only the human can supply. | dummy text, lorem ipsum |
 | Lab Notebook | The chosen visual direction in `docs/design.md`: warm paper, graph-paper grid, sticker-like labels. | style, skin |
 | Design token | A named colour, font or spacing value defined once in the Tailwind theme (`src/app/globals.css`, once wired up) and reused everywhere. | magic value, hard-coded colour |
+| Page shell | The shared wrapper that gives every page the same `main` landmark, width and spacing. | layout wrapper, container |
+| Sketch | A small inline SVG drawing in the Lab Notebook style, such as the hero arrow. | doodle, illustration |
+| Margin note | A small monospace annotation beside content, such as "fig. 1". | caption, tooltip |
 | Wrapper | A small component in `src/components/animations/` that adds motion to its children. | animation helper |
 | Reduced motion | An OS setting asking sites to avoid animation. Every animation must respect it. | no-animation mode |
 
