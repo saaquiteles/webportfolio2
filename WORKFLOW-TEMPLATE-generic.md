@@ -1,149 +1,270 @@
 # Agentic development workflow: a generic, reusable template
 
-Works for any software project (web app, mobile app, API, data pipeline, library, CLI). Fill in the `<placeholders>`.
+Works for any software project and any tech stack (web app, mobile app, backend service, data pipeline, library, CLI, infrastructure code). Nothing here depends on a language, framework or hosting choice; where a tool or language is named, it is only an example. Fill in the `<placeholders>`.
 
-Origin: designed on a retail-bank project (2026-10-23), then simplified on 2026-10-26 after running on a portfolio-site scaffold, using ideas from Matt Pocock's agent-skills course (mattpocock/skills). Status: the first version ran a whole story; **this simpler version has not been piloted yet**. Treat the numbers (such as "30 lines") as first guesses.
+**Prerequisites:** Claude Code (the files live in `.claude/`; another AI tool needs its own equivalents of agents, commands, skills, hooks and permission rules), git, and one scripting runtime for the hooks (any that every developer's machine has; the examples use `node`).
+
+Origin: designed on a retail-bank project (2026-10-23), simplified on 2026-10-26 after running on a portfolio-site scaffold, using ideas from Matt Pocock's agent-skills course (mattpocock/skills), then revised on 2026-10-27 after an outside review (requirement IDs, verification wording and context use), and again on 2026-10-28 after a second one (a spike level, module-level commits and packaging the locks), then a pass to make it stack-agnostic, and finally a pass on 2026-10-30 after the first pilot (a mobile-app frontend story with six tasks, followed by a retro). Status: piloted once; the pilot's lessons are folded in below (module workflow, status block, retro folder, hook config and Windows notes). Treat the numbers (such as "30 lines") as first guesses.
 
 ## 1. The idea
-Don't ask the AI to "build the app". Write down what you want in words you both share, make it plan, approve the plan, then let one builder do **one small, test-first step at a time** while a reviewer checks each step. Locks (hooks) stop dangerous actions. The human approves the key decisions and is the only one who pushes.
+
+Start with a draft of the plan the human and AI have already discussed. The organizer turns that draft into a clear, ordered, functionality-based build plan and gives only concise feedback about gaps, risks and useful improvements. The human approves the organized plan before code changes begin.
+
+Build **one functionality module at a time**. Each module is a small, coherent behaviour that can be verified end to end. Define its **happy path** (the expected successful journey) and its **sad paths** (validation failures, errors, empty states, denied access, boundary cases and other relevant failure behaviour) before implementation. Build test-first where practical, review the completed module, and commit only when the module is complete and verified.
+
+Learning is available without becoming a development gate. When the human runs `/teach` (a skill), it creates an interactive HTML learning file in the learning folder. It explains the actual implementation in beginner-friendly language, shows code snippets and identifies the files touched. It does not pause or add mandatory steps to the build loop.
+
+Locks (hooks) stop dangerous actions. The human approves key decisions and is the only one who pushes. Process follows risk, and every step has to earn its keep (see "Keeping it lean" in section 4).
 
 ## 2. Words used here
+
 - **Agent**: a specialised AI helper with its own instructions and tools (a file in `.claude/agents/`).
 - **Command**: a saved prompt you run as `/name` (a file in `.claude/commands/`).
-- **Rule**: a short instruction file in `.claude/rules/` that every session reads.
+- **Skill**: reusable instructions and supporting resources loaded when a capability is invoked (a folder in `.claude/skills/`).
+- **Rule**: a short instruction file in `.claude/rules/`. Without a `paths:` line it loads in every session; with one, only when matching files are touched.
 - **Hook**: a small script that runs before or after an action and can block it. A lock, not a request.
 - **Spec**: the written agreement of what the project must do and how its parts talk. The AI never invents or renames what the spec fixes.
+- **Requirement ID**: a number on each requirement (`REQ-03`), so every module, test and learning file can point back to why it exists.
 - **Glossary**: the project's words, each with the words to avoid. One word per idea.
 - **Contract**: the agreed place a test touches the code, such as a rendered screen or a function. Tests check behaviour there, not internals.
-- **Vertical slice**: a task that works end to end when it is finished, like one finished slice of cake instead of a whole layer of sponge.
+- **Functionality module**: a cohesive piece of user-visible or system behaviour, built and verified as one unit. A module includes its happy path and relevant sad paths.
+- **Happy path**: the expected successful journey through a functionality.
+- **Sad path**: an expected failure, invalid input, boundary condition, denial, empty state or recovery behaviour.
 - **TDD**: write a failing test first, then just enough code to pass it.
+- **Mutation check**: break the exact line a test protects, watch the test fail, then restore the line. It proves a test that was green on its first run can fail.
+- **Fast check / full check**: a targeted test run used while building, and the one command that runs everything (typecheck, lint, all tests, build) before review.
+- **Level**: how much process a change gets: spike, short path or full flow. It follows risk, not size (section 4).
+- **Status block**: about ten lines at the top of the organized plan (current module, approvals, last check, next action) that carry work across a `/clear` or `/compact`; dated history goes in a Log section at the end of the plan.
+- **Interactive learning file**: an HTML file generated by `/teach` on demand. It explains a completed or existing implementation using actual files, snippets and beginner-friendly explanations.
+- **Spike**: a throwaway experiment to answer one question. Nothing from it ships as it is.
+- **Module commit**: a commit made after a complete functionality module has passed its checks and review. It may contain multiple related implementation and test changes that together complete that module.
 - **ADR**: a short note "we chose X because Y", with a status (Proposed until the human accepts it).
 
 ## 3. The layers
+
 | Layer | What it is | Where it lives |
 |---|---|---|
-| 1. Sources of truth | Requirements, spec, numbered standards (each tagged *tool* or *review*), glossary, ADRs | `docs/` |
-| 2. Rules | `CLAUDE.md` plus a few short rule files | `CLAUDE.md`, `.claude/rules/` |
-| 3. Agents | planner, builder, reviewer | `.claude/agents/` |
-| 4. Commands | `/start-story`, `/plan`, `/review`, `/retro`, `/explain` | `.claude/commands/` |
+| 1. Sources of truth | Requirements with IDs, spec, numbered standards (each tagged *tool* or *review*), glossary, ADRs, follow-ups | `docs/` |
+| 2. Rules | `CLAUDE.md` plus a few short rule files, scoped by path where possible | `CLAUDE.md`, `.claude/rules/` |
+| 3. Agents | organizer, builder, reviewer | `.claude/agents/` |
+| 4. Commands and skills | `/start-story`, `/organize`, `/review`, `/retro`, and the `/teach` skill | `.claude/commands/`, `.claude/skills/` |
 | 5. Hooks + permissions | Automatic locks and allow/deny lists | `.claude/settings.json`, `.claude/hooks/` |
 
 **Golden rule:** anything that must never happen belongs in layer 5, not layer 2. A rule can be forgotten. A hook cannot. State each rule **once**, and point at it from everywhere else.
 
-```
-CLAUDE.md
-docs/      requirements, spec, standards, glossary, adr/
-.claude/   settings.json, agents/, commands/, rules/, hooks/, logs/{plans,learning}/
-```
+**Context rule:** whatever loads every session costs on every turn. Keep it short and load the rest only when it is needed (section 7).
+
+CLAUDE.md docs/      requirements, spec, standards, glossary, follow-ups.md, adr/ .claude/   settings.json, agents/, commands/, skills/, rules/, hooks/, logs/{plans,learning,retro}/
 
 ## 4. The flow
-**Step 0, choose the level** with one question: *can this be undone with `git revert`, and how much breaks if it is wrong?* Say "Flow: <level>, because <one line>" and wait for approval. If unsure, take the full flow.
+
+**Step 0, choose the level** with one question: *can this be undone with `git revert`, and how much breaks if it is wrong?* Say "Flow: `<level>`, because `<one line>`" and wait for approval.
 
 | Level | Use it when | Flow |
 |---|---|---|
-| **Short path** | Easy to undo AND small: one area, one or two files, about 30 lines, no visible behaviour change | One-line approval, a test first, change, the check, a short learning note, a quick checklist review in the main session |
-| **Full flow** | Anything else, and always for: hard to undo or high impact (money, health, user data, deletion), security, a schema or public-interface change, more than one area, a new dependency or pattern, personal data | The full loop, plus contracts confirmed in writing, a rollback named in the plan, a whole-area review at the end, an ADR for each new decision, and a stop to ask when unclear |
+| **Spike** | A throwaway experiment to learn how something works or whether an idea is feasible. Nothing from it ships as it is | Say "Flow: spike", the question it answers and a cap (at most `<N>` files touched or `<N>` steps, then stop and report the dead end so the human can pivot to a simpler approach; an agent has no clock, so do not use a time box), and wait for approval. No organized plan file and no module commit. Work only in a git-ignored scratch folder inside the workspace (for example `scratch/`) that the full check and the hooks do not pick up; create no branch unless the human asks. No test first, because nothing ships; every other guardrail still applies. Make no change to the real dependency manifest or lockfile; install only inside the scratch folder, or ask. A spike ends with a written answer shown to the human (a few lines in an ADR or `docs/follow-ups.md`), or it was not a spike. The human decides when it ends and approves deleting the code. To use the idea, rebuild it test first at the right level. |
+| **Short path** | Easy to undo AND low impact: one area, no visible behaviour change, no full-flow trigger. Rule of thumb: one or two files, about 30 lines of code (docs-only changes can be bigger) | One-line approval, a test first where practical, change, the full check, a quick checklist review in the main session. No `/teach` unless requested. |
+| **Full flow** | Anything else, and always for: hard to undo or high impact (money, health, user data, deletion), security or auth, a schema or public-interface change, more than one area, a new dependency or pattern, personal data | Organize the discussed draft into functionality modules; confirm each module's happy and sad paths, contracts and acceptance criteria; human approves the organized plan. Build one module at a time, test-first, run the full check, review the completed module, then commit that module if the human has authorized committing. Include a rollback and ADRs for hard-to-reverse decisions. Stop and ask when unclear. |
 
+The level follows risk, not size: a one-line change to auth is full flow; a long docs-only rewrite can be the short path. Work on security, auth, migrations or money logic also goes on `docs/follow-ups.md` as **needs experienced review**.
+
+A spike is never a way around the flow. If it touches real data, auth, money or personal data, it is not a spike. If its code is kept, rebuild it test-first at the right level. Exploration is only worth doing when it ends in a written answer.
+
+**Keeping it lean.** Rigor follows risk, not habit.
+
+- **Use the lighter level without guilt.** A copy fix, a style tweak or a trivial refactor belongs on the short path. A short path done properly is not cutting corners.
+- **Build by functionality, not arbitrary task fragments.** A module should represent one coherent behaviour and include its successful path plus the relevant failure paths. Split a module only when it is too large to build, test or review safely.
+- **Spend understanding where failure is expensive.** Know the contracts (what goes in, what comes out, where it fails) and the risky parts (state, security boundaries, data integrity, money) in depth. Boilerplate, configuration and layout get a concise description.
+- **Fail fast.** Run the fast check first. Anything a person has to remember should become a tool check (a test, a linter or a hook).
+- **Keep teaching separate from delivery.** `/teach` is on demand and must not block the build, review or commit loop. Do not generate learning files automatically after every module.
+- **Prune.** `/retro` records whether each process step caught a real problem or taught something. After about two weeks of use, or about ten modules, a step that did neither is shortened or dropped. The human makes the change; the agent never skips a guardrail on its own. Human approval, tests, the full check, review and hooks are not pruned.
+
+```text
+/start-story -> discuss and draft the approach
+-> /organize (organizer structures the draft; concise gap/risk feedback)
+-> human approves the organized plan
+-> for each functionality module:
+     confirm happy path + relevant sad paths + acceptance criteria
+     -> builder implements test-first (fast check)
+     -> full check
+     -> /review (Spec, then Standards)
+     -> apply approved fixes and re-check
+     -> module complete -> human-authorized module commit
+-> optional /teach <module-or-topic> -> interactive HTML in learning folder
+-> end of story: /review whole <area>, then /retro
 ```
-/start-story -> /plan -> (human approves)
--> per task: build test-first -> the full check -> /review (Spec, then Standards) -> apply the recommended fixes
-   -> learning note -> next task (at a story boundary, or when the context is getting full, first write the next step and the approvals into the plan file, then the human runs /clear or /compact)
-End of each story: /review whole <area>, then /retro
-```
+
 | Step | What happens |
 |---|---|
-| `/start-story` | An interview, not a form: numbered questions in rounds, each with a recommended answer ("yes" accepts it). The agent looks up facts itself and asks only decisions. It proposes glossary words and flags where the story, requirements and spec disagree. It also reads the follow-ups list (`docs/follow-ups.md`, tracked, parked items each with when to do it) and says which items the story would finish or touch. No code. |
-| `/plan` | State the level. Small ordered tasks, each a **vertical slice** that works end to end: task, first failing test, acceptance criteria, blocked by. Optional sections only when needed: contracts, ADRs, out of scope, rollback. Hard stop for approval. |
-| Build | One task at a time. Failing test first, then just enough code, one test at a time. Then run the one full check command (typecheck, lint, tests, build) and report real results only; there is no separate command for it. |
-| `/review` | Two passes by a fresh, read-only reviewer. **Spec:** is anything missing, added without being asked, or done wrong while looking done? **Standards:** the numbered rules. Findings are numbered and marked behaviour change or refactor. The recommended fixes are applied; ask first about behaviour changes and anything outside the task. |
-| Note | One learning note, written after the review. |
-| `/retro` | Looks back at what happened and suggests changes to the *setup*, not the code. Sorts each problem: **mechanical** (a tool can check it, so add a hook, lint rule or test) or **judgement** (a reader must check it, so add it to the standards). Also flags a bloated `CLAUDE.md` and instructions that change nothing. It only suggests; the human decides. |
-| `/explain` | Explains a file, feature or term as if to a beginner. Changes nothing. |
+| `/start-story` | An interview, not a form: numbered questions in rounds, each with a recommended answer ("yes" accepts it). The agent looks up facts itself and asks only decisions. It maps the story to requirement IDs, proposes glossary words and flags where the story, requirements and spec disagree. It also reads the follow-ups list (`docs/follow-ups.md`, tracked, parked items each with when to do it) and says which items the story would finish or touch. No code. |
+| `/organize` | Send the organizer the draft plan created through discussion. It restructures the draft into ordered, functionality-based modules. For every module, it identifies the goal, requirement IDs, acceptance criteria, happy path, relevant sad paths, expected files/areas, first tests and dependencies. It gives minimal feedback only: missing paths, unclear criteria, risks, dependencies or a practical recommendation. It must preserve the decisions already agreed, distinguish assumptions from decisions, and ask instead of inventing missing requirements. It saves the organized plan using the plan template and stops for human approval. No code. |
+| Build | Work on one approved functionality module at a time. Confirm its happy path and relevant sad paths from the approved plan. Write failing tests first where practical, then implement only what the module needs, using the fast check. Run the full check before review. A test that is green on its first run is shown able to fail with a mutation check where practical (break the exact line it protects, watch it fail, restore the line and show `git diff` is empty). Report real results only. |
+| `/review` | Two passes by a fresh, read-only reviewer that reads the diff and the module acceptance criteria itself instead of trusting the builder's report. **Spec:** is anything missing, added without being asked, or done wrong while looking done? **Standards:** the numbered rules. Findings are numbered, marked behaviour change or refactor, and give the file and line and the evidence. The recommended fixes are applied; ask first about behaviour changes and anything outside the module. |
+| Module commit | After all happy-path and sad-path acceptance criteria, checks and review findings for the module are complete, prepare one commit for the completed module. Do not commit intermediate work, known mistakes, failing states or partially completed modules. The human must explicitly authorize the commit. The commit may include all related files and tests required for that single completed functionality. |
+| `/teach` | On demand, after or during development, run the `/teach` skill for a module, feature, file or technical concept. It reads the actual code and creates an interactive HTML learning file in `.claude/logs/learning/`. The file explains concepts ELI5, fundamentals, runtime/code behaviour, real code snippets, files touched, each file's purpose and what changed. It must be self-contained and usable in a browser, with lightweight interactions (for example expandable explanations, tabs or a small knowledge check) where useful. It does not modify application code, require a checkpoint before development continues, or delay the build loop. |
+| `/retro` | Looks back at what happened and suggests changes to the *setup*, not the code. Sorts each problem: **mechanical** (a tool can check it, so add a hook, lint rule or test) or **judgement** (a reader must check it, so add it to the standards). Scores the story on six questions: correct (criteria and key failure cases verified?), traceable (requirement to code to evidence?), understood (could I explain the changed files?), debuggable (could I follow a failure?), efficient (mistakes caught early, no dead steps?), safe (did the locks block what they should?). It saves its output in `.claude/logs/retro/<date>-<story-id>-<area>.md`, with a status column per suggestion (todo, done, needs the human, skipped) that is kept up to date as items are done. It only suggests; the human decides. |
+| `/explain` | A lightweight conversational explanation of a file, feature or term. For a structured, reusable learning artifact, use `/teach` instead. |
 
-**Never skipped:** human approval, a test first, the full check, a learning note, a review, every guardrail.
+**Never skipped by the agent:** human approval, tests (or an approved alternative check), the full check for the full flow, review, and every guardrail. `/teach` is optional and on demand, not a required delivery checkpoint. A spike skips tests and review only because nothing ships; approval and every guardrail still apply.
+
+**Commits.** Commit only when the human explicitly asks. The unit of commit is a **completed functionality module**, not an individual task or code edit. A module commit is allowed only after its happy path and relevant sad paths are implemented, acceptance criteria are met, checks pass, and review findings are resolved or explicitly accepted by the human. Never commit known mistakes, failing tests, incomplete modules or intermediate work. Use a clear Conventional Commits message (`type(scope): subject`; types `feat`, `fix`, `refactor`, `style`, `docs`, `test`, `chore`, plus `build`, `ci` or `perf` if your team uses them). The subject is imperative ("add", not "added"), and the body explains why, not how. Mark a breaking change with `!` after the type and a `BREAKING CHANGE:` footer.
+
+- **Before committing, inspect the staged diff and run the module's required checks again.** Confirm the staged changes belong to the completed module and do not contain unrelated work, accidental deletions, secrets, build output, ignored learning files or a nested repo.
+- **No automatic commits.** The agent proposes the module commit and message; it runs `git add` and `git commit` only after the human explicitly authorizes it. The human pushes.
+- **No commit-splitting skill.** This workflow does not create commits per small edit or per task. It commits once per completed, verified module.
 
 ## 5. The agents
-| Role | Job | Tools | Key limits |
-|---|---|---|---|
-| `planner` | Turn a story into small ordered tasks | Read-only | Lists a question instead of guessing |
-| `builder` | Implement one approved task, test first. One section per area (frontend, backend, ...) | Read, search, write, bash | Works only in the area; lists what is fixed (spec, shipped code, docs) |
-| `reviewer` | Check changes against the story, spec and rule IDs; has a whole-area mode | Read, search, read-only git | Never edits; quotes rule IDs |
 
-Put the standing instructions (report format, must-fix vs nice-to-have, "real results only") **in the agent file**, so each brief shrinks to one paragraph. A very large project can split the builder per area. A designer agent is optional.
+| Role | Job | Tools | Key limits | Model / effort |
+|---|---|---|---|---|
+| `organizer` | Turn a human-discussed draft into an ordered functionality-based plan | Read, search, write plan file | Writes only the organized plan file; structures and critiques the draft lightly; does not invent requirements, make decisions or write application code | Use the configured default unless the project explicitly sets one |
+| `builder` | Implement one approved functionality module, test first | Read, search, write, bash | Works only in the approved area/module; follows the happy path and sad paths; does not commit | `sonnet-5.5`, medium |
+| `reviewer` | Check a completed module against the story, spec and rule IDs; has a whole-area mode | Read, search, read-only git | Never edits or commits; quotes rule IDs; checks the diff itself | `sonnet-5.5`, medium |
+
+Put the standing instructions (report format, must-fix vs nice-to-have, "real results only") **in the agent file**, so each brief shrinks to a few lines of pointers. Standing tooling notes belong there too (for example a workaround for a command that is broken on one operating system): write them once in the agent file, not in every brief. The reviewer is read-only and does not run the checks: the main session runs the typecheck, lint and tests first and puts the results in the brief, and a reviewer's "I did not run it" is not a finding.
+
+| Agent | Report |
+|---|---|
+| `organizer` | Ordered modules; requirement IDs; goal and acceptance criteria; happy path; sad paths; expected files/areas; tests and dependencies; concise gaps, risks and recommendations; open questions |
+| `builder` | What changed in the module; files changed; happy/sad paths covered; each check with its status; anything unverified; deviations from the approved plan |
+| `reviewer` | Numbered findings, each: must-fix or nice-to-have, behaviour change or refactor, file and line, evidence, the fix; then anything left unresolved |
+
+**Status words** (the only ones the builder and reviewer use for checks): **passed**, **failed**, **not run** (and why), **not provable by a test** (and how else it was checked). Anything not covered is **unverified** and is listed in the report. A green build does not prove the feature is right.
+
+Use subagents where a fresh, separate context pays off (the full-flow builder and reviewer); on the short path, stay in the main session. A very large project can split the builder per area. A designer agent is optional.
 
 ## 6. Hooks and permissions (the locks)
-- **Block git pushes** in `permissions.deny`, and **force-push, `reset --hard` and `clean -f`** in a hook. Allow commits only when the human asks.
-- **Block edits outside the workspace** and in the lock files themselves (`settings.json`, `hooks/`). The human edits those.
-- **Protect secrets:** deny `Read(**/.env)` in `permissions.deny`, and block shell reads such as `cat .env` in a hook. A hook on the shell does not stop the file-reading tool, so the deny rule is the one that matters.
-- **Allow-list** the read-only git commands and your one check command, or every run prompts.
+
+- **Block git pushes** in `permissions.deny`, and **force-push, `reset --hard` and `clean -f`** in a hook. Commits are allowed only when the human asks and only for a completed, verified functionality module (see Commits in section 4).
+- **Block edits outside the workspace** and in the lock files themselves (`settings.json`, `hooks/`), except folders you allow by name in the hook config (for example the agent's own memory folder). The human edits the locks.
+- **Protect secrets:** deny reads of your secret files in `permissions.deny` (for example `Read(**/.env)`, key files, credential files), and block shell reads such as `cat .env` in a hook. A hook on the shell does not stop the file-reading tool, so the deny rule is the one that matters.
+- **Don't run what nobody has read:** no piped installers (`curl ... | sh`), and no new dependency unless the plan names it.
+- **Turn on the tool's sandbox** if your version has one, so the shell can reach only the workspace and the network you allow. Hooks and deny rules catch mistakes; they are speed bumps, not walls.
+- **Allow-list** the read-only git commands and your fast and full check commands, or every run prompts.
 
 Lessons that cost time on the first project:
-- **A hook that crashes fails open.** Only exit code 2 blocks; any other failure lets the action through. After every hook edit, run it by hand with allowed and blocked inputs, and keep that self-test.
+
+- **A hook that crashes fails open.** Only exit code 2 blocks; any other failure lets the action through. After every hook edit, run it by hand with allowed and blocked inputs, and keep that self-test. Make the self-test compare the exact exit code (0 allowed, 2 blocked) and treat anything else as a failure: a syntax error in a patch to a guard was caught that way.
 - **A deny rule matches by prefix, and a compound command is refused if any part matches.** `git push --dry-run` is blocked too, and so was a long command that merely contained it.
 - **An editor buffer is not the file.** If a change to a locked file "didn't work", re-read it from disk first. It is often unsaved.
 - **An automatic permission check may refuse an action.** Don't route around it; the human can say "retry".
 - **The shell's folder can persist** between commands (the session reported its working folder changing more than once). Start each command from the project root, or use absolute paths, or it can end up inside a nested repo.
 
-## 7. Learning notes
-The human's job is to learn the product, not only ship it. One note per task, written **once, after the review**, about 40 lines: who did what, what was built, why this way, key terms (each in plain words with an everyday example), follow the flow through the files, what the tests prove (the red result, the green result, and what is **not** proven), what the review changed, 3 likely questions, a two-line summary. Short on the short path.
+Not yet seen, but worth adding to the self-test: **try the bypasses, not only the obvious command.** For secrets (shown with a `.env` file): `head .env`, `grep . .env`, `cp .env x.txt`, a one-line interpreter command (`node -e`, `python -c`, `ruby -e` and so on) that opens it. For pushes: `git -C . push`, `sh -c "git push"`. A prefix rule may miss these, so the hook must catch what it can.
 
-## 8. Starting a new project
-1. **Sources of truth first:** requirements, spec, standards with rule IDs (`ST-01`) each tagged tool or review, the glossary, and an empty `docs/follow-ups.md` for anything parked on purpose (tracked, because learning notes are usually git-ignored). On a brand-new project, add a design step that produces the spec and first ADRs.
-2. **`CLAUDE.md`:** where the AI may write, no unprompted git writes, the human approves, an area map, the one check command, the flow, the levels.
-3. **Rules:** git, comments, testing, learning, and one safety rule for your domain (section 9).
-4. **Agents:** planner, builder, reviewer, each with narrow limits and a pattern to copy.
-5. **Commands:** change only the area names and the check command.
-6. **Hooks and permissions before any agent writes code.** Test the hooks.
-7. **Run one small real task** on the short path, then one on the full flow. Write down every step that felt pointless, trim, and run `/retro`.
+**Package the locks once.** Write and test the hooks once, then keep them in a **starter repo** (or a plugin, if your tool bundles hooks, skills, agents and commands) that every new project copies or installs: the hook scripts, their self-test, the `settings.json` skeleton, the rule files, the agent files and the `/organize` and `/teach` command/skill resources.
 
-## 9. Adapting to your kind of project
-Only three things change: the **areas**, the **safety rule** and the **check command**.
+- **Config, not edits:** keep what differs per project (protected folders, folders outside the workspace the agent may write to such as its own memory folder, nested repos, the check commands), with self-test cases for an allowed folder, a sibling folder, a folder that only starts with the same letters, and a `../` trick out of it in one small config file that the hooks read, not edited into the hook code. Put that file inside the locked path (under `.claude/hooks/`, which the paths hook protects), so an agent cannot weaken the guards by editing it.
+- **Versioning:** a `VERSION` file in the starter, copied into each project, and a tag per release. To update a project, diff its hooks against the tagged starter. When you fix a hook inside one project, fix it in the starter too and note it in that project's follow-ups.
+- **Backstop:** a plugin can bundle hooks, skills and agents, but do not assume it can ship `permissions.deny` rules (unverified). Keep a copied `settings.json` skeleton as well, and test that the deny rules block what they should.
+- **Runtime:** the hooks need a scripting runtime on every developer's machine; say which in the starter's README. The self-test travels with the hooks, and you re-run it after every copy.
 
-| Project type | Areas | Safety rule (examples) | Check command |
-|---|---|---|---|
-| Web app | frontend, backend, database | Never log personal data. Validate all input. Escape output. | `npm run check` |
-| Mobile app | app, backend | No secrets in the bundle. Handle offline and permission states. | `npm test` |
-| Data pipeline | ingest, transform, load | Re-runnable. Never overwrite raw data. Record row counts. | `pytest`, `dbt test` |
-| Library / CLI | core, docs, examples | Public API changes are breaking and need an ADR. Destructive actions need a flag. | `cargo test`, `go test ./...` |
+## 7. Keeping context small
 
-**Writing your safety rule:** answer three questions. (1) What is the worst thing a mistake could do (lose data, leak data, charge money)? (2) What must always hold? (3) Which changes are hard to undo? The answers become the full-flow triggers and the lines of the safety rule.
+Cut repetition, not discipline.
 
-## 10. Lessons from the first real project
-- **Check, don't assume.** Newest versions often do not work together (a linter that did not support the newest TypeScript). Look up which versions each tool says it works with before pinning.
+- **Know what loads every turn.** `CLAUDE.md` and every rule file without a `paths:` line load in every session, so moving text between them saves nothing. Keep `CLAUDE.md` to the working agreement, the area map, the two check commands, the flow and pointers. Give area rules a `paths:` line (for example `paths: src/api/**`) so they load only when those files are touched. Keep procedures in commands, skills and agent files, which load when used. Check what actually loads with `/memory` and `/context`; path rules have had format quirks, so test one before relying on it.
+- **Briefs are pointers, not copies:** module, requirement ID, files, happy/sad paths and first test. Everything standing lives in the agent file or organized plan.
+- **Point at the files.** Name the files and the pattern to copy. The agent widens its search only when it finds a dependency or a risk, and says so. No whole-repo survey for a small module.
+- **Quiet output:** summary test reporters, focused diffs, the part of a file that matters. Show the full output for a failure or a security-sensitive check.
+- **Teach only when useful.** `/teach` is invoked on demand and reads the code directly. Do not preload long interactive learning files into every session or regenerate the same explanation; link to an existing HTML learning file when it already covers the topic.
+- **Cost is not context.** Caching can make repeated text cheaper, but it still fills the window. Measure before trimming on a hunch.
+
+## 8. Interactive learning files
+
+Learning is separated from the delivery loop. The human can run `/teach <module, feature, file or concept>` whenever an explanation would be useful. It is a skill that runs directly as `/teach`, and it creates a self-contained interactive HTML file under `.claude/logs/learning/`, for example `<date>-<story-id>-<module-or-topic>.html`.
+
+The skill must inspect the real code and relevant tests before explaining. It must not invent code, file names, execution behaviour or test results. The HTML learning file should include, when relevant:
+
+1. **ELI5 overview:** what the feature does, why it exists, and an everyday analogy before technical detail.
+2. **Technical fundamentals:** explain the concepts used, define jargon, and connect each concept to the actual implementation.
+3. **Code behaviour:** walk through the real execution flow step by step, including inputs, outputs, important branches, state changes, errors and relevant edge cases.
+4. **Code snippets:** show short, real snippets from the project with file paths and explain the important lines. Keep snippets focused rather than copying whole files.
+5. **Files touched:** list every file changed for the module, with its purpose/responsibility and a concise description of what changed. Distinguish files changed by the module from related files merely read for context.
+6. **Tests and verification:** describe what the tests cover and what they do not prove. Include actual commands/results only when verified from the current project state.
+7. **Interactive learning:** use lightweight HTML/CSS/JavaScript interactions where they improve comprehension, such as expandable explanations, tabs for code-flow stages, a glossary reveal or a short optional knowledge check. Keep the page responsive, accessible and usable offline. Do not add external dependencies or require a server.
+8. **Recap:** summarize the feature, the key technical concepts and the files worth revisiting.
+
+The output is an HTML artifact for learning, not application code. Save it only in `.claude/logs/learning/`. Do not change the app, tests, project configuration or dependencies to create it. Do not make `/teach` a prerequisite for the next module, review or commit. If the folder is git-ignored, keep the learning file out of commits.
+
+A minimal learning index (`.claude/logs/learning/INDEX.md`) may list generated HTML files, their topics and links to the concepts they cover. Update it only when `/teach` creates a new artifact. Do not maintain mandatory checkpoints, retries or teach-backs in the development loop.
+
+## 9. Starting a new project
+
+1. **Sources of truth first:** requirements with IDs (`REQ-01`), spec, standards with rule IDs (`ST-01`) each tagged tool or review, the glossary, and an empty `docs/follow-ups.md` for anything parked on purpose (tracked, because interactive learning files are usually git-ignored). On a brand-new project, add a design step that produces the spec and first ADRs.
+2. **`CLAUDE.md`:** where the AI may write, no unprompted git writes, the human approves, an area map, the fast and full check commands, the flow, the levels.
+3. **Rules:** git, comments, testing, learning, and one safety rule for your domain (section 10). Scope area rules with `paths:`.
+4. **Agents:** organizer, builder, reviewer, each with narrow limits, a pattern to copy and the report format from section 5.
+5. **Commands and skills:** create `/start-story`, `/organize`, `/review` and `/retro`; install the `/teach` skill. Adapt only the area names and check commands.
+6. **Hooks and permissions before any agent writes code.** Test the hooks, including the bypasses in section 6. Start from your starter repo if you have one.
+7. **Create the organized-plan template and an empty learning index**. Keep `.claude/logs/learning/` available for on-demand HTML artifacts.
+8. **Run one small real task** on the short path, then one on the full flow. Write down every step that felt pointless, trim, and run `/retro` with its six questions. Change the template only for problems you actually saw.
+
+## 10. Adapting to your kind of project
+
+Only four things change: the **areas**, the **safety rule**, and the **fast** and **full check** commands. The rows below are examples; pick the closest one or write your own. Anything else project-specific (architecture limits, data-integrity rules, deployment checks) belongs in that project's spec and standards, not in this template.
+
+| Project type | Areas | Safety rule (examples) | Fast check | Full check |
+|---|---|---|---|---|
+| Web app | frontend, backend, database | Never log personal data. Validate all input. Escape output. | `npx vitest run <file>` | `npm run check` |
+| Mobile app | app, backend | No secrets in the bundle. Handle offline and permission states. | `npx jest <file>` | `npm test` |
+| Data pipeline | ingest, transform, load | Re-runnable. Never overwrite raw data. Record row counts. | `pytest <file> -q` | `pytest`, `dbt test` |
+| Library / CLI | core, docs, examples | Public API changes are breaking and need an ADR. Destructive actions need a flag. | `cargo test <name>`, `go test ./<pkg> -run <Name>` | `cargo test`, `go test ./...` |
+| Backend service | api, domain, persistence | Validate input at the boundary. Never log personal data. Migrations must be reversible. | `<test runner> <file or class>` | `<build tool> verify` |
+| Infrastructure as code | modules, environments | The agent plans but never applies to a shared environment. No secrets in code or state. | `<tool> validate` | `<tool> plan` plus policy tests |
+
+**Writing your safety rule:** answer four questions. (1) What is the worst thing a mistake could do (lose data, leak data, charge money)? (2) What must always hold? (3) Which changes are hard to undo? (4) Which changes need an experienced reviewer? The answers become the full-flow triggers, the "needs experienced review" items and the lines of the safety rule.
+
+## 11. Lessons from the first real project
+
+- **Check, don't assume.** Newest versions often do not work together (a linter that did not support the newest version of the language). Look up which versions each tool says it works with before pinning.
 - **State a standard once and tag it.** *Tool* means a command fails; *review* means only a reader catches it. When a reader catches the same mistake twice, make it a tool check.
 - **Re-check agent reports yourself.** They are usually right, and sometimes wrong in small ways (a miscount, an unverified claim). Run the key check again.
 - **Run the same check locally and in CI.** The first push is the first real test on another operating system.
-- **Agent-file edits take effect on the next turn.** After changing an agent's model or tools, test it in a new turn. Edited and tested in the same turn, a planner still ran as the old model; the identical check one turn later ran as the new one.
+- **Agent-file edits take effect on the next turn.** After changing an agent's model or tools, test it in a new turn. Edited and tested in the same turn, an organizer still ran as the old model; the identical check one turn later ran as the new one.
 - **Use a light review for tiny changes.** A full review agent on a one-line change is wasted effort.
-- **Never commit a repo inside a repo.** Ignore it or move it.
+- **Run a whole-area review at the end of every story.** It found what no per-task review had looked at (the production build had no error boundary, so an unexpected error would have blanked the app).
+- **Re-read the rule and agent files when an ADR is accepted.** `CLAUDE.md`, a rule file and an agent file all kept saying "the stack is not chosen" after the ADR was accepted.
+- **A mutation check is cheap and honest.** Breaking one line to watch a new test fail is what turns "green" into "proven".
+- **A concrete picture teaches better than another question.** When a concept was missed twice, a two-line diagram or a step-by-step trace worked where a third multiple-choice retry did not.
+- **On Windows, check the tool shims and the line endings.** A package manager started through a one-off runner can have a broken shim (run its real entry point with `node` directly, and put a small wrapper on the PATH for scripts that call it). A machine with `core.autocrlf=true` checks out CRLF files, and a repo whose `.gitattributes` says `eol=lf` then fails its format check on files nobody touched (set `core.autocrlf input`).
 
-## 11. Known gaps
-- **Untested:** this simpler version has not run on a real story yet. Pilot it, then adjust.
+## 12. Known gaps
+
+- **Piloted once, on one story** (a mobile-app frontend, six tasks, 2026-10-28 to 2026-10-30). What felt heavy: a Status block that became a log (addressed above). What earned its keep: the mutation check, the whole-area review, and the hooks with their self-test. The former checkpoint and teach-back process has been replaced by optional `/teach` HTML artifacts. Pilot it on a second story, in a different area, before treating the numbers as settled.
 - **Architecture rules are checked only by reading**, unless you add a dependency-boundary tool for your language.
-- **One approver:** a junior approver and an AI reviewer can agree on something wrong. Get an experienced person to review early.
+- **One approver:** a junior approver and an AI reviewer can agree on something wrong. Get an experienced person to review early, and always for items marked "needs experienced review".
+- **Hooks are not a sandbox.** They catch mistakes, not a determined bypass.
+- **Still untested:** the spike level (never used in the pilot) and the starter-repo idea. The on-demand teaching approach is intended to keep learning useful without slowing delivery. The spike is the likeliest to be abused as a way around the flow; watch for it in `/retro`.
 
 ## Appendix: fill-in skeletons
+
 ### `CLAUDE.md`
+
 ```markdown
 # <project>
 ## Working agreement (read first)
 - Work ONLY inside this workspace. No git writes unless the human asks; never push.
 - Use the words in `docs/glossary.md`; propose new words, add them only after the human's yes.
 - The human is <experience level>: explain in plain words (define terms, an everyday example, why before how, a short summary) and get approval before code.
-- After each task passes its checks and review, write a learning note.
+- Build one approved functionality module at a time. Verify its happy path and relevant sad paths, run the full check and review it before committing the completed module.
+- Use `/teach` on demand to create an interactive HTML learning file; it is not a required development checkpoint.
 ## Area map
 | Area | Stack | Folder |
-Full check: `<one command>`
+|---|---|---|
+Fast check: `<targeted test command>` · Full check: `<one command>`
 ## Fixed (do not change)
 <spec files, standards, glossary, shipped code, the locks>
 ## Flow
-<the level question, the two-level table, the loop from section 4>
+<the level question, the level table, the loop from section 4>
 ```
+
 ### `.claude/settings.json` (the locks)
+
 ```json
 {
   "permissions": {
-    "allow": ["Read", "Glob", "Grep", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(<check command>:*)"],
+    "allow": ["Read", "Glob", "Grep", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(<fast check>:*)", "Bash(<full check>:*)"],
     "deny": ["Bash(git push:*)", "Read(**/.env)"]
   },
   "hooks": {
@@ -154,38 +275,196 @@ Full check: `<one command>`
   }
 }
 ```
-Writing a hook script: it reads a JSON description of the action from stdin (`tool_input.command` for the shell, `tool_input.file_path` for edits), checks it, and calls `exit(2)` with the reason on stderr to block. Any other exit lets the action through, so test it by hand with allowed and blocked inputs. Copy the guards from a project that already has them.
 
-### `/plan` command
+Writing a hook script: it reads a JSON description of the action from stdin (`tool_input.command` for the shell, `tool_input.file_path` for edits), checks it, and calls `exit(2)` with the reason on stderr to block. Any other exit lets the action through, so test it by hand with allowed, blocked and bypass inputs. Use any runtime that every developer's machine has (the example uses `node`; a shell, Python or other script works the same, and on Windows prefer a runtime over shell-specific syntax). Copy the guards from your starter repo (section 6), or from a project that already has them.
+
+### `/organize` command
+
 ```markdown
 ---
-description: Pick a level, then produce a small plan and wait for approval
+description: Structure a discussed draft into an approved, functionality-based build plan
 ---
-Ask the level question (can this be undone with `git revert`, and how much breaks if it is wrong?). Say "Flow: <level>, because <one line>" and name any full-flow trigger that applied.
-- Short path: no plan file. Say in 2-3 lines what changes, in which file, and which test comes first. Wait for approval.
-- Full flow: use the planner agent, save the plan from `plans/TEMPLATE.md`, add contracts and a rollback, and wait for approval.
-If unsure, take the full flow. Write no code until approved.
+Accept the human's discussion notes or draft plan as the source. Do not restart discovery or silently change agreed decisions.
+Organize the draft into ordered functionality modules. For each module include:
+- Module ID and concise goal
+- Requirement IDs
+- Acceptance criteria
+- Happy path (step-by-step expected success behaviour)
+- Relevant sad paths (validation, errors, permissions, empty/boundary states and recovery)
+- Expected areas/files (best current estimate; label uncertain paths as estimates)
+- First failing test or approved alternative check
+- Dependencies and blocked-by relationships
+- Risks, assumptions and open questions
+
+Give minimal feedback only: identify material gaps, ambiguous acceptance criteria, missing failure paths, risky assumptions, dependencies and one or two practical recommendations where useful. Preserve the draft's intent. Do not invent requirements or make product/architecture decisions; ask the human where a decision is needed.
+Use `.claude/logs/plans/TEMPLATE.md` as the structure and save a story-specific copy under `.claude/logs/plans/<story-id>-plan.md`. Set a clear status block and wait for explicit human approval. Write no code.
+```
+
+### Organized plan template (`.claude/logs/plans/TEMPLATE.md`)
+
+```markdown
+# Organized plan: <story>
+Flow: <level>, because <one line>
+Source draft: <conversation / document / notes>
+
+## Status
+- Current module: <M1>, <not started | building | in review | done>
+- Approval: <pending | approved, date>
+- Decisions and constraints: <short list, or ADR links>
+- Modules completed: <list, or none>
+- Files changed so far: <paths>
+- Last full check: <passed | failed: what>
+- Open issues: <list, or none>
+- Next action: <one line>
+
+## Modules
+### M1: <functionality name>
+- Requirement: <REQ-03>
+- Goal: <one sentence>
+- Acceptance criteria:
+  - [ ] <observable result>
+- Happy path:
+  1. <user/system action>
+  2. <expected response>
+- Sad paths:
+  - <condition> -> <expected handling>
+- Expected files/areas: <paths or estimates>
+- First failing test: <name and contract> (or approved alternative check)
+- Dependencies: <module IDs, or none>
+- Risks / assumptions / open questions: <items, or none>
+
+### M2: <next functionality>
+<repeat module structure>
+
+## Decisions / ADRs / rollback
+<only when needed>
+
+## Log
+<dated history, newest first: approvals, module progress, check results, review outcomes and commits>
+```
+
+### Module brief (what the main session sends the builder)
+
+```markdown
+Module <M1> from `<organized plan>`: <goal>. Requirements: <REQ-03>.
+Area: <area>. Expected files: <paths>. Pattern to copy: <path>.
+Happy path: <short summary>. Sad paths: <short summary>.
+Acceptance criteria: <list>. First test: <name> (or approved alternative check).
+```
+
+### The organizer agent
+
+```markdown
+---
+name: organizer
+description: Structures a human-discussed draft into an ordered functionality-based plan.
+tools: Read, Glob, Grep, Write
+---
+Accept the discussion draft or notes supplied by the human as the source of truth. Do not restart discovery, silently alter decisions or invent requirements.
+Read only the project context needed to understand the draft (requirements, spec, glossary, relevant architecture and follow-ups).
+Organize the draft into cohesive functionality modules. Each module must include its goal, requirement IDs, observable acceptance criteria, happy path, relevant sad paths, expected files/areas, first test or approved alternative check, dependencies and risks/open questions.
+Give minimal feedback: call out only meaningful gaps, ambiguous criteria, missing failure cases, risky assumptions, dependencies and one or two useful recommendations.
+Separate confirmed decisions from assumptions. Ask the human when a product or technical decision is unresolved.
+Write only `.claude/logs/plans/<story-id>-plan.md` using the plan template. Do not write or edit application code, tests, configuration or source-of-truth documents.
+Stop after presenting the organized plan and concise feedback. Wait for explicit human approval before implementation begins.
 ```
 
 ### The builder agent
+
 ```markdown
 ---
 name: builder
-description: Implements one approved task, test first. Use for <what>.
+description: Implements one approved functionality module, test first.
+model: sonnet-5.5
+effort: medium
 tools: Read, Glob, Grep, Write, Edit, Bash
 ---
-Work ONLY in the area named in the brief, one approved task at a time.
+Work ONLY in the approved area and module. Do not begin another module until the current one is complete and reviewed.
+Read the organized plan, named files and the pattern first; widen the search only if you find a dependency or a risk, and say so.
+Implement every approved happy-path and relevant sad-path acceptance criterion. Do not add behaviour not in the plan.
+Stop and ask before: a behaviour change not in the plan, touching anything fixed, changing scope, or guessing.
+Start with ONE failing test at the agreed contract. Watch it fail (`<fast check>`), write only the code it needs, repeat. Run `<full check>` at the end of the module. A test that is green on its first run must be shown able to fail where practical: break the exact line it protects, watch it fail, restore the line and show `git diff` is empty.
+Do not commit. A module is ready for review only when its acceptance criteria and checks are complete.
 ## Areas
 <area>: <what it is>, <what is fixed (do not change)>, <the pattern to copy>
-## How to build a unit
-Start with ONE failing test at the agreed contract. Watch it fail, write only the code it needs, repeat. Run `<check command>` at the end.
-A finished unit has: <checklist>.
+## Report (short)
+Module: <ID and name>. Changed: <one line per change>. Files: <paths>.
+Happy paths covered: <list>. Sad paths covered: <list>.
+Checks: <command> -> passed | failed | not run (why) | not provable by a test (how else checked).
+Unverified: <list or none>. Deviations from the plan: <list or none>.
+Never report a result you did not see.
 ```
+
+### The reviewer agent
+
+```markdown
+---
+name: reviewer
+description: Reviews a completed functionality module against its plan, spec and standards.
+model: sonnet-5.5
+effort: medium
+tools: Read, Glob, Grep, Bash
+---
+Read the organized plan, module acceptance criteria, relevant spec and standards, and inspect the actual diff yourself. Do not rely solely on the builder's report.
+Review happy-path behaviour, every relevant sad path, validation, authorization, state changes, error handling, regression risk and scope control.
+Run no edits and make no commits. The main session runs checks and supplies their real results; do not claim to have run checks.
+Report numbered findings. Each finding must state severity (must-fix or nice-to-have), behaviour change or refactor, file and line, evidence, why it matters, and a recommended fix.
+Ask before recommending a behaviour change outside the approved module. End with unresolved issues and whether the module is ready to commit.
+```
+
+### `/teach` skill
+
+One file: `.claude/skills/teach/SKILL.md`. A skill can be run directly as `/teach <module, feature, file or concept>`, so no separate command file is needed. If your tool lets you mark a skill as manual-only, do that, so it runs only when the human asks for it.
+
+```markdown
+---
+name: teach
+description: Explains real project code for a beginner and creates a self-contained interactive HTML learning file. Run as /teach followed by a module, feature, file or technical concept. Use only when the human asks for an explanation or a learning file.
+---
+# Teach
+
+The topic is the module, feature, file or technical concept the human names after `/teach`. Explain it using the actual repository as the source of truth. Do not block or delay development.
+
+## Required workflow
+1. Identify the topic and its relevant implementation files. Read the relevant tests and call sites so the explanation follows real execution, not just one isolated file. If an existing learning artifact already explains the topic, link to it, or update it only when the implementation has materially changed.
+2. Determine which files were changed for the requested module from the organized plan, git diff/history or the human's supplied file list. Clearly distinguish changed files from related files read for context.
+3. Explain in this order:
+   - ELI5: what it does, why it exists and an everyday analogy.
+   - Fundamentals: define each technical concept in simple language.
+   - Behaviour: trace the real execution flow, inputs, outputs, branches, state changes and failure handling.
+   - Code snippets: short real snippets with file paths and line references when available.
+   - Files: each touched file's responsibility, purpose and exact change.
+   - Verification: tests and checks actually observed, plus what they do not prove.
+   - Recap: key idea, concepts and files to revisit.
+4. Generate a self-contained HTML page with embedded CSS and JavaScript. Use semantic HTML, responsive layout, accessible controls and no external libraries, CDN assets or network requirements.
+5. Add useful interactions only when they aid learning (for example, expandable explanations, tabs for flow stages, glossary reveals or an optional knowledge check). Keep interactions simple and reliable.
+6. Save the artifact under `.claude/logs/learning/` using `<date>-<story-id>-<module-or-topic>.html`. Update `INDEX.md` with the title, topic, module and relative file path.
+7. Report the created path and a short outline of what the page covers.
+
+## Guardrails
+- Never fabricate code, file changes, line numbers, runtime behaviour, test results or requirements.
+- If the source does not establish something, label it unknown or ask.
+- Do not edit application code, tests, dependencies, project configuration or the organized plan.
+- Do not make learning a required step before continuing development or committing a completed module.
+- Keep the HTML file in the learning folder; do not stage or commit it when that folder is git-ignored.
+```
+
+### Learning index (`.claude/logs/learning/INDEX.md`)
+
+```markdown
+# Learning library
+
+| Topic | Module | What it covers | HTML file |
+|---|---|---|---|
+| <dependency injection> | <M2> | <plain-language overview and code flow> | <2026-11-02-S12-M2-dependency-injection.html> |
+```
+
 ### `<domain>-safety.md`
+
 ```markdown
 # <Domain> safety
 - <the worst-case mistake, as a rule: "Never ...">
 - <what must always hold: "Always validate ...">
-- Never hardcode secrets; never read real `.env` files.
+- Never hardcode secrets; never read real secret files (for example `.env`).
 - When requirements are unclear or conflict, stop and ask instead of guessing.
 ```
