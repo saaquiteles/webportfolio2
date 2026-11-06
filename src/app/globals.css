@@ -12,6 +12,12 @@
   --color-grid: #E4E7EC;
 }
 
+@theme inline {
+  --font-heading: var(--font-bricolage);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
 @layer base {
   body {
     background-color: var(--color-paper);

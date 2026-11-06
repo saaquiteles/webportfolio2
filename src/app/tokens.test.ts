@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { bricolage, inter, jetbrainsMono } from './fonts';
 
 const css = readFileSync(join(process.cwd(), 'src/app/globals.css'), 'utf8');
 
@@ -79,5 +80,15 @@ describe('the colour tokens in globals.css', () => {
 
   it('keeps the grid faint against paper (1.25 or less)', () => {
     expect(contrast(color('grid'), color('paper'))).toBeLessThanOrEqual(1.25);
+  });
+});
+
+describe('the font tokens in globals.css', () => {
+  it.each([
+    ['heading', bricolage],
+    ['sans', inter],
+    ['mono', jetbrainsMono],
+  ])('maps --font-%s to the loaded font variable', (name, font) => {
+    expect(css).toContain(`--font-${name}: var(${font.variable});`);
   });
 });

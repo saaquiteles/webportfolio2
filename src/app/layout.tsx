@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { SiteFooter } from '@/components/global/SiteFooter';
 import { SiteHeader } from '@/components/global/SiteHeader';
 import { profile } from '@/data/profile';
+import { bricolage, inter, jetbrainsMono } from './fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${bricolage.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
         <SiteHeader />
         {children}

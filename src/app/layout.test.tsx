@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { bricolage, inter, jetbrainsMono } from './fonts';
 import RootLayout, { metadata } from './layout';
 
 describe('RootLayout', () => {
@@ -16,6 +17,15 @@ describe('RootLayout', () => {
   it('declares the page language on the html element', () => {
     const markup = renderToStaticMarkup(<RootLayout>x</RootLayout>);
     expect(markup).toContain('<html lang="en"');
+  });
+
+  it('puts the three font variables on the html element', () => {
+    const markup = renderToStaticMarkup(<RootLayout>x</RootLayout>);
+    const htmlTag = markup.match(/<html[^>]*>/)?.[0] ?? '';
+    for (const font of [bricolage, inter, jetbrainsMono]) {
+      expect(font.variable).not.toBe('');
+      expect(htmlTag).toContain(font.variable);
+    }
   });
 
   it('renders children without adding a second main landmark', () => {
