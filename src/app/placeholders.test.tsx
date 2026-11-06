@@ -1,26 +1,11 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import type { ReactElement } from 'react';
 import { caseStudies } from '#site/content';
 import RootLayout from './layout';
+import { pageLoaders, renderEveryVariant } from './render-pages';
 
 const PLACEHOLDER = 'TODO(human)';
-
-type PageModule = {
-  default: (props: { params: Promise<Record<string, string>> }) => ReactElement | Promise<ReactElement>;
-  generateStaticParams?: () => Record<string, string>[];
-};
-
-const pageLoaders = import.meta.glob<PageModule>('./**/page.tsx');
-
-async function renderEveryVariant(load: () => Promise<PageModule>) {
-  const { default: Page, generateStaticParams } = await load();
-  const paramSets = generateStaticParams ? generateStaticParams() : [{}];
-  return Promise.all(
-    paramSets.map(async (params) => renderToStaticMarkup(await Page({ params: Promise.resolve(params) }))),
-  );
-}
 
 describe('placeholders', () => {
   it('finds the pages to check', () => {
