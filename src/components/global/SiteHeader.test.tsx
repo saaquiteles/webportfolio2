@@ -65,6 +65,6 @@ describe('SiteHeader', () => {
   });
 
   it('marks no link as current on a case-study page', () => {
-    expect(currentLinks('/projects/buriccat/')).toEqual([]);
+    expect(currentLinks('/projects/3d-card-game/')).toEqual([]);
   });
 });

@@ -64,7 +64,7 @@ describe('Home page', () => {
     ).toHaveClass('text-pretty');
   });
 
-  it('lists the featured projects under a Projects heading, without the unfeatured one', () => {
+  it('lists the featured projects under a Projects heading', () => {
     render(<Home />);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Projects' })).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('Home page', () => {
       'href',
       '/projects/portfolio',
     );
-    expect(screen.queryByRole('link', { name: 'Buriccat' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '3D Card Game' })).toBeInTheDocument();
   });
 
   it('has a main landmark', () => {

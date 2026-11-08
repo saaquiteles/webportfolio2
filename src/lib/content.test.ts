@@ -5,7 +5,7 @@ import { caseStudies } from '#site/content';
 describe('case-study collection', () => {
   it('contains the three case studies', () => {
     expect(caseStudies.map((study) => study.slug).sort()).toEqual([
-      'buriccat',
+      '3d-card-game',
       'cockatiel-recognition',
       'portfolio',
     ]);

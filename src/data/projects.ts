@@ -14,13 +14,13 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    slug: 'buriccat',
-    title: 'Buriccat',
+    slug: '3d-card-game',
+    title: '3D Card Game',
     summary: 'A 3D Baccarat game in the browser, a fun project to try out React Three Fiber.',
     year: 2026,
     tags: ['react', 'react-three-fiber', 'gsap', 'game'],
     links: { repo: 'https://github.com/saaquiteles/baccarat' },
-    featured: false,
+    featured: true,
   },
   {
     slug: 'portfolio',

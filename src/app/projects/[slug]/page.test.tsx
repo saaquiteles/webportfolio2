@@ -8,17 +8,17 @@ describe('Case study page', () => {
     const params = generateStaticParams();
 
     expect(params).toEqual(
-      expect.arrayContaining([{ slug: 'buriccat' }, { slug: 'cockatiel-recognition' }]),
+      expect.arrayContaining([{ slug: '3d-card-game' }, { slug: 'cockatiel-recognition' }]),
     );
     expect(params).toHaveLength(caseStudies.length);
   });
 
   it('shows the title as the only h1, a main landmark and the body text', async () => {
-    render(await Page({ params: Promise.resolve({ slug: 'buriccat' }) }));
+    render(await Page({ params: Promise.resolve({ slug: '3d-card-game' }) }));
 
     const headings = screen.getAllByRole('heading', { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent('Buriccat');
+    expect(headings[0]).toHaveTextContent('3D Card Game');
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Built with' })).toBeInTheDocument();
     expect(screen.queryByText('A fun project to try out React Three Fiber.')).not.toBeInTheDocument();
@@ -49,8 +49,8 @@ describe('Case study page', () => {
     expect(main.getByText(/91\.17% accuracy/)).toBeInTheDocument();
   });
 
-  it('credits the third-party assets and AI-made parts of Buriccat', async () => {
-    render(await Page({ params: Promise.resolve({ slug: 'buriccat' }) }));
+  it('credits the third-party assets and AI-made parts of 3D Card Game', async () => {
+    render(await Page({ params: Promise.resolve({ slug: '3d-card-game' }) }));
 
     const main = within(screen.getByRole('main'));
     expect(main.getByRole('heading', { level: 2, name: 'Credits' })).toBeInTheDocument();
@@ -65,8 +65,8 @@ describe('Case study page', () => {
     expect(main.getByText(/speech synthesis/)).toBeInTheDocument();
   });
 
-  it('describes how Buriccat is built and links to its repository', async () => {
-    render(await Page({ params: Promise.resolve({ slug: 'buriccat' }) }));
+  it('describes how 3D Card Game is built and links to its repository', async () => {
+    render(await Page({ params: Promise.resolve({ slug: '3d-card-game' }) }));
 
     const main = within(screen.getByRole('main'));
     expect(

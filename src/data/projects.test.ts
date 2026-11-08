@@ -4,10 +4,10 @@ import { caseStudies } from '#site/content';
 import { projects } from './projects';
 
 describe('projects data', () => {
-  it('lists the thesis first, then Buriccat, then the portfolio', () => {
+  it('lists the thesis first, then 3D Card Game, then the portfolio', () => {
     expect(projects.map((project) => project.slug)).toEqual([
       'cockatiel-recognition',
-      'buriccat',
+      '3d-card-game',
       'portfolio',
     ]);
   });
@@ -41,16 +41,16 @@ describe('projects data', () => {
     }
   });
 
-  it('links the thesis to its repository and paper and Buriccat to its repository', () => {
+  it('links the thesis to its repository and paper and 3D Card Game to its repository', () => {
     expect(projects[0].links?.repo).toBe('https://github.com/saaquiteles/thesis-project');
     expect(projects[0].links?.paper).toBe('https://ebooks.iospress.nl/doi/10.3233/ATDE251126');
     expect(projects[1].links?.repo).toBe('https://github.com/saaquiteles/baccarat');
     expect(projects[2].links?.repo).toBe('https://github.com/saaquiteles/webportfolio2');
   });
 
-  it('features the thesis and the portfolio, not Buriccat', () => {
+  it('features the thesis, the card game and the portfolio', () => {
     const featured = projects.filter((project) => project.featured).map((project) => project.slug);
 
-    expect(featured).toEqual(['cockatiel-recognition', 'portfolio']);
+    expect(featured).toEqual(['cockatiel-recognition', '3d-card-game', 'portfolio']);
   });
 });
