@@ -48,6 +48,15 @@ describe('projects data', () => {
     expect(projects[2].links?.repo).toBe('https://github.com/saaquiteles/webportfolio2');
   });
 
+  it("keeps the repository and paper links in each case study body the same as the project data", () => {
+    for (const project of projects) {
+      const study = caseStudies.find((candidate) => candidate.slug === project.slug);
+      for (const url of [project.links?.repo, project.links?.paper]) {
+        if (url) expect(study?.body, `${url} in the ${project.slug} case study`).toContain(url);
+      }
+    }
+  });
+
   it('features the thesis, the card game and the portfolio', () => {
     const featured = projects.filter((project) => project.featured).map((project) => project.slug);
 
