@@ -47,7 +47,7 @@ npm run publish-review   # the diff against origin/main of everything that becom
 
 ## How it is built
 
-Every code change is made test first with Claude Code, and each task passes `npm run check`. A second agent reviews each change, and each task ends with a learning note. The rules live in `CLAUDE.md` and `docs/standards.md`.
+Every code change is made test first with Claude Code, in small functionality modules. Each module passes `npm run check`, and a second agent reviews it before it is committed. The rules live in `CLAUDE.md` and `docs/standards.md`.
 
 ## Privacy
 
