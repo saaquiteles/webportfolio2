@@ -7,7 +7,7 @@ interface DateRangeProps {
 
 export function DateRange({ start, end }: DateRangeProps) {
   return (
-    <p>
+    <p className="font-mono text-sm text-muted">
       <time dateTime={start}>{formatMonth(start)}</time>
       {' – '}
       {end ? <time dateTime={end}>{formatMonth(end)}</time> : 'Present'}

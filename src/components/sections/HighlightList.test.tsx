@@ -21,4 +21,10 @@ describe('HighlightList', () => {
     expect(without).toHaveTextContent('Aug 2026');
     expect(without.querySelectorAll('p')).toHaveLength(2);
   });
+
+  it('shows the date in the mono font', () => {
+    render(<HighlightList highlights={[{ title: 'T', org: 'O', date: '2024-11' }]} />);
+
+    expect(screen.getByText('Nov 2024').parentElement).toHaveClass('font-mono');
+  });
 });

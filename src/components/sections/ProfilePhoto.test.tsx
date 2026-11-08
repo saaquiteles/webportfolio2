@@ -17,4 +17,23 @@ describe('ProfilePhoto', () => {
     expect(image).toHaveAttribute('src', '/images/me.jpg');
     expect(screen.queryByText('TODO(human): photo')).not.toBeInTheDocument();
   });
+
+  it('shows one uncropped image with one decorative tape', () => {
+    const { container } = render(
+      <ProfilePhoto photo={{ src: '/images/me.jpg', alt: 'Sean smiling at a desk' }} />,
+    );
+
+    expect(screen.getAllByRole('img')).toHaveLength(1);
+    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);
+    const image = screen.getByRole('img', { name: 'Sean smiling at a desk' });
+    expect(image).toHaveClass('h-auto', 'w-full');
+    expect(image.className).not.toContain('object-cover');
+    expect(image.className).toMatch(/(^|\s)rotate-[12](\s|$)/);
+  });
+
+  it('shows no tape with the placeholder', () => {
+    const { container } = render(<ProfilePhoto />);
+
+    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(0);
+  });
 });

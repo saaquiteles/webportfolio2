@@ -21,4 +21,10 @@ describe('DateRange', () => {
       '2025-07',
     ]);
   });
+
+  it('sets the dates in the mono font', () => {
+    const { container } = render(<DateRange start="2025-05" end="2025-07" />);
+
+    expect(container.firstElementChild).toHaveClass('font-mono');
+  });
 });
