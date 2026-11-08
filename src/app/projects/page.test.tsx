@@ -19,4 +19,15 @@ describe('Projects page', () => {
     expect(titles).toEqual(projects.map((project) => project.title));
     expect(titles[0]).toBe('A Vision System That Tells Cockatiels Apart');
   });
+
+  it('lists the cards in a grid and alternates their tilt', () => {
+    render(<Projects />);
+
+    const cards = screen.getAllByRole('listitem').filter((item) => item.querySelector('article'));
+    expect(cards).toHaveLength(projects.length);
+    cards.forEach((card, index) => {
+      expect(card).toHaveClass(index % 2 === 0 ? 'rotate-1' : '-rotate-1');
+    });
+    expect(cards[0].parentElement).toHaveClass('grid', 'grid-cols-1');
+  });
 });

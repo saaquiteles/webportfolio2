@@ -19,6 +19,12 @@ describe('ProjectCard', () => {
     for (const tag of buriccat.tags) expect(screen.getByText(tag)).toBeInTheDocument();
   });
 
+  it('shows the project year', () => {
+    render(<ProjectCard project={buriccat} />);
+
+    expect(screen.getByText(String(buriccat.year))).toBeInTheDocument();
+  });
+
   it('links to the repository as an external link', () => {
     render(<ProjectCard project={buriccat} />);
 
@@ -36,6 +42,28 @@ describe('ProjectCard', () => {
       'https://ebooks.iospress.nl/doi/10.3233/ATDE251126',
     );
     expect(screen.queryByRole('link', { name: /repository/ })).not.toBeInTheDocument();
+  });
+
+  it('carries one decorative tape strip hidden from assistive technology', () => {
+    const { container } = render(<ProjectCard project={buriccat} />);
+
+    const hidden = container.querySelectorAll('[aria-hidden="true"]');
+    expect(hidden).toHaveLength(1);
+    expect(hidden[0]).toBeEmptyDOMElement();
+  });
+
+  it('shows no repository or paper link when the project has neither', () => {
+    render(<ProjectCard project={{ ...buriccat, links: undefined }} />);
+
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(screen.getByRole('link', { name: 'Buriccat' })).toBeInTheDocument();
+  });
+
+  it('renders a long title as one link', () => {
+    const title = 'A Very Long Project Title '.repeat(8).trim();
+    render(<ProjectCard project={{ ...buriccat, title }} />);
+
+    expect(screen.getByRole('link', { name: title })).toBeInTheDocument();
   });
 
   it('shows no image when there is no cover', () => {
