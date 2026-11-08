@@ -97,6 +97,27 @@ describe('Case study page', () => {
     );
   });
 
+  it('styles section headings, the Credits list and links in the body', async () => {
+    render(await Page({ params: Promise.resolve({ slug: '3d-card-game' }) }));
+
+    const main = within(screen.getByRole('main'));
+    const heading = main.getByRole('heading', { level: 2, name: 'Built with' });
+    expect(heading).toHaveClass('border-t-4', 'border-tomato');
+    const credits = main.getByRole('link', { name: 'Kenney' }).closest('ul');
+    expect(credits).toHaveClass('list-disc', 'pl-6');
+    const link = main.getByRole('link', { name: 'Source code on GitHub' });
+    expect(link).toHaveClass('underline', 'text-blueprint');
+    expect(link).toHaveAttribute('href', 'https://github.com/saaquiteles/baccarat');
+    expect(link).not.toHaveAttribute('target');
+  });
+
+  it('keeps the body text in a prose-width column', async () => {
+    render(await Page({ params: Promise.resolve({ slug: '3d-card-game' }) }));
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Built with' });
+    expect(heading.closest('.max-w-prose')).not.toBeNull();
+  });
+
   it('does not render a page for an unknown slug', async () => {
     await expect(Page({ params: Promise.resolve({ slug: 'does-not-exist' }) })).rejects.toThrow(
       'NEXT_HTTP_ERROR_FALLBACK;404',
