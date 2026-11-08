@@ -1,6 +1,6 @@
 # ADR 0003: How the drawn-in sketches and custom cursor are built
 
-Status: Proposed (the human decides)
+Status: Accepted for `TiltCard` only, on 2026-11-08 (the human's decision). The other wrappers (`DrawOnScroll`, `ScrollRuler`, `CrosshairCursor`, `KineticHeadline`, `WordSwap`) stay Proposed and are a later story. The tilt is strong, with a lifted shadow.
 
 ## Gap
 `docs/spec.md` lists animation wrappers but names none. The design needs scroll-drawn SVG, a crosshair cursor with a live readout, tilt and peel cards, and kinetic headline text.
