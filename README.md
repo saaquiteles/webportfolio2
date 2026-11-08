@@ -2,7 +2,7 @@
 
 My personal web portfolio: a creative showcase plus a general site (about, projects, contact).
 
-**Status:** in development. The home, about, contact and projects pages and the case studies are written. The blog, motion and final styling are planned, and the deployment to GitHub Pages is on hold.
+**Status:** in development. The home, about, contact and projects pages and the case studies are written. The styled look (graph-paper notebook, taped cards, and a 3D tilt on the project cards) is done. The blog and the rest of the motion are planned, and the deployment to GitHub Pages is on hold.
 
 ## What is in it
 
@@ -18,7 +18,7 @@ Projects are typed data in `src/data/projects.ts` plus one MDX case study each i
 
 ## Built with
 
-Next.js (App Router, static export), TypeScript, Tailwind CSS v4, Velite with MDX, Vitest and Testing Library, ESLint.
+Next.js (App Router, static export), TypeScript, Tailwind CSS v4, Velite with MDX, Framer Motion (project-card tilt only), Vitest and Testing Library, ESLint.
 
 ## Getting started
 
@@ -38,7 +38,7 @@ npm run publish-review   # the diff against origin/main of everything that becom
 | Folder | What lives there |
 |---|---|
 | `src/app` | Pages and layout |
-| `src/components` | `global/` (header, footer) and `sections/` (page parts) |
+| `src/components` | `global/` (header, footer), `sections/` (page parts) and `animations/` (the card tilt) |
 | `src/data` | Profile, experience and project data |
 | `src/lib` | Shared types and small helpers |
 | `content/projects` | MDX case studies |
@@ -57,3 +57,8 @@ My resume and original photos are kept in a git-ignored `private/` folder and ar
 
 - The agentic workflow was simplified with ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills).
 - Credits for the assets used in each project are on its case study page.
+- Fonts, all under the [SIL Open Font License, Version 1.1](https://openfontlicense.org):
+  - Bricolage Grotesque, Copyright 2022 The Bricolage Grotesque Project Authors ([source](https://github.com/ateliertriay/bricolage)).
+  - Inter, Copyright (c) 2016 The Inter Project Authors ([source](https://github.com/rsms/inter)).
+  - JetBrains Mono, Copyright 2020 The JetBrains Mono Project Authors ([source](https://github.com/JetBrains/JetBrainsMono)).
+  - TODO(human): the notices above were read from each upstream repository's licence file, not from Google Fonts (those pages could not be read). Confirm the files served through `next/font/google` carry the same notice.
