@@ -22,6 +22,9 @@ Things parked on purpose. Each says when it should be done. Remove a line when i
 - The font mock returns the option string for `.variable`, while real Next returns a class name, so `layout.test.tsx` proves the layout wires the variable, not that the real class is applied. A browser check covers the real one.
 - Candidates to automate (`docs/standards.md`): the `ST-02` import limit, `knip` for unused exports.
 
+## Later stories
+- **Blog (R-03, R-11).** A later story, decided by the human on 2026-11-08. `/blog/`, `/blog/[slug]/` and the RSS feed are in `docs/spec.md` and `docs/requirements.md` but have no code. When it starts, CT-02 (drafts never reach a production build) becomes testable, and every post needs the human's own text.
+
 ## Content that goes stale
 - The HTD role has no end date, so it shows "Present", and the intro says "currently in" the program. Update both when the program ends (`src/data/experience.ts`, `src/data/profile.ts`).
 - The footer year is computed at build time, so it is only as fresh as the last deploy.
