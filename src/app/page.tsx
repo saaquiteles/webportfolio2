@@ -1,9 +1,13 @@
 import { PageShell } from '@/components/global/PageShell';
+import { ProjectCard } from '@/components/sections/ProjectCard';
 import { ContactLinks } from '@/components/sections/ContactLinks';
 import { SketchArrow } from '@/components/sections/SketchArrow';
 import { profile } from '@/data/profile';
+import { projects } from '@/data/projects';
 
 export default function Home() {
+  const featured = projects.filter((project) => project.featured);
+
   return (
     <PageShell>
       <section>
@@ -15,6 +19,18 @@ export default function Home() {
         <p className="max-w-3xl text-lg text-pretty md:text-xl">{profile.tagline}</p>
         <ContactLinks email={profile.email} links={profile.links} />
       </section>
+      {featured.length > 0 && (
+        <section aria-labelledby="featured-projects" className="mt-20">
+          <h2 id="featured-projects">Projects</h2>
+          <ul className="mt-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((project, index) => (
+              <li key={project.slug} className={index % 2 === 0 ? 'rotate-1' : '-rotate-1'}>
+                <ProjectCard project={project} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </PageShell>
   );
 }

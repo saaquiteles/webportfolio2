@@ -64,6 +64,20 @@ describe('Home page', () => {
     ).toHaveClass('text-pretty');
   });
 
+  it('lists the featured projects under a Projects heading, without the unfeatured one', () => {
+    render(<Home />);
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Projects' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'A Vision System That Tells Cockatiels Apart' }),
+    ).toHaveAttribute('href', '/projects/cockatiel-recognition');
+    expect(screen.getByRole('link', { name: 'This portfolio' })).toHaveAttribute(
+      'href',
+      '/projects/portfolio',
+    );
+    expect(screen.queryByRole('link', { name: 'Buriccat' })).not.toBeInTheDocument();
+  });
+
   it('has a main landmark', () => {
     render(<Home />);
     expect(screen.getByRole('main')).toBeInTheDocument();
