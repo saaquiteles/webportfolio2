@@ -27,20 +27,14 @@ describe('Home page', () => {
     expect(screen.getByText('Sean Argie A. Quiteles')).toBeInTheDocument();
   });
 
-  it('links to email, LinkedIn and GitHub', () => {
+  it('offers the email as the one contact action and leaves the other links to the Contact page', () => {
     render(<Home />);
     expect(screen.getByRole('link', { name: 'seanargieq@gmail.com' })).toHaveAttribute(
       'href',
       'mailto:seanargieq@gmail.com',
     );
-    expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
-      'href',
-      'https://linkedin.com/in/saaquiteles',
-    );
-    expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
-      'href',
-      'https://github.com/saaquiteles',
-    );
+    expect(screen.queryByRole('link', { name: 'LinkedIn' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'GitHub' })).not.toBeInTheDocument();
   });
 
   it('shows one decorative sketch arrow and no image', () => {

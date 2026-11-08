@@ -17,7 +17,7 @@ export default function Home() {
         <h1 className="max-w-5xl text-hero font-extrabold tracking-tight md:text-7xl lg:text-display">{profile.headline}</h1>
         <SketchArrow className="ml-auto h-14 w-28 text-tomato md:ml-72 md:h-24 md:w-56" />
         <p className="max-w-3xl text-lg text-pretty md:text-xl">{profile.tagline}</p>
-        <ContactLinks email={profile.email} links={profile.links} />
+        <ContactLinks email={profile.email} links={profile.links} emailOnly />
       </section>
       {featured.length > 0 && (
         <section aria-labelledby="featured-projects" className="mt-20">

@@ -28,4 +28,11 @@ describe('ContactLinks', () => {
     );
     expect(screen.getAllByRole('link')).toHaveLength(3);
   });
+
+  it('shows only the email when asked for the email alone', () => {
+    render(<ContactLinks {...contact} emailOnly />);
+
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(screen.getByRole('link', { name: 'seanargieq@gmail.com' })).toBeInTheDocument();
+  });
 });
