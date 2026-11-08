@@ -25,6 +25,8 @@ Things parked on purpose. Each says when it should be done. Remove a line when i
 ## Later stories
 - **Blog (R-03, R-11).** A later story, decided by the human on 2026-11-08. `/blog/`, `/blog/[slug]/` and the RSS feed are in `docs/spec.md` and `docs/requirements.md` but have no code. When it starts, CT-02 (drafts never reach a production build) becomes testable, and every post needs the human's own text.
 
+- **Font notices.** The README credits the three fonts with the copyright lines read from each upstream repository (2026-11-08), not from Google Fonts, whose pages could not be read. Confirm the files served through `next/font/google` carry the same notice.
+
 ## Content that goes stale
 - The HTD role has no end date, so it shows "Present", and the intro says "currently in" the program. Update both when the program ends (`src/data/experience.ts`, `src/data/profile.ts`).
 - The footer year is computed at build time, so it is only as fresh as the last deploy.

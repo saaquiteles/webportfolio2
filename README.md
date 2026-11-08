@@ -61,4 +61,3 @@ My resume and original photos are kept in a git-ignored `private/` folder and ar
   - Bricolage Grotesque, Copyright 2022 The Bricolage Grotesque Project Authors ([source](https://github.com/ateliertriay/bricolage)).
   - Inter, Copyright (c) 2016 The Inter Project Authors ([source](https://github.com/rsms/inter)).
   - JetBrains Mono, Copyright 2020 The JetBrains Mono Project Authors ([source](https://github.com/JetBrains/JetBrainsMono)).
-  - TODO(human): the notices above were read from each upstream repository's licence file, not from Google Fonts (those pages could not be read). Confirm the files served through `next/font/google` carry the same notice.
