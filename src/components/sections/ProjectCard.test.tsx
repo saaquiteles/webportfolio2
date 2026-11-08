@@ -34,14 +34,17 @@ describe('ProjectCard', () => {
     );
   });
 
-  it('links to the published paper when a project has one', () => {
+  it('links to both the repository and the published paper when a project has them', () => {
     render(<ProjectCard project={thesis} />);
 
     expect(screen.getByRole('link', { name: `${thesis.title} paper` })).toHaveAttribute(
       'href',
       'https://ebooks.iospress.nl/doi/10.3233/ATDE251126',
     );
-    expect(screen.queryByRole('link', { name: /repository/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: `${thesis.title} repository` })).toHaveAttribute(
+      'href',
+      'https://github.com/saaquiteles/thesis-project',
+    );
   });
 
   it('carries one decorative tape strip hidden from assistive technology', () => {

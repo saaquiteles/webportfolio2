@@ -41,9 +41,16 @@ describe('projects data', () => {
     }
   });
 
-  it('links the thesis to its published paper and Buriccat to its repository', () => {
+  it('links the thesis to its repository and paper and Buriccat to its repository', () => {
+    expect(projects[0].links?.repo).toBe('https://github.com/saaquiteles/thesis-project');
     expect(projects[0].links?.paper).toBe('https://ebooks.iospress.nl/doi/10.3233/ATDE251126');
     expect(projects[1].links?.repo).toBe('https://github.com/saaquiteles/baccarat');
     expect(projects[2].links?.repo).toBe('https://github.com/saaquiteles/webportfolio2');
+  });
+
+  it('features the thesis and the portfolio, not Buriccat', () => {
+    const featured = projects.filter((project) => project.featured).map((project) => project.slug);
+
+    expect(featured).toEqual(['cockatiel-recognition', 'portfolio']);
   });
 });

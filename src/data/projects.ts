@@ -7,7 +7,10 @@ export const projects: Project[] = [
     summary: 'Real-time image classification system using Raspberry Pi, OpenCV and SqueezeNet CNN.',
     year: 2025,
     tags: ['python', 'opencv', 'pytorch', 'raspberry-pi', 'cnn', 'squeezenet'],
-    links: { paper: 'https://ebooks.iospress.nl/doi/10.3233/ATDE251126' },
+    links: {
+      repo: 'https://github.com/saaquiteles/thesis-project',
+      paper: 'https://ebooks.iospress.nl/doi/10.3233/ATDE251126',
+    },
     featured: true,
   },
   {
@@ -17,7 +20,7 @@ export const projects: Project[] = [
     year: 2026,
     tags: ['react', 'react-three-fiber', 'gsap', 'game'],
     links: { repo: 'https://github.com/saaquiteles/baccarat' },
-    featured: true,
+    featured: false,
   },
   {
     slug: 'portfolio',
