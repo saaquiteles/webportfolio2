@@ -8,7 +8,7 @@ Things parked on purpose. Each says when it should be done. Remove a line when i
 
 ## In the styling story
 - A `cover` branch in `ProjectCard` when the first project image exists (alt text required).
-- Lighthouse numbers on Home are not recorded yet (M5 closed on a hand check). Run it and record performance and accessibility (aim for at least 90), and the bundle cost of `framer-motion` and the 16 `.woff2` files. `out/` holds 16 `.woff2` files because `next/font` ships every unicode-range slice of each family, not only `latin`; if the weight hurts, look at `preload` and the number of weights.
+- Lighthouse on Home, run by the human on 2026-11-08 (Lighthouse 13.3, mobile, served locally): performance 98, accessibility 100, layout shift 0, largest paint 2.1 s, blocking time 150 ms, 392 KiB in 28 requests. Home loads only 3 font files (129 KB) and about 184 KB of scripts. Lighthouse estimates 106 KiB of unused JavaScript; look at it when the bundle grows. No action now.
 - Tilt-listener flicker near card edges: the listeners sit on the tilting element. Only act if it is seen in the browser; the fix would be an outer static element.
 - Footer floating on short pages (Contact): the body has no minimum height. The human checked each screen and saw nothing wrong, so this is parked; revisit if it shows on a tall viewport.
 - Heading levels on Home: the `ProjectCard` titles are h2, siblings of the h2 'Projects' (flat but valid). Making them h3 needs a heading-level prop on `ProjectCard`.
