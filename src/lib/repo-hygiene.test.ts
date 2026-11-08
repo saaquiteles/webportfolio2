@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const git = (...args: string[]) => execFileSync('git', args, { encoding: 'utf8' });
@@ -42,5 +43,29 @@ describe('the Claude Code setup stays on this machine', () => {
 
   it('tracks no file under .claude', () => {
     expect(git('ls-files', '.claude').split('\n').filter(Boolean)).toEqual([]);
+  });
+
+  it('ignores the scratch folder used by the Spike level', () => {
+    for (const file of ['scratch/spike.ts', 'scratch/notes/a.md']) {
+      expect(ignored(file), file).toBe(true);
+    }
+  });
+});
+
+describe('type check and lint skip folders that are not part of the site', () => {
+  const folders = ['scratch', 'private', 'out', 'agentic-workflow-matt'];
+
+  it('excludes them from the type check', () => {
+    const { exclude } = JSON.parse(readFileSync('tsconfig.json', 'utf8')) as { exclude: string[] };
+    for (const folder of folders) {
+      expect(exclude, folder).toContain(folder);
+    }
+  });
+
+  it('ignores them in the lint config', () => {
+    const config = readFileSync('eslint.config.mjs', 'utf8');
+    for (const folder of folders) {
+      expect(config, folder).toContain(`"${folder}/**"`);
+    }
   });
 });

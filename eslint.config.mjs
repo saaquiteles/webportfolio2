@@ -27,5 +27,8 @@ export default defineConfig([
     "next-env.d.ts",
     "coverage/**",
     ".velite/**",
+    "scratch/**",
+    "private/**",
+    "agentic-workflow-matt/**",
   ]),
 ]);
