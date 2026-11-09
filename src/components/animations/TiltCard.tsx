@@ -1,29 +1,14 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useState } from 'react';
 import type { FocusEvent, PointerEvent, ReactNode } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useFinePointer } from './useFinePointer';
 import { useReducedMotion } from './useReducedMotion';
 
 const MAX_TILT_DEGREES = 10;
 const LIFT_SCALE = 1.03;
 const SPRING = { stiffness: 220, damping: 20, mass: 0.6 };
-const FINE_POINTER_QUERY = '(hover: hover) and (pointer: fine)';
-
-function subscribeToFinePointer(onChange: () => void) {
-  if (typeof window.matchMedia !== 'function') return () => {};
-  const query = window.matchMedia(FINE_POINTER_QUERY);
-  query.addEventListener('change', onChange);
-  return () => query.removeEventListener('change', onChange);
-}
-
-function getFinePointer() {
-  return typeof window.matchMedia === 'function' && window.matchMedia(FINE_POINTER_QUERY).matches;
-}
-
-function useFinePointer() {
-  return useSyncExternalStore(subscribeToFinePointer, getFinePointer, () => false);
-}
 
 interface TiltCardProps {
   children: ReactNode;
