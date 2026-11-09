@@ -1,3 +1,4 @@
+import { withBasePath } from '@/lib/base-path';
 import type { Profile } from '@/lib/types';
 import { Tape } from './Tape';
 
@@ -11,7 +12,7 @@ export function ProfilePhoto({ photo }: ProfilePhotoProps) {
     <div className="relative max-w-sm border-2 border-rule bg-surface p-3">
       <Tape />
       {/* eslint-disable-next-line @next/next/no-img-element -- images.unoptimized is set for the static export */}
-      <img src={photo.src} alt={photo.alt} className="h-auto w-full rotate-1" />
+      <img src={withBasePath(photo.src)} alt={photo.alt} className="h-auto w-full rotate-1" />
     </div>
   );
 }

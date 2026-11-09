@@ -3,7 +3,7 @@
 Things parked on purpose. Each says when it should be done. Remove a line when it is done.
 
 ## Before the first deploy (deploying is on hold)
-- **Photo base path.** The profile photo `src` (`/images/sean-quiteles.webp`) has no `basePath`, so it returns 404 when the site is served from a repo sub-path. Full flow, because it touches the deploy setup; name a rollback.
+- **Photo GPS metadata (human check).** Before the first deploy, the human checks `public/images/sean-quiteles.webp` for GPS metadata and strips it if present. This is a human check, not agent work.
 - **Deploy workflow.** It runs only by hand (ADR 0007). Re-add `push:` with `branches: [main]` when deploying resumes, and enable Pages by hand (Settings, Pages, Source: GitHub Actions).
 
 ## In the styling story

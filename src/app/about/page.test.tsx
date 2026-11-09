@@ -1,9 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import About from './page';
 import { profile } from '@/data/profile';
 
 describe('About page', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it('has one level-1 heading, a main landmark and an Experience section', () => {
     render(<About />);
 
@@ -22,6 +26,7 @@ describe('About page', () => {
   });
 
   it('shows the profile photo with alt text and no placeholder', () => {
+    vi.stubEnv('NEXT_PUBLIC_BASE_PATH', undefined);
     render(<About />);
 
     const photo = screen.getByRole('img', {
