@@ -15,9 +15,12 @@ describe('Home page', () => {
 
   it('uses the approved headline as the level-1 heading', () => {
     render(<Home />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'I build full-stack apps with Spring Boot and React.',
-    );
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'I build full-stack apps with Spring Boot and React.',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('shows the approved tagline', () => {

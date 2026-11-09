@@ -21,6 +21,14 @@ Things parked on purpose. Each says when it should be done. Remove a line when i
 - The font mock returns the option string for `.variable`, while real Next returns a class name, so `layout.test.tsx` proves the layout wires the variable, not that the real class is applied. A browser check covers the real one.
 - Candidates to automate (`docs/standards.md`): the `ST-02` import limit, `knip` for unused exports.
 
+## Motion (S6)
+- **Headline translation and copy.** The headline is a hidden full copy plus aria-hidden single-letter spans. A page translator may translate the visible letters as separate pieces, and find-in-page or select-and-copy may see the sentence twice. Check it in the browser pass; if it hurts, settle per word and not per letter.
+- **Headline wrapping.** Words are inline blocks that never break, so "full-stack" no longer wraps after the hyphen. Check 360 px in the browser; if the gap looks bad, split on the hyphen and keep it with the first part.
+- **Headline kerning.** Splitting into letters loses kerning pairs at display size. Check in the browser; the fallback is to animate per word.
+- **Hero arrow dot.** A round line cap may show a small dot at the shaft end before it draws. Look once in the browser; if it shows, change the dash setting.
+- **Old browsers.** A media query without addEventListener (Safari before 14) would throw in useReducedMotion, useFinePointer and TiltCard. A guard, ideally through one shared useMediaQuery helper, is open (asked, not yet decided).
+- **Real hydration, scroll feel and reduced motion** are unproven by tests. They are the S6 browser pass (module M6).
+
 ## Later stories
 - **Blog (R-03, R-11).** A later story, decided by the human on 2026-11-08. `/blog/`, `/blog/[slug]/` and the RSS feed are in `docs/spec.md` and `docs/requirements.md` but have no code. When it starts, CT-02 (drafts never reach a production build) becomes testable, and every post needs the human's own text.
 

@@ -3,7 +3,7 @@
 Status: Proposed. Raised by the S6 motion plan (module M3; the headline part is built in M4).
 
 ## Decision
-The Home headline settle (built in M4) and the hero arrow drawing (built in M3) will use a CSS animation that only runs when the visitor allows motion, not `framer-motion`.
+The Home headline settle (built in M4) and the hero arrow drawing (built in M3) use a CSS animation that only runs when the visitor allows motion, not `framer-motion`.
 
 ## Gap
 ADR 0023 says the static HTML and the first browser render always show the finished state, and motion starts only after hydration (the moment the browser attaches React to the HTML). An animation that plays on load then has a problem. The HTML already shows the finished arrow. If JavaScript started the drawing after hydration, the arrow would jump back to empty and draw again, a visible flash.
