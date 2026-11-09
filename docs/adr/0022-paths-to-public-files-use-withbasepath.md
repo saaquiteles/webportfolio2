@@ -1,6 +1,6 @@
 # ADR 0022: Paths to files in `public/` go through `withBasePath`
 
-Status: Proposed. Raised by the S5 deploy plan (module M1).
+Status: Accepted by the human on 2026-11-09. Raised by the S5 deploy plan (module M1).
 
 ## Decision
 Every path to a file in `public/` that is written as a plain string (for example an image `src`) goes through `withBasePath` from `src/lib/base-path.ts` before it reaches the page.
