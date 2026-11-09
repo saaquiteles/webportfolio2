@@ -2,7 +2,7 @@
 
 Works for any software project and any tech stack (web app, mobile app, backend service, data pipeline, library, CLI, infrastructure code). Nothing here depends on a language, framework or hosting choice; where a tool or language is named, it is only an example. Fill in the `<placeholders>`.
 
-**Prerequisites:** Claude Code (the files live in `.claude/`; another AI tool needs its own equivalents of agents, commands, skills, hooks and permission rules), git, and one scripting runtime for the hooks (any that every developer's machine has; the examples use `node`).
+**Prerequisites:** Claude Code (the files live in `.claude/`; another AI tool needs its own equivalents of agents, commands, skills, hooks and permission rules), git, and one scripting runtime for the hooks (any that your machine has; the examples use `node`).
 
 Origin: designed on a retail-bank project (2026-10-23), simplified on 2026-10-26 after running on a portfolio-site scaffold, using ideas from Matt Pocock's agent-skills course (mattpocock/skills), then revised on 2026-10-27 after an outside review (requirement IDs, verification wording and context use), and again on 2026-10-28 after a second one (a spike level, module-level commits and packaging the locks), then a pass to make it stack-agnostic, and finally a pass on 2026-10-30 after the first pilot (a mobile-app frontend story with six tasks, followed by a retro). Status: piloted once; the pilot's lessons are folded in below (module workflow, status block, retro folder, hook config and Windows notes). Treat the numbers (such as "30 lines") as first guesses.
 
@@ -110,11 +110,13 @@ A spike is never a way around the flow. If it touches real data, auth, money or 
 
 **Never skipped by the agent:** human approval, tests (or an approved alternative check), the full check for the full flow, review, and every guardrail. `/teach` is optional and on demand, not a required delivery checkpoint. A spike skips tests and review only because nothing ships; approval and every guardrail still apply.
 
-**Commits.** Commit only when the human explicitly asks. The unit of commit is a **completed functionality module**, not an individual task or code edit. A module commit is allowed only after its happy path and relevant sad paths are implemented, acceptance criteria are met, checks pass, and review findings are resolved or explicitly accepted by the human. Never commit known mistakes, failing tests, incomplete modules or intermediate work. Use a clear Conventional Commits message (`type(scope): subject`; types `feat`, `fix`, `refactor`, `style`, `docs`, `test`, `chore`, plus `build`, `ci` or `perf` if your team uses them). The subject is imperative ("add", not "added"), and the body explains why, not how. Mark a breaking change with `!` after the type and a `BREAKING CHANGE:` footer.
+**Commits.** Commit only when the human explicitly asks. The unit of commit is a **completed functionality module**, not an individual task or code edit. A module commit is allowed only after its happy path and relevant sad paths are implemented, acceptance criteria are met, checks pass, and review findings are resolved or explicitly accepted by the human. Never commit known mistakes, failing tests, incomplete modules or intermediate work. Use a clear Conventional Commits message (`type(scope): subject`; types `feat`, `fix`, `refactor`, `style`, `docs`, `test`, `chore`, plus `build`, `ci` or `perf` if you use them). The subject is imperative ("add", not "added"), and the body explains why, not how. Mark a breaking change with `!` after the type and a `BREAKING CHANGE:` footer.
 
 - **Before committing, inspect the staged diff and run the module's required checks again.** Confirm the staged changes belong to the completed module and do not contain unrelated work, accidental deletions, secrets, build output, ignored learning files or a nested repo.
 - **No automatic commits.** The agent proposes the module commit and message; it runs `git add` and `git commit` only after the human explicitly authorizes it. The human pushes.
-- **No AI attribution lines.** Do not add `Co-Authored-By`, "Generated with ..." or similar lines to commit messages or pull request descriptions, unless your team asks for them. If your tool adds one by default, switch that off and put the rule in the project's git rule file, so the human's wish overrides the tool's default.
+- **No AI attribution lines.** Do not add `Co-Authored-By`, "Generated with ..." or similar lines to commit messages or pull request descriptions, unless you want them. If your tool adds one by default, switch that off and put the rule in the project's git rule file, so the human's wish overrides the tool's default.
+- **Stage by file path.** `git add -p` is interactive and may not work in an agent shell. When one file holds changes for two commits, build the in-between version of the file, store it with `git hash-object -w <file>`, put it in the index with `git update-index --cacheinfo 100644,<hash>,<path>`, commit, then `git add` the file again for the second commit. Check `git diff --cached` before each commit.
+- **A global commit rule can conflict.** If you keep a personal rule such as "every commit is atomic", say in the project's git rule file which one wins here, and whether a commit-splitting skill may be used (for example only to word the message).
 - **No commit-splitting skill.** This workflow does not create commits per small edit or per task. It commits once per completed, verified module.
 
 ## 5. The agents
@@ -139,7 +141,8 @@ Use subagents where a fresh, separate context pays off (the full-flow builder an
 
 ## 6. Hooks and permissions (the locks)
 
-- **Block git pushes** in `permissions.deny`, and **force-push, `reset --hard` and `clean -f`** in a hook. Commits are allowed only when the human asks and only for a completed, verified functionality module (see Commits in section 4).
+- **Block git pushes, `reset --hard` and `clean`** in `permissions.deny`, and also block **force-push, `reset --hard` and `clean -f`** in a hook as a second lock.
+- **Make commits ask every time:** put `git add` and `git commit` in `permissions.ask`, so a prompt appears whatever mode the session is in, and the human decides when work is committed. Commits are made only when the human asks and only for a completed, verified functionality module (see Commits in section 4). The cost is one prompt per command, and an agent that runs while nobody is at the terminal waits on it; if that matters more than the safety, move the two entries to `allow` and rely on the written rule alone.
 - **Block edits outside the workspace** and in the lock files themselves (`settings.json`, `hooks/`), except folders you allow by name in the hook config (for example the agent's own memory folder). The human edits the locks.
 - **Protect secrets:** deny reads of your secret files in `permissions.deny` (for example `Read(**/.env)`, key files, credential files), and block shell reads such as `cat .env` in a hook. A hook on the shell does not stop the file-reading tool, so the deny rule is the one that matters.
 - **Don't run what nobody has read:** no piped installers (`curl ... | sh`), and no new dependency unless the plan names it.
@@ -161,7 +164,7 @@ Not yet seen, but worth adding to the self-test: **try the bypasses, not only th
 - **Config, not edits:** keep what differs per project (protected folders, folders outside the workspace the agent may write to such as its own memory folder, nested repos, the check commands), with self-test cases for an allowed folder, a sibling folder, a folder that only starts with the same letters, and a `../` trick out of it in one small config file that the hooks read, not edited into the hook code. Put that file inside the locked path (under `.claude/hooks/`, which the paths hook protects), so an agent cannot weaken the guards by editing it.
 - **Versioning:** a `VERSION` file in the starter, copied into each project, and a tag per release. To update a project, diff its hooks against the tagged starter. When you fix a hook inside one project, fix it in the starter too and note it in that project's follow-ups.
 - **Backstop:** a plugin can bundle hooks, skills and agents, but do not assume it can ship `permissions.deny` rules (unverified). Keep a copied `settings.json` skeleton as well, and test that the deny rules block what they should.
-- **Runtime:** the hooks need a scripting runtime on every developer's machine; say which in the starter's README. The self-test travels with the hooks, and you re-run it after every copy.
+- **Runtime:** the hooks need a scripting runtime on your machine; say which in the starter's README. The self-test travels with the hooks, and you re-run it after every copy.
 
 ## 7. Keeping context small
 
@@ -199,7 +202,7 @@ The skill must inspect the real code and relevant tests before explaining. It mu
 - **End of quiz:** show a first-try score and a "Start over" button.
 - **Offline and no JavaScript:** keep everything inline, and add a plain list of the questions with their answers and explanations so the page still teaches with JavaScript off.
 - **Check before saving:** verify every correct answer and explanation against the code and tests.
-- **Look:** use your team's house style (colours, fonts) if you have one, and keep text contrast at 4.5:1 or better.
+- **Look:** use your own house style (colours, fonts) if you have one, and keep text contrast at 4.5:1 or better.
 - **Scope:** apply this to new pages only. Do not retrofit older learning files.
 - **Reuse one pattern:** keep a small `quiz-pattern.html` next to `SKILL.md` (a starter is in the appendix) so every page behaves the same.
 
@@ -215,7 +218,7 @@ A minimal learning index (`.claude/logs/learning/INDEX.md`) may list generated H
 4. **Agents:** organizer, builder, reviewer, each with narrow limits, a pattern to copy and the report format from section 5.
 5. **Commands and skills:** create `/start-story`, `/organize`, `/review` and `/retro`; install the `/teach` skill. Adapt only the area names and check commands.
 6. **Hooks and permissions before any agent writes code.** Test the hooks, including the bypasses in section 6. Start from your starter repo if you have one.
-7. **Create the organized-plan template and an empty learning index**. Keep `.claude/logs/learning/` available for on-demand HTML artifacts.
+7. **Create the organized-plan template and an empty learning index**. Keep `.claude/logs/learning/` available for on-demand HTML artifacts. If you allow spikes, create their folder safely: git-ignored, excluded from the type check, the linter and the test runner, with a test that proves each of those (a rule that says "use a git-ignored scratch folder" is false until the config says so).
 8. **Run one small real task** on the short path, then one on the full flow. Write down every step that felt pointless, trim, and run `/retro` with its six questions. Change the template only for problems you actually saw.
 
 ## 10. Adapting to your kind of project
@@ -241,20 +244,29 @@ Only four things change: the **areas**, the **safety rule**, and the **fast** an
 - **Run the same check locally and in CI.** The first push is the first real test on another operating system.
 - **Agent-file edits take effect on the next turn.** After changing an agent's model or tools, test it in a new turn. Edited and tested in the same turn, an organizer still ran as the old model; the identical check one turn later ran as the new one.
 - **Use a light review for tiny changes.** A full review agent on a one-line change is wasted effort.
+- **Scripted edits can fail silently.** Backslashes and regexes were lost inside `node -e` and `sed`, and a new test assertion never landed, so its mutation check proved nothing. Make multi-line or backslash edits with the editor tool, and `grep` that a new assertion exists before its mutation check.
 - **Run a whole-area review at the end of every story.** It found what no per-task review had looked at (for example, in one project the production build had no error boundary, so an unexpected error would have blanked the app).
+- **Whole-area review checklist.** Beyond the code, look at: config excludes (type check, lint, test runner) for scratch, build and private folders; whether a rule file says something a lint rule or the standards contradict; links that appear both in data and in content; and every raw asset path that a framework helper does not cover.
 - **Re-read the rule and agent files when an ADR is accepted.** `CLAUDE.md`, a rule file and an agent file all kept saying "the stack is not chosen" after the ADR was accepted.
 - **Write ADRs for a reader who is new.** A correct but dense ADR gets skimmed and then ignored. Formal structure with plain wording keeps it readable and still reviewable.
+- **Review docs-only changes for facts.** A document claimed a design was approved on the wrong date and the review missed it. For a docs-only module, brief the reviewer: "verify every date, number and name against the plan or the code".
+- **Tests that keep docs and data honest.** Cheap guards that caught or closed real gaps: the spec names every field of a data type, links inside content bodies match the data, and bad or missing front matter is rejected.
+- **A design-quality hook can flag intended design.** Fix real problems. For a confident false positive, use the narrowest ignore the tool offers and say so. If unsure, ask. The tool may block the agent from changing its own tooling, so the human runs the ignore command.
+- **Before the first deploy, check raw asset paths.** A framework's link and asset handling follows the base path, but a plain image tag does not. Put such paths through one small helper. If CI sets the base-path variable on the test step, every test that reads it must set and clear it itself. Prove it with one build with the variable set and a search of the output, then a normal build.
+- **No browser means a human pass.** Look-and-feel criteria (tilt feel, wrapping at narrow widths, focus ring on a transformed card) cannot be proven by jsdom tests. Plan the pass: three widths, keyboard only, and Lighthouse on a built site (not the dev server), mobile, performance and accessibility. Save the report as HTML into a git-ignored folder so the agent can read the numbers.
 - **A mutation check is cheap and honest.** Breaking one line to watch a new test fail is what turns "green" into "proven".
 - **A concrete picture teaches better than another question.** When a concept was missed twice, a two-line diagram or a step-by-step trace worked where asking the question a third time did not.
+- **Example, on Windows: Git Bash rewrites a value that starts with `/`.** `NEXT_PUBLIC_BASE_PATH=/site npm run build` becomes a Windows path and the build fails; set `MSYS_NO_PATHCONV=1` first. A "CRLF will be replaced by LF" warning on `git add` is harmless when the repository stores LF.
 - **Example, on Windows: check the tool shims and the line endings.** A package manager started through a one-off runner can have a broken shim (run its real entry point with `node` directly, and put a small wrapper on the PATH for scripts that call it). A machine with `core.autocrlf=true` checks out CRLF files, and a repo whose `.gitattributes` says `eol=lf` then fails its format check on files nobody touched (set `core.autocrlf input`).
 
 ## 12. Known gaps
 
-- **Piloted once, on one story** (a mobile-app frontend, six tasks, 2026-10-28 to 2026-10-30). What felt heavy: a Status block that became a log (addressed above). What earned its keep: the mutation check, the whole-area review, and the hooks with their self-test. Learning is optional and on demand, through `/teach` HTML artifacts. Pilot it on a second story, in a different area, before treating the numbers as settled.
+- **First pilot, on one story** (a mobile-app frontend, six tasks, 2026-10-28 to 2026-10-30). What felt heavy: a Status block that became a log (addressed above). What earned its keep: the mutation check, the whole-area review, and the hooks with their self-test. Learning is optional and on demand, through `/teach` HTML artifacts. Pilot it on a second story, in a different area, before treating the numbers as settled.
+- **Second pilot (a personal portfolio site: styling, 2026-10-27 to 2026-11-09).** 11 code and test commits, 6 modules plus 5 small ones, 0 spikes, two whole-area review rounds. Steps that caught real problems: mutation checks (a test that did not protect its guard, a bound test that read too early, an assertion that never landed), the module review (missing test branches) and the whole-area review (an unignored spike folder, config excludes, a data-versus-content link drift, a standards line that disagreed with lint). Not yet exercised: the organizer on a story with a draft (used once at the end), and `/teach` until late. Retro scores were 4 on most questions and 3 on "understood".
 - **Architecture rules are checked only by reading**, unless you add a dependency-boundary tool for your language.
-- **One approver:** a junior approver and an AI reviewer can agree on something wrong. Get an experienced person to review early, and always for items marked "needs experienced review".
+- **One approver:** you approve everything and an AI reviews it, so the two of you can agree on something wrong. Ask an experienced person to look at security, money or data changes early, and at anything marked "needs experienced review".
 - **Hooks are not a sandbox.** They catch mistakes, not a determined bypass.
-- **Still untested:** the spike level (never used in the pilot) and the starter-repo idea. The on-demand teaching approach is intended to keep learning useful without slowing delivery. The spike is the likeliest to be abused as a way around the flow; watch for it in `/retro`.
+- **Still untested:** the spike level (never used in either pilot) and the starter-repo idea. The on-demand teaching approach is intended to keep learning useful without slowing delivery. The spike is the likeliest to be abused as a way around the flow; watch for it in `/retro`.
 
 ## Appendix: fill-in skeletons
 
@@ -283,8 +295,9 @@ Fast check: `<targeted test command>` · Full check: `<one command>`
 ```json
 {
   "permissions": {
-    "allow": ["Read", "Glob", "Grep", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(<fast check>:*)", "Bash(<full check>:*)"],
-    "deny": ["Bash(git push:*)", "Read(**/.env)"]
+    "allow": ["Read", "Glob", "Grep", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)", "Bash(<fast check>:*)", "Bash(<full check>:*)"],
+    "ask": ["Bash(git add:*)", "Bash(git commit:*)"],
+    "deny": ["Bash(git push:*)", "Bash(git reset --hard:*)", "Bash(git clean:*)", "Read(**/.env)", "Read(**/.env.*)"]
   },
   "hooks": {
     "PreToolUse": [
@@ -295,7 +308,75 @@ Fast check: `<targeted test command>` · Full check: `<one command>`
 }
 ```
 
-Writing a hook script: it reads a JSON description of the action from stdin (`tool_input.command` for the shell, `tool_input.file_path` for edits), checks it, and calls `exit(2)` with the reason on stderr to block. Any other exit lets the action through, so test it by hand with allowed, blocked and bypass inputs. Use any runtime that every developer's machine has (the example uses `node`; a shell, Python or other script works the same, and on Windows prefer a runtime over shell-specific syntax). Copy the guards from your starter repo (section 6), or from a project that already has them.
+Writing a hook script: it reads a JSON description of the action from stdin (`tool_input.command` for the shell, `tool_input.file_path` for edits), checks it, and calls `exit(2)` with the reason on stderr to block. Any other exit lets the action through, so test it by hand with allowed, blocked and bypass inputs. Use any runtime that your machine has (the example uses `node`; a shell, Python or other script works the same, and on Windows prefer a runtime over shell-specific syntax). Copy the guards from your starter repo (section 6), or from a project that already has them.
+
+### `/start-story` command
+
+```markdown
+---
+description: Interview me about a story (numbered questions with recommended answers), then restate it. No code.
+argument-hint: <story, requirement IDs, or "design" to settle the visual direction>
+---
+Story: $ARGUMENTS
+
+1. Read `docs/requirements.md`, `docs/spec.md`, `docs/standards.md`, `docs/glossary.md` and `docs/adr/`. Look facts up yourself in the files and the code. Never ask me what the repo can tell you. Also read `docs/follow-ups.md` and say which parked items this story would finish or touch, so they are planned with it and removed from the file when done.
+2. Interview me in rounds. Each round asks every question that is ready to answer, numbered, each with your **recommended answer** ("yes" accepts it). Ask only decisions. The next round asks what depended on my earlier answers. Stop when nothing is left to ask.
+3. Say where the story, the requirements and the spec disagree.
+4. Propose new or fuzzy words for the glossary (term, meaning, words to avoid). Add them to `docs/glossary.md` only after I say yes.
+5. Map the story to requirement IDs and give it a short story id (for example `S5`), used in plan and learning file names.
+6. Finish by restating the shared understanding in plain words and ask: "Is that our shared understanding?" The restated draft is what `/organize` turns into modules.
+
+If the story is "design": ask about mood, colours, fonts and references, and the open questions in `docs/requirements.md`. If you have a design skill, use it to propose 2 or 3 directions, each with a reason and a reduced-motion fallback. After I pick one, save it to `docs/design.md` and write any spec or requirement gaps as ADRs in `docs/adr/` with `Status: Proposed`.
+
+Do not write code or a plan yet.
+```
+
+### `/review` command
+
+```markdown
+---
+description: Review the completed module (Spec, then Standards), then apply the recommended fixes
+argument-hint: [whole <area>]
+---
+Arguments: $ARGUMENTS
+- **Short path:** do a quick checklist in the main session, with no reviewer agent. Spec: does the change do what was asked, and nothing more? Standards: which rule IDs apply, and does `<full check>` pass?
+- **Full flow:** use the `reviewer` agent. With no argument it reviews the completed module (`git diff` plus new files, against the module in the organized plan). With `whole <area>` it reviews the whole area folder for drift (see the area map in `CLAUDE.md`).
+
+Brief the `reviewer` with: the module and its acceptance criteria, the result of `<full check>` you already ran (with counts), the red-run evidence (the failing message and the mutation checks), and what the human approved. The reviewer is read-only and does not run the checks; tell it so, because otherwise it reports them as unverified. For a docs-only module, also tell it to verify every date, number and name against the plan or the code.
+
+The review has two passes, Spec then Standards, and ends with "Recommended to apply" and whether the module is ready to commit.
+
+Then apply the recommended fixes unless I say skip:
+- A **behaviour change**: write a failing test first, then fix. Ask me first.
+- A **refactor**: keep the tests green before and after, and change no test.
+- Anything outside the module: ask me first.
+Run `<full check>` afterwards and report the real results. Then, if there is a plan (a short-path change has none), update its Status block (current module, modules completed, files changed, last check, open issues, next action) and Log, and tell me the module is ready for my commit. Do not commit unless I ask; do not write a learning file unless I run `/teach`.
+```
+
+### `/retro` command
+
+```markdown
+---
+description: Look back at what happened and suggest changes to the setup, not the code
+argument-hint: [story id, and what to focus on]
+---
+Focus: $ARGUMENTS
+
+Read what actually happened (this session, the organized plan with its Log, the review findings), not a summary of it. Look in seven places:
+1. **Navigation:** did the agent struggle to find a file? Add a pointer.
+2. **Automatic checks:** could a hook, lint rule or test have caught a mistake?
+3. **Standards:** did a review miss something? Sort it as **mechanical** (a tool can check it, so it becomes a check) or **judgement** (a reader must check it, so it goes in `docs/standards.md`, tagged tool or review).
+4. **`CLAUDE.md`:** has it grown too big? Move instructions into the standards or into checks.
+5. **Tool economy:** were any commands wastefully expensive?
+6. **No-ops:** instructions that change nothing the agent does. Delete them.
+7. **Information access:** was something the agent needed missing?
+
+Then score the story on six questions: correct (criteria and key failure cases verified?), traceable (requirement to code to evidence?), understood (could the human explain the changed files?), debuggable (could a failure be followed?), efficient (mistakes caught early, no dead steps?), safe (did the locks block what they should?). Count any spikes, and check that each ended in a written answer.
+
+For each process step (organize, the module loop, mutation checks, review, whole-area review, `/teach`), note whether it caught a real problem or taught something. After about two weeks of use, or about ten modules, a step that did neither is a candidate to shorten or drop; the human decides. Human approval, tests, the full check, review and the hooks are not pruned.
+
+Save the result to `.claude/logs/retro/<date>-<story-id>-<area>.md`, worst first, with a status per suggestion (todo, done, needs the human, skipped) that you keep up to date. Only suggest: I decide what changes. Change nothing else yourself.
+```
 
 ### `/organize` command
 
@@ -315,7 +396,7 @@ Organize the draft into ordered functionality modules. For each module include:
 - Dependencies and blocked-by relationships
 - Risks, assumptions and open questions
 
-Give minimal feedback only: identify material gaps, ambiguous acceptance criteria, missing failure paths, risky assumptions, dependencies and one or two practical recommendations where useful. Preserve the draft's intent. Do not invent requirements or make product/architecture decisions; ask the human where a decision is needed.
+Give minimal feedback only: identify material gaps, ambiguous acceptance criteria, missing failure paths, risky assumptions, dependencies and one or two practical recommendations where useful. Check where CI differs from the local run (environment variables set only in CI, the operating system) and list each difference that could break a test or the build. Preserve the draft's intent. Do not invent requirements or make product/architecture decisions; ask the human where a decision is needed.
 Use `.claude/logs/plans/TEMPLATE.md` as the structure and save a story-specific copy under `.claude/logs/plans/<story-id>-plan.md`. Set a clear status block and wait for explicit human approval. Write no code.
 ```
 
@@ -544,6 +625,54 @@ rs.addEventListener('click',build);build();
 | Topic | Module | What it covers | HTML file |
 |---|---|---|---|
 | <dependency injection> | <M2> | <plain-language overview and code flow> | <2026-11-02-S12-M2-dependency-injection.html> |
+```
+
+### Rule files (`.claude/rules/`)
+
+Short summaries of the working rules. Where a rule file and `docs/standards.md` differ, the standards win. Adapt only the placeholders.
+
+**`git.md`**
+
+```markdown
+# Git
+- Commit only when the human explicitly asks. Never push, force-push, `reset --hard` or `clean -f` unless asked in that moment.
+- The unit of commit is a **completed functionality module**: happy path and relevant sad paths done, acceptance criteria met, `<full check>` passing, review findings resolved or accepted by the human. One commit per module, in Conventional Commits format (`type(scope): subject`), imperative, explaining why. A short-path change is its own commit. Never commit intermediate work, failing tests or a half-finished module. <If you keep a global commit rule, say here which one wins in this project and whether a commit-splitting skill may be used.>
+- Before committing, inspect the staged diff and run the full check again. The staged files must belong to the module: no unrelated work, secrets, build output or nested repo.
+- The agent proposes the commit and its message; it runs `git add` and `git commit` only when the human says to. Stage by file path (interactive `git add -p` may not work in an agent shell).
+- No AI attribution in commit messages or pull request descriptions: no `Co-Authored-By` line and no "Generated with ..." line. The human's wish overrides the tool's default.
+- Start every shell command from the project root. The shell's folder can persist between commands, and a `git` command run inside a nested repository would act on the wrong project.
+```
+
+**`comments.md`**
+
+```markdown
+# Comments
+- Default to no comments. Names and structure should explain the code.
+- Comment only the why when it is not obvious (a browser quirk, a build workaround).
+- No commented-out code, no TODOs without a name. For content placeholders use `TODO(human)`.
+```
+
+**`testing.md`**
+
+```markdown
+# Testing
+- Failing test first where practical, and watch it fail before writing code. If a test first makes no sense for a module (a pure layout tweak, a config file), the plan names the alternative check and the human approves it with the plan, never the builder alone.
+- Test behaviour through the contract, not internals. Name the contracts here: <a rendered component, an API response, a schema, a helper function, a config object>.
+- Every module covers its happy path and its relevant sad paths (invalid or missing data, empty state, boundary, denied or failed case), or says why a sad path does not apply.
+- Fast check: `<fast check>`. Full check: `<full check>`. The production build is a test.
+- Report real results only, with the status words **passed**, **failed**, **not run** (and why) or **not provable by a test** (and how else it was checked).
+- The red run must fail for the stated reason: quote the failing message in the report. A syntax error or a missing import is not a red for the behaviour under test.
+- A test that passes on its first run (a guard, a branch test) needs a mutation check: break the exact line it protects, watch it fail, restore the line and show `git diff` is empty. Confirm a new assertion exists (`grep`) before the mutation check.
+```
+
+**`shell.md`**
+
+```markdown
+# Shell and edits
+- Edit files with the editor tool. For multi-line text use a quoted heredoc (<<'EOF'), so the shell does not expand backticks or dollar signs.
+- No regexes, backslashes, backticks or dollar signs inside an inline `<runtime> -e` or `sed` command; use the editor tool instead. <Note any runtime that does not work on this machine.>
+- After a scripted edit, check `git diff` shows it landed. A silent no-op makes a "red" test run meaningless.
+- Delete specific files (`rm file`, `rmdir dir`). Recursive force-delete is blocked by a hook.
 ```
 
 ### `<domain>-safety.md`
