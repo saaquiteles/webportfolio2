@@ -28,4 +28,20 @@ describe('SketchArrow', () => {
 
     expect(container.querySelector('svg')).toHaveClass('text-tomato');
   });
+
+  it('with drawIn, normalises both paths to length 1 and marks the svg for the draw animation', () => {
+    const { container } = render(<SketchArrow drawIn />);
+    const paths = container.querySelectorAll('path');
+
+    expect(paths).toHaveLength(2);
+    paths.forEach((path) => expect(path).toHaveAttribute('pathLength', '1'));
+    expect(container.querySelector('svg')).toHaveClass('sketch-draw');
+  });
+
+  it('without drawIn, leaves the arrow plain', () => {
+    const { container } = render(<SketchArrow />);
+
+    container.querySelectorAll('path').forEach((path) => expect(path).not.toHaveAttribute('pathLength'));
+    expect(container.querySelector('svg')).not.toHaveClass('sketch-draw');
+  });
 });

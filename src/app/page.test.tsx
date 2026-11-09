@@ -49,6 +49,12 @@ describe('Home page', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
+  it('draws the hero arrow in with the CSS draw class', () => {
+    const { container } = render(<Home />);
+
+    expect(container.querySelector('svg[aria-hidden="true"]')).toHaveClass('sketch-draw');
+  });
+
   it('steps the headline up in size at tablet and desktop widths', () => {
     render(<Home />);
 

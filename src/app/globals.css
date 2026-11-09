@@ -72,3 +72,24 @@
     outline-offset: 3px;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes sketch-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .sketch-draw path {
+    stroke-dasharray: 1;
+    animation: sketch-draw 0.6s ease-out both;
+  }
+
+  .sketch-draw path:nth-child(2) {
+    animation-duration: 0.3s;
+    animation-delay: 0.6s;
+  }
+}

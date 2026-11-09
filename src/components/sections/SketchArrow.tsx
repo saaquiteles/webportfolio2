@@ -1,14 +1,17 @@
 interface SketchArrowProps {
   className?: string;
+  drawIn?: boolean;
 }
 
-export function SketchArrow({ className = '' }: SketchArrowProps) {
+export function SketchArrow({ className = '', drawIn = false }: SketchArrowProps) {
+  const pathLength = drawIn ? 1 : undefined;
+
   return (
     <svg
       aria-hidden="true"
       focusable="false"
       viewBox="0 0 230 110"
-      className={`fill-none ${className}`}
+      className={`fill-none ${drawIn ? 'sketch-draw ' : ''}${className}`}
     >
       <path
         d="M8 22 C 70 0, 150 8, 162 52 C 167 72, 152 80, 142 87"
@@ -16,6 +19,7 @@ export function SketchArrow({ className = '' }: SketchArrowProps) {
         strokeWidth="3.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        pathLength={pathLength}
       />
       <path
         d="M142 87 L158 86.5 M142 87 L149 72"
@@ -23,6 +27,7 @@ export function SketchArrow({ className = '' }: SketchArrowProps) {
         strokeWidth="3.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        pathLength={pathLength}
       />
     </svg>
   );
