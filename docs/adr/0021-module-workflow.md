@@ -1,6 +1,6 @@
 # ADR 0021: Update the human's files and the public text to match the new way of working
 
-Status: Proposed (the human decides). Raised on 2026-11-08, when the project started following `WORKFLOW-TEMPLATE-generic.md`.
+Status: Accepted on 2026-11-09 (the human decided). Raised on 2026-11-08, when the project started following `WORKFLOW-TEMPLATE-generic.md`. The README and the portfolio case study were updated on 2026-11-08, and `docs/standards.md` TE-01 and the glossary rows were pasted on 2026-11-09.
 
 Decision in one sentence: change four places that still describe the old way of working, and add the new words the workflow uses to the glossary.
 
