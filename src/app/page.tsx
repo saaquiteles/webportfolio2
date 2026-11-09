@@ -2,6 +2,7 @@ import { PageShell } from '@/components/global/PageShell';
 import { ProjectGrid } from '@/components/sections/ProjectGrid';
 import { ContactLinks } from '@/components/sections/ContactLinks';
 import { SketchArrow } from '@/components/sections/SketchArrow';
+import { ScrollRuler } from '@/components/animations/ScrollRuler';
 import { profile } from '@/data/profile';
 import { projects } from '@/data/projects';
 
@@ -10,6 +11,7 @@ export default function Home() {
 
   return (
     <PageShell>
+      <ScrollRuler />
       <section>
         <p className="mb-7 inline-block -rotate-2 rounded-md border-2 border-ink bg-surface px-4 py-2 font-semibold shadow-md">
           {profile.name}

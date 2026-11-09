@@ -1,8 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render, screen } from '@testing-library/react';
 import Home from './page';
 
 describe('Home page', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('shows exactly one level-1 heading', () => {
     render(<Home />);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
@@ -75,5 +80,32 @@ describe('Home page', () => {
   it('has a main landmark', () => {
     render(<Home />);
     expect(screen.getByRole('main')).toBeInTheDocument();
+  });
+
+  it('shows no scroll ruler when motion is not known to be allowed', () => {
+    const { container } = render(<Home />);
+    expect(container.querySelector('.fixed[aria-hidden="true"]')).toBeNull();
+  });
+
+  it('shows one decorative scroll ruler when motion is allowed', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    const { container } = render(<Home />);
+    expect(container.querySelectorAll('div.fixed[aria-hidden="true"]')).toHaveLength(1);
+  });
+
+  it('has no scroll ruler in the server HTML even when the browser allows motion', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    const html = renderToString(<Home />);
+    expect(html).not.toContain('pointer-events-none fixed');
   });
 });
