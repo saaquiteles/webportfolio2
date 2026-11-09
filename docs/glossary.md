@@ -30,7 +30,12 @@ The human owns this file. During `/start-story` the agent may propose new words;
 | ADR | A short note saying "we chose X because Y". Lives in `docs/adr/` with a Status (Proposed until the human accepts it). | decision doc |
 | Short path | The light flow for a small change that is easy to undo: one area, one or two files, about 30 lines, no visible behaviour change. | Level 1 |
 | Full flow | The whole loop for everything else, and always for a change that is hard to undo or reaches wide (config, deploy, new dependency, schema, personal data). | Level 2, Level 3 |
-| Vertical slice | A task that works end to end when it is finished, like one finished slice of cake instead of a whole layer of sponge. | layer-by-layer task |
+| Functionality module | One coherent piece of behaviour, built and verified as a unit, with its happy path and relevant sad paths. | task, ticket |
+| Happy path | The expected successful journey through a functionality. | normal case |
+| Sad path | An expected failure: invalid input, an error, an empty state, a denied case or a boundary. | edge case (when it means a failure) |
+| Mutation check | Break the exact line a test protects, watch the test fail, then restore the line. | sanity check |
+| Module commit | The single commit made after a functionality module has passed its checks and review. | task commit |
+| Spike | A throwaway experiment that answers one question; nothing from it ships. | prototype |
 
 ## Tool words (for learning)
 | Term | Meaning | Avoid |

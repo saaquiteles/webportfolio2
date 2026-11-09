@@ -33,7 +33,7 @@ A mistake that a reader catches twice should become a tool check. See "Candidate
 - CT-03 Images referenced from MDX live in `public/` and are optimised before commit. [review]
 
 ## Testing (TE)
-- TE-01 A failing test comes first. [review] The learning note shows the red result.
+- TE-01 A failing test comes first, where practical. [review] The builder's report quotes the red result, and a test that was green on its first run is shown able to fail (a mutation check).
 - TE-02 Test behaviour through the contract (rendered component, content schema), not internals. [review]
 - TE-03 A broken static export is a failed test: `npm run build` must pass. [tool] The build.
 
