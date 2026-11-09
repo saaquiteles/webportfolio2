@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": ["src/app/globals.css"],
+        "reason": "The 32 px grid is the approved Lab Notebook design, not a generated default"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [".claude/skills/teach/theme-vertere.css"],
+        "reason": "The 8px top bar is the Vértere house style, not a card side border"
+      }
+    ]
+  }
+}
