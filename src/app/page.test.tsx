@@ -117,4 +117,15 @@ describe('Home page', () => {
     const html = renderToString(<Home />);
     expect(html).not.toContain('pointer-events-none fixed');
   });
+
+  it('keeps the name tag tilted', () => {
+    render(<Home />);
+    expect(screen.getByText('Sean Argie A. Quiteles')).toHaveClass('-rotate-2');
+  });
+
+  it('has no depth transform in the server HTML', () => {
+    const html = renderToString(<Home />);
+    expect(html).not.toMatch(/style="[^"]*translate/);
+    expect(html).not.toMatch(/style="[^"]*transform:(?!none)/);
+  });
 });
