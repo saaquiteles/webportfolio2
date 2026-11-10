@@ -1,6 +1,6 @@
 # ADR 0025: CSS for the headline and the hero arrow
 
-Status: Proposed. Raised by the S6 motion plan (module M3; the headline part is built in M4).
+Status: Accepted by the human on 2026-11-09. Raised by the S6 motion plan (module M3; the headline part is built in M4).
 
 ## Decision
 The Home headline settle (built in M4) and the hero arrow drawing (built in M3) use a CSS animation that only runs when the visitor allows motion, not `framer-motion`.

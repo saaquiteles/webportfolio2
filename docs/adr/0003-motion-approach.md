@@ -1,6 +1,6 @@
 # ADR 0003: How the drawn-in sketches and custom cursor are built
 
-Status: Accepted for `TiltCard` only, on 2026-11-08 (the human's decision). The other wrappers (`DrawOnScroll`, `ScrollRuler`, `CrosshairCursor`, `KineticHeadline`, `WordSwap`) stay Proposed. The tilt is strong, with a lifted shadow. Each wrapper is accepted when the human says yes after it is built.
+Status: Partly accepted (the human's decisions). Accepted: `TiltCard` (2026-11-08, a strong tilt with a lifted shadow), and `ScrollRuler` and `KineticHeadline` (2026-11-09; the headline is built with CSS, see ADR 0025). The hero arrow draws with CSS too (ADR 0025), so `DrawOnScroll` as written here is not built and stays Proposed, as do `CrosshairCursor` and `WordSwap`. The pointer depth effect is ADR 0024. Each wrapper is accepted when the human says yes after it is built.
 
 ## Gap
 `docs/spec.md` lists animation wrappers but names none. The design needs scroll-drawn SVG, a crosshair cursor with a live readout, tilt and peel cards, and kinetic headline text.

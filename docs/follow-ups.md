@@ -27,7 +27,18 @@ Things parked on purpose. Each says when it should be done. Remove a line when i
 - **Headline kerning.** Splitting into letters loses kerning pairs at display size. Check in the browser; the fallback is to animate per word.
 - **Hero arrow dot.** A round line cap may show a small dot at the shaft end before it draws. Look once in the browser; if it shows, change the dash setting.
 - **Old browsers.** A media query without addEventListener (Safari before 14) would throw in useReducedMotion, useFinePointer and TiltCard. A guard, ideally through one shared useMediaQuery helper, is open (asked, not yet decided).
+- **Pointer depth wrapper layout shift.** Check in the browser that the wrapper around the hero adds no layout shift.
+- **Safari mouseleave.** Check that the depth effect and the tilt settle back when the pointer leaves in Safari.
+- **Lighthouse after the motion story (2026-11-09, mobile, built site, two runs by the human):** performance 98 and 96, accessibility 100 and 100, layout shift 0, largest paint 2.1 s and 2.2 s, blocking time 120 ms and 170 ms, 399 KiB in 29 requests (189 KB of scripts, 129 KB of fonts). The 2 point drop in the second run comes from main-thread time (1.5 s against 2.2 s), which varies run to run. Lighthouse also notes that the two arrow paths animate stroke-dashoffset, which cannot run on the compositor. It is informational and small (two paths, 0.9 s); revisit only if a later page animates many strokes.
 - **Real hydration, scroll feel and reduced motion** are unproven by tests. They are the S6 browser pass (module M6).
+
+## Next motion story
+Unbuilt pieces of ADR 0003. Each is its own module, and each keeps the shared rule that the static HTML and first render are the finished state (ADR 0023):
+- **Crosshair cursor.** An overlay with a live x/y readout; the normal cursor is kept. Fine pointer only, off under reduced motion.
+- **Tagline word swap.** Cycles only the three stack names already in the tagline (no new words). Stops under reduced motion; the static tagline is the finished state.
+- **Page transitions.** Probably enter-only, after a spike to see if it works with the static export.
+- **Card corner peel.** Also triggers on focus; none under reduced motion or touch.
+- **Scroll-driven draw wrapper.** A `framer-motion` wrapper in `animations/` for later sketches; the drawing appears complete under reduced motion.
 
 ## Later stories
 - **Blog (R-03, R-11).** A later story, decided by the human on 2026-11-08. `/blog/`, `/blog/[slug]/` and the RSS feed are in `docs/spec.md` and `docs/requirements.md` but have no code. When it starts, CT-02 (drafts never reach a production build) becomes testable, and every post needs the human's own text.

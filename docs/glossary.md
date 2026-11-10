@@ -21,6 +21,9 @@ The human owns this file. During `/start-story` the agent may propose new words;
 | Sketch | A small inline SVG drawing in the Lab Notebook style, such as the hero arrow. | doodle, illustration |
 | Margin note | A small monospace annotation beside content, such as "fig. 1". | caption, tooltip |
 | Wrapper | A small component in `src/components/animations/` that adds motion to its children. | animation helper |
+| Progress ruler | The thin side bar on Home that fills as you scroll. | scrollbar, progress bar |
+| Depth effect | Layers that drift by small, different amounts with the pointer. | parallax |
+| Finished state | What a wrapper shows with reduced motion, without JavaScript and before hydration: the final, static look. | fallback look, no-motion version |
 | Reduced motion | An OS setting asking sites to avoid animation. Every animation must respect it. | no-animation mode |
 
 ## Workflow words

@@ -44,4 +44,10 @@ MDX frontmatter, project: `title`, `slug`, `summary`, `date`, `tags`. Blog post:
 Dates in data and frontmatter are `YYYY-MM` strings (ADR 0011). Shared types live in `src/lib/types.ts`.
 
 ## Animation components (in `src/components/animations/`)
-Wrappers are the only place that imports `framer-motion`; pages use the wrappers. Each wrapper honours reduced motion.
+Wrappers are the only place that imports `framer-motion`, except CSS-only effects; pages use the wrappers. Each wrapper shows the finished state with reduced motion, without JavaScript and before hydration (ADR 0023).
+- `TiltCard`: 3D tilt toward a fine pointer (max 10 degrees) with a lifted shadow; also lifts on keyboard focus; static otherwise.
+- `ScrollRuler`: decorative fixed side bar on Home that fills with scroll progress; not rendered under reduced motion.
+- `PointerDepthField` and `PointerDepthLayer` (`strength` prop): layers drift by translate only with the pointer (Home: headline 4, name tag 8, arrow 12 px); fine pointer only; decorative, so no focus trigger (ADR 0024).
+- `KineticHeadline`: headline letters settle in with the CSS animation `kinetic-settle`; the full sentence stays as screen-reader text (ADR 0025).
+- Hooks: `useReducedMotion`, `useFinePointer` (shared media-query reads).
+- `SketchArrow` (in `sections/`): the `drawIn` prop adds the CSS class `sketch-draw`, which draws the strokes on load. Both CSS animations (`sketch-draw`, `kinetic-settle`) are in `globals.css` under `prefers-reduced-motion: no-preference`.

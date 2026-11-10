@@ -82,20 +82,34 @@ The profile photo is a taped print: a `surface` frame with `border-2`, a slight 
 `MdxContent` passes a `components` map to the compiled MDX (`src/components/sections/MdxContent.tsx`), so case studies are styled with token classes and standard utilities, not hand-written CSS: `h2` gets a tomato top rule, lists get bullets or numbers with spacing, links are blueprint and underlined. The body is capped at `max-w-prose`.
 
 ## Motion
-| Priority | What it does |
-|---|---|
-| Scroll storytelling | The page is a notebook. Sections "draw in" as ruled lines and sketches animate along their paths while you scroll. A progress ruler runs down the side. |
-| Cursor and hover | A small crosshair cursor with a live x/y readout in mono. Cards tilt in 3D on hover (built, see above); the corner peel is not built. |
-| Kinetic typography | Headline letters settle from a slight scatter into place. Words in the tagline swap on a timer. |
+Shared rule (ADR 0023): the static HTML and the first browser render are the finished state. Motion only starts after the page has hydrated and only when the visitor allows it, so without JavaScript, before hydration and with reduced motion the page looks complete.
 
-All motion lives in wrappers under `src/components/animations/` (`ST-02`).
+Built (S6, M1 to M5):
+| Piece | What it does |
+|---|---|
+| 3D tilt on project cards | `TiltCard`, described above. |
+| Scroll progress ruler | `ScrollRuler`: a thin bar at the left edge of Home that fills as you scroll. Decorative (`aria-hidden`). Hidden under reduced motion. |
+| Hero arrow draw | `SketchArrow` with `drawIn` draws on load with a CSS stroke animation (`sketch-draw` in `globals.css`). |
+| Headline settle | `KineticHeadline`: the letters settle into place with a CSS animation (`kinetic-settle`). The full sentence stays in the page for screen readers. |
+| Pointer depth on the hero | `PointerDepthField` with `PointerDepthLayer`: the headline drifts 4 px, the name tag 8 px and the arrow 12 px with the pointer. Translate only. |
+
+Not built yet (see "Next motion story" in `docs/follow-ups.md`):
+| Piece | Plan |
+|---|---|
+| Crosshair cursor | An overlay with a live x/y readout; the normal cursor is kept. |
+| Tagline word swap | Cycles only the three stack names already in the tagline. |
+| Page transitions | Probably enter-only, decided after a spike. |
+| Card corner peel | Not started. |
+| Scroll-driven draw | A `framer-motion` wrapper for later sketches. |
+
+All `framer-motion` code lives in wrappers under `src/components/animations/` (`ST-02`); the arrow draw and the headline settle are plain CSS.
 
 ## Fallbacks
 | Situation | Behaviour |
 |---|---|
-| `prefers-reduced-motion` (`A11Y-03`) | Drawings appear complete, text fades in, cursor stays the default, tilt and peel removed, the tagline stops swapping. |
-| Touch device (no cursor) | No custom cursor. Cards get a tap highlight. Scroll effects stay, simplified. |
-| Keyboard focus (`A11Y-02`) | Every hover effect also triggers on focus, with a visible focus ring. |
+| `prefers-reduced-motion` (`A11Y-03`) | The finished static state: the arrow is fully drawn, the headline is in place, the ruler is hidden, there is no tilt and no depth drift. |
+| Touch device or no fine pointer | The static hero and static cards: no tilt, no depth effect. The scroll ruler stays. |
+| Keyboard focus (`A11Y-02`) | Every hover effect also triggers on focus, with a visible focus ring, except the pointer depth effect. That one is decorative: it carries no information and no action, so a keyboard visitor loses nothing. |
 
 ## Risks to watch
 - Lots of SVG drawing is the most effort. Start with a few reusable sketches.

@@ -1,6 +1,6 @@
 # ADR 0024: Pointer depth on the Home hero
 
-Status: Proposed. Raised by the S6 motion plan (module M5).
+Status: Accepted by the human on 2026-11-09. Raised by the S6 motion plan (module M5).
 
 ## Decision
 The Home hero has a depth effect: the name tag, the headline and the arrow drift by small, different amounts as the pointer moves, but only with a fine pointer (a mouse or trackpad) and when the visitor allows motion.
