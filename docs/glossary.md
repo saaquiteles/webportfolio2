@@ -33,12 +33,17 @@ The human owns this file. During `/start-story` the agent may propose new words;
 | ADR | A short note saying "we chose X because Y". Lives in `docs/adr/` with a Status (Proposed until the human accepts it). | decision doc |
 | Short path | The light flow for a small change that is easy to undo: one area, one or two files, about 30 lines, no visible behaviour change. | Level 1 |
 | Full flow | The whole loop for everything else, and always for a change that is hard to undo or reaches wide (config, deploy, new dependency, schema, personal data). | Level 2, Level 3 |
-| Functionality module | One coherent piece of behaviour, built and verified as a unit, with its happy path and relevant sad paths. | task, ticket |
+| Functionality module | One coherent piece of behaviour, built and verified as a unit, with its happy path and relevant sad paths (in team mode, the paths the plan names). | task, ticket |
 | Happy path | The expected successful journey through a functionality. | normal case |
 | Sad path | An expected failure: invalid input, an error, an empty state, a denied case or a boundary. | edge case (when it means a failure) |
 | Mutation check | Break the exact line a test protects, watch the test fail, then restore the line. | sanity check |
 | Module commit | The single commit made after a functionality module has passed its checks and review. | task commit |
 | Spike | A throwaway experiment that answers one question; nothing from it ships. | prototype |
+| Mode | The line in CLAUDE.md that says how plans are structured: personal (ordered modules) or team (four phases and a staging gate). | setting |
+| Vertical slice | In team mode, a thin working path through all the layers (for example screen, server and data), built first for the happy path only. | spike |
+| Hardening | In team mode, the phase that adds validation, error handling, edge cases and empty states to a working happy path. | bug fixing |
+| Staging gate | In team mode, the checklist that makes the finished happy path ready to hand to testers, with no downtime for testers or developers. | release checklist |
+| Release candidate | A tagged commit where the full check passes, built reproducibly for testers. | latest build |
 
 ## Tool words (for learning)
 | Term | Meaning | Avoid |

@@ -149,6 +149,8 @@ The organizer structures the human's discussion into four phases, concise, in bu
 
 **Rules in team mode.** A module is complete when the acceptance criteria the plan names for it are met, and the plan says which paths each module covers (a phase 2 module may be happy-path only). The story closes only when hardening has covered the relevant sad paths, or the plan says why one does not apply; every deferred sad path has an owning hardening module, and the whole-area review at the end of the story lists each one with its owner and flags any without an owner or not done; the module reviewer does not flag a sad path the plan gives to a named later module. On a live product, hardening finishes before a release; the main line holds happy-path-only work for a while.
 
+**The levels still apply in team mode.** Step 0 (spike, short path, full flow) measures the size and risk of one change, so it stays. A story uses the four phases only at full flow. A change found by testers goes through the short path unless it meets a full-flow trigger. A spike is still the way to answer a feasibility question before planning, for example whether a reproducible build and a tester channel can work at all. Untested: in a team, the full-flow triggers (a public interface, a data schema, security, the deploy workflow) probably need another person's review, and a fix may have to land on both the tag and the main line.
+
 ## 5. The agents
 
 | Role | Job | Tools | Key limits | Model / effort |
@@ -736,9 +738,10 @@ Short summaries of the working rules. Where a rule file and `docs/standards.md` 
 
 ```markdown
 # Comments
-- Do not put comments in the codebase. Names, structure and tests explain the code.
-- Put the why (a browser quirk, a build workaround, a trade-off) in the commit message, an ADR or the docs, not next to the code.
-- The only allowed exceptions are tool directives that need comment syntax (a lint suppression with its reason, a type-check pragma) and `TODO(human)` placeholders in content.
+- Keep comments to a minimum. Names, structure and tests explain the code.
+- Comment only the important parts, and only where the code truly needs it: the why when it is not obvious (a browser quirk, a build workaround, a trade-off). Never comment what the code already says.
+- Put longer reasons in the commit message, an ADR or the docs.
+- Tool directives that need comment syntax (a lint suppression with its reason, a type-check pragma) and `TODO(human)` placeholders in content are fine.
 - No commented-out code, no TODOs without a name.
 ```
 
