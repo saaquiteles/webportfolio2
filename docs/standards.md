@@ -36,6 +36,7 @@ A mistake that a reader catches twice should become a tool check. See "Candidate
 - TE-01 A failing test comes first, where practical. [review] The builder's report quotes the red result, and a test that was green on its first run is shown able to fail (a mutation check).
 - TE-02 Test behaviour through the contract (rendered component, content schema), not internals. [review]
 - TE-03 A broken static export is a failed test: `npm run build` must pass. [tool] The build.
+- TE-04 A component whose tree shape (element types) depends on a hook that differs between the server and the browser has a hydration test that keeps the same DOM node. [review] Otherwise React rebuilds the subtree after hydration and CSS animations replay. Example: `src/components/animations/PointerDepth.test.tsx`.
 
 ## Static export (SE)
 - SE-01 No server-only features (see the list in `docs/spec.md`). [tool + review] The static build fails on most of them, such as API routes and server actions. A reader catches the rest.

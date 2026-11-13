@@ -276,14 +276,16 @@ Only four things change: the **areas**, the **safety rule**, and the **fast** an
 - **Run the same check locally and in CI.** The first push is the first real test on another operating system.
 - **Agent-file edits take effect on the next turn.** After changing an agent's model or tools, test it in a new turn. Edited and tested in the same turn, an organizer still ran as the old model; the identical check one turn later ran as the new one.
 - **Use a light review for tiny changes.** A full review agent on a one-line change is wasted effort.
-- **Scripted edits can fail silently.** Backslashes and regexes were lost inside `node -e` and `sed`, and a new test assertion never landed, so its mutation check proved nothing. Make multi-line or backslash edits with the editor tool, and `grep` that a new assertion exists before its mutation check.
+- **Scripted edits can fail silently.** Backslashes and regexes were lost inside `node -e` and `sed`, and a new test assertion never landed, so its mutation check proved nothing. Make multi-line or backslash edits with the editor tool, and `grep` that a new assertion exists before its mutation check. In a node script, never give `String.replace` replacement text that contains a dollar sign (it expands to pieces of the file and can multiply it); use slicing or a function, and compare line counts after a scripted document edit.
 - **Run a whole-area review at the end of every story.** It found what no per-task review had looked at (for example, in one project the production build had no error boundary, so an unexpected error would have blanked the app).
 - **Whole-area review checklist.** Beyond the code, look at: config excludes (type check, lint, test runner) for scratch, build and private folders; whether a rule file says something a lint rule or the standards contradict; links that appear both in data and in content; and every raw asset path that a framework helper does not cover.
 - **Re-read the rule and agent files when an ADR is accepted.** `CLAUDE.md`, a rule file and an agent file all kept saying "the stack is not chosen" after the ADR was accepted.
 - **Write ADRs for a reader who is new.** A correct but dense ADR gets skimmed and then ignored. Formal structure with plain wording keeps it readable and still reviewable.
 - **Review docs-only changes for facts.** A document claimed a design was approved on the wrong date and the review missed it. For a docs-only module, brief the reviewer: "verify every date, number and name against the plan or the code".
 - **Tests that keep docs and data honest.** Cheap guards that caught or closed real gaps: the spec names every field of a data type, links inside content bodies match the data, and bad or missing front matter is rejected.
-- **A design-quality hook can flag intended design.** Fix real problems. For a confident false positive, use the narrowest ignore the tool offers and say so. If unsure, ask. The tool may block the agent from changing its own tooling, so the human runs the ignore command.
+- **A design-quality hook can flag intended design.** Fix real problems. For a confident false positive, use the narrowest ignore the tool offers and say so. If unsure, ask. The tool may block the agent from changing its own tooling, so the human runs the ignore command (with `!` and a space before it) and the agent confirms it with the tool's read-only `status` action. Never create the tool's config file empty: it is then treated as malformed.
+- **A tree that changes shape after hydration replays animations.** A component that renders a plain element on the server and a different element once a hook flips (for example "fine pointer" or "reduced motion") makes React rebuild the whole subtree, and CSS animations start again. Every test stayed green and only a review caught it. Keep one tree shape in every state, and add a hydration test that holds a DOM node and asserts it is the same node afterwards.
+- **Builders never record the human's approval.** A builder edited a decision record to say the human had accepted it, because the brief told it to update the status. Only the main session writes an acceptance, after the human says yes.
 - **Before the first deploy, check raw asset paths.** A framework's link and asset handling follows the base path, but a plain image tag does not. Put such paths through one small helper. If CI sets the base-path variable on the test step, every test that reads it must set and clear it itself. Prove it with one build with the variable set and a search of the output, then a normal build.
 - **No browser means a human pass.** Look-and-feel criteria (tilt feel, wrapping at narrow widths, focus ring on a transformed card) cannot be proven by jsdom tests. Plan the pass: three widths, keyboard only, and Lighthouse on a built site (not the dev server), mobile, performance and accessibility. Save the report as HTML into a git-ignored folder so the agent can read the numbers.
 - **A mutation check is cheap and honest.** Breaking one line to watch a new test fail is what turns "green" into "proven".
@@ -572,7 +574,7 @@ tools: Read, Glob, Grep, Write, Edit, Bash
 ---
 Work ONLY in the approved area and module. Do not begin another module until the current one is complete and reviewed.
 Read the organized plan, named files and the pattern first; widen the search only if you find a dependency or a risk, and say so.
-Implement every approved happy-path and relevant sad-path acceptance criterion (in team mode, the paths the plan names for this module). Do not add behaviour not in the plan.
+Implement every approved happy-path and relevant sad-path acceptance criterion (in team mode, the paths the plan names for this module). Do not add behaviour not in the plan. Never edit a decision record's status or write that the human approved anything.
 Stop and report to the main session before: a behaviour change not in the plan, touching anything fixed, changing scope, or guessing.
 Start with ONE failing test at the agreed contract. Watch it fail (`<fast check>`), write only the code it needs, repeat. Run `<full check>` at the end of the module. A test that is green on its first run must be shown able to fail where practical: break the exact line it protects, watch it fail, restore the line and show `git diff` is empty.
 Do not commit. A module is ready for review only when its acceptance criteria and checks are complete.
@@ -596,7 +598,7 @@ model: sonnet-5.5
 effort: medium
 tools: Read, Glob, Grep, Bash
 ---
-Read the organized plan, module acceptance criteria, relevant spec and standards, and inspect the actual diff yourself. Do not rely solely on the builder's report.
+Read the organized plan, module acceptance criteria, the standards in full and the relevant spec, and inspect the actual diff yourself. List the claims you could not verify. Do not rely solely on the builder's report.
 Review happy-path behaviour, every relevant sad path (in team mode, only the paths the plan names for this module; check at the end of the story that hardening covered the rest), validation, authorization, state changes, error handling, regression risk and scope control.
 Make no edits and no commits. The main session runs checks and supplies their real results; do not claim to have run checks.
 Report numbered findings. Each finding must state severity (must-fix or nice-to-have), behaviour change or refactor, file and line, evidence, why it matters, and a recommended fix.
@@ -764,7 +766,8 @@ Short summaries of the working rules. Where a rule file and `docs/standards.md` 
 # Shell and edits
 - Edit files with the editor tool. For multi-line text use a quoted heredoc (<<'EOF'), so the shell does not expand backticks or dollar signs.
 - No regexes, backslashes, backticks or dollar signs inside an inline `<runtime> -e` or `sed` command; use the editor tool instead. <Note any runtime that does not work on this machine.>
-- After a scripted edit, check `git diff` shows it landed. A silent no-op makes a "red" test run meaningless.
+- In a node script, never pass replacement text containing a dollar sign to `String.replace`; use slicing or a function. Compare line counts before and after a scripted edit of a document.
+- After a scripted edit, check `git diff` shows it landed, and `grep` that a new test assertion exists before its mutation check. A silent no-op makes a "red" test run meaningless.
 - Delete specific files (`rm file`, `rmdir dir`). Recursive force-delete is blocked by a hook.
 ```
 
