@@ -8,7 +8,8 @@ A personal portfolio: a motion-heavy creative showcase plus a general site (abou
 - Requirements come from `docs/`. Read `docs/requirements.md` and `docs/spec.md` before coding.
 - Use the words in `docs/glossary.md` exactly. Propose new or fuzzy words; add them only after the human says yes.
 - The human is learning: explain plans in plain language and get approval before writing code. Explain as if to a beginner (define terms, everyday example, why before how, a short summary at the end).
-- Build one approved functionality module at a time. Verify its happy path and relevant sad paths, run the full check and review it before the human commits the completed module.
+- Mode: personal
+- Build one approved functionality module at a time. Verify its happy path and relevant sad paths, run the full check and review it before the human commits the completed module. (A team project would use the team mode in `WORKFLOW-TEMPLATE-generic.md`: four phases and a staging gate, with `.claude/logs/plans/TEMPLATE-team.md`.)
 - Learning is on demand: the human runs `/teach` to get an interactive HTML learning file (see `.claude/rules/learning.md`). It is never a required step in the build loop.
 - Anything that must never happen is a hook, not a rule. See `.claude/settings.json`.
 - `.claude/` is git-ignored and exists only on this machine, so `git revert` cannot undo a change there.

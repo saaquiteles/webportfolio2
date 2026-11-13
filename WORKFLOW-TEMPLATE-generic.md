@@ -10,7 +10,9 @@ Origin: designed on a retail-bank project (2026-10-23), simplified on 2026-10-26
 
 Start with a draft of the plan the human and AI have already discussed. The organizer turns that draft into a clear, ordered, functionality-based build plan and gives only concise feedback about gaps, risks and useful improvements. The human approves the organized plan before code changes begin.
 
-Build **one functionality module at a time**. Each module is a small, coherent behaviour that can be verified end to end. Define its **happy path** (the expected successful journey) and its **sad paths** (validation failures, errors, empty states, denied access, boundary cases and other relevant failure behaviour) before implementation. Build test-first where practical, review the completed module, and commit only when the module is complete and verified.
+Build **one functionality module at a time**. Each module is a small, coherent behaviour that can be verified end to end. In personal mode, define its **happy path** (the expected successful journey) and its **sad paths** (validation failures, errors, empty states, denied access, boundary cases and other relevant failure behaviour) before implementation. Build test-first where practical, review the completed module, and commit only when the module is complete and verified.
+
+**Two modes.** `Mode: personal` (the default, for a solo project) is the flow described in this document: each module covers its happy path and its relevant sad paths. `Mode: team` adds a four-phase plan and a staging gate, so testers can try a working happy path while developers keep building (section 4, "Team mode"). The mode is a line in `CLAUDE.md`, and the organizer asks if it is not stated.
 
 Learning is available without becoming a development gate. When the human runs `/teach` (a skill), it creates an interactive HTML learning file in the learning folder. It explains the actual implementation in beginner-friendly language, shows code snippets and identifies the files touched. It does not pause or add mandatory steps to the build loop.
 
@@ -29,6 +31,11 @@ Locks (hooks) stop dangerous actions. The human approves key decisions and is th
 - **Contract**: the agreed place a test touches the code, such as a rendered screen or a function. Tests check behaviour there, not internals.
 - **Functionality module**: a cohesive piece of user-visible or system behaviour, built and verified as one unit. A module includes its happy path and relevant sad paths.
 - **Happy path**: the expected successful journey through a functionality.
+- **Mode**: `personal` or `team`, set in `CLAUDE.md`. Team mode adds four phases and a staging gate.
+- **Staging gate** (team mode): the checklist that makes the finished happy path ready to hand to testers, with no downtime for testers or developers.
+- **Release candidate** (team mode): a tagged commit where the full check passes, built reproducibly for testers.
+- **Vertical slice** (team mode): a thin working path through all the layers, built first for the happy path only.
+- **Hardening** (team mode): the phase that adds validation, error handling, edge cases and empty states to a working happy path.
 - **Sad path**: an expected failure, invalid input, boundary condition, denial, empty state or recovery behaviour.
 - **Mutation check**: break the exact line a test protects, watch the test fail, then restore the line. It proves a test that was green on its first run can fail.
 - **Fast check / full check**: a targeted test run used while building, and the one command that runs everything (typecheck, lint, all tests, build) before review.
@@ -100,17 +107,17 @@ A spike is never a way around the flow. If it touches real data, auth, money or 
 | Step | What happens |
 |---|---|
 | `/start-story` | An interview, not a form: numbered questions in rounds, each with a recommended answer ("yes" accepts it). The agent looks up facts itself and asks only decisions. It maps the story to requirement IDs, proposes glossary words and flags where the story, requirements and spec disagree. It also reads the follow-ups list (`docs/follow-ups.md`, tracked, parked items each with when to do it) and says which items the story would finish or touch. No code. It also assigns a short story id (for example `S1`) that is used in plan and learning file names. |
-| `/organize` | Send the organizer the draft plan created through discussion. It restructures the draft into ordered, functionality-based modules. For every module, it identifies the goal, requirement IDs, acceptance criteria, happy path, relevant sad paths, expected files/areas, first tests and dependencies. It gives minimal feedback only: missing paths, unclear criteria, risks, dependencies or a practical recommendation. It must preserve the decisions already agreed, distinguish assumptions from decisions, and ask instead of inventing missing requirements. It saves the organized plan using the plan template and stops for human approval. No code. |
+| `/organize` | Send the organizer the draft plan created through discussion. It restructures the draft into ordered, functionality-based modules (in team mode, into four phases with a staging gate between the happy path and hardening). For every module, it identifies the goal, requirement IDs, acceptance criteria, happy path, relevant sad paths, expected files/areas, first tests and dependencies. It gives minimal feedback only: missing paths, unclear criteria, risks, dependencies or a practical recommendation. It must preserve the decisions already agreed, distinguish assumptions from decisions, and ask instead of inventing missing requirements. It saves the organized plan using the plan template and stops for human approval. No code. |
 | Build | Work on one approved functionality module at a time. Confirm its happy path and relevant sad paths from the approved plan. Write failing tests first where practical, then implement only what the module needs, using the fast check. Run the full check before review. A test that is green on its first run is shown able to fail with a mutation check where practical (break the exact line it protects, watch it fail, restore the line and show `git diff` is empty). Report real results only. |
 | `/review` | Two passes by a fresh, read-only reviewer that reads the diff and the module acceptance criteria itself instead of trusting the builder's report. **Spec:** is anything missing, added without being asked, or done wrong while looking done? **Standards:** the numbered rules. Findings are numbered, marked behaviour change or refactor, and give the file and line and the evidence. The recommended fixes are applied; ask first about behaviour changes and anything outside the module. |
-| Module commit | After all happy-path and sad-path acceptance criteria, checks and review findings for the module are complete, prepare one commit for the completed module. Do not commit intermediate work, known mistakes, failing states or partially completed modules. The human must explicitly authorize the commit. The commit may include all related files and tests required for that single completed functionality. |
+| Module commit | After all the acceptance criteria for the module (in personal mode its happy-path and sad-path criteria; in team mode the paths the plan names), checks and review findings for the module are complete, prepare one commit for the completed module. Do not commit intermediate work, known mistakes, failing states or partially completed modules. The human must explicitly authorize the commit. The commit may include all related files and tests required for that single completed functionality. |
 | `/teach` | On demand, after or during development, run the `/teach` skill for a module, feature, file or technical concept. It reads the actual code and creates an interactive HTML learning file in `.claude/logs/learning/`. The file explains concepts ELI5, fundamentals, runtime/code behaviour, real code snippets, files touched, each file's purpose and what changed. It must be self-contained and usable in a browser, with lightweight interactions (for example expandable explanations, tabs or a small knowledge check) where useful. It does not modify application code, add a required step before development continues, or delay the build loop. |
 | `/retro` | Looks back at what happened and suggests changes to the *setup*, not the code. Sorts each problem: **mechanical** (a tool can check it, so add a hook, lint rule or test) or **judgement** (a reader must check it, so add it to the standards). Scores the story on six questions: correct (criteria and key failure cases verified?), traceable (requirement to code to evidence?), understood (could I explain the changed files?), debuggable (could I follow a failure?), efficient (mistakes caught early, no dead steps?), safe (did the locks block what they should?). It saves its output in `.claude/logs/retro/<date>-<story-id>-<area>.md`, with a status column per suggestion (todo, done, needs the human, skipped) that is kept up to date as items are done. It only suggests; the human decides. |
 | `/explain` | A lightweight conversational explanation of a file, feature or term. For a structured, reusable learning artifact, use `/teach` instead. |
 
 **Never skipped by the agent:** human approval, tests (or an approved alternative check), the full check for the full flow, review, and every guardrail. `/teach` is optional and on demand, not a required delivery checkpoint. A spike skips tests and review only because nothing ships; approval and every guardrail still apply.
 
-**Commits.** Commit only when the human explicitly asks. The unit of commit is a **completed functionality module**, not an individual task or code edit. A module commit is allowed only after its happy path and relevant sad paths are implemented, acceptance criteria are met, checks pass, and review findings are resolved or explicitly accepted by the human. Never commit known mistakes, failing tests, incomplete modules or intermediate work. Use a clear Conventional Commits message (`type(scope): subject`; types `feat`, `fix`, `refactor`, `style`, `docs`, `test`, `chore`, plus `build`, `ci` or `perf` if you use them). The subject is imperative ("add", not "added"), and the body explains why, not how. Mark a breaking change with `!` after the type and a `BREAKING CHANGE:` footer.
+**Commits.** Commit only when the human explicitly asks. The unit of commit is a **completed functionality module**, not an individual task or code edit. A module commit is allowed only after its happy path and relevant sad paths are implemented (in team mode, the paths the plan names for it), acceptance criteria are met, checks pass, and review findings are resolved or explicitly accepted by the human. Never commit known mistakes, failing tests, incomplete modules or intermediate work. Use a clear Conventional Commits message (`type(scope): subject`; types `feat`, `fix`, `refactor`, `style`, `docs`, `test`, `chore`, plus `build`, `ci` or `perf` if you use them). The subject is imperative ("add", not "added"), and the body explains why, not how. Mark a breaking change with `!` after the type and a `BREAKING CHANGE:` footer.
 
 - **Before committing, inspect the staged diff and run the module's required checks again.** Confirm the staged changes belong to the completed module and do not contain unrelated work, accidental deletions, secrets, build output, ignored learning files or a nested repo.
 - **No automatic commits.** The agent proposes the module commit and message; it runs `git add` and `git commit` only after the human explicitly authorizes it. The human pushes.
@@ -119,11 +126,34 @@ A spike is never a way around the flow. If it touches real data, auth, money or 
 - **A global commit rule can conflict.** If you keep a personal rule such as "every commit is atomic", say in the project's git rule file which one wins here, and whether a commit-splitting skill may be used (for example only to word the message).
 - **No commit-splitting skill.** This workflow does not create commits per small edit or per task. It commits once per completed, verified module.
 
+### Team mode: four phases and a staging gate
+
+Use this only when several people work on the project and testers try builds. For a solo project it adds work and no benefit, so stay in personal mode.
+
+The organizer structures the human's discussion into four phases, concise, in bullets and checklists ("not applicable" where a line does not fit, for example an API endpoint on a static site):
+- **Phase 1, bare minimum happy path:** the shortest path from the user's action to success, with only the essential UI element, API endpoint and data action. No validation, error handling, edge cases or non-essential styling.
+- **Phase 2, vertical slice modules:** a vertical slice is a thin working path through all the layers (frontend, backend, data). Build the happy path only, as ordered, atomic modules, each with its own acceptance criteria and first failing test. A module lists the sad paths it leaves out as "deferred to" a named hardening module.
+- **Staging gate** (between phase 2 and phase 3; it is not a phase, see below).
+- **Phase 3, hardening:** critical validation rules, specific error scenarios, edge cases and empty states, as modules. Include what the testers found.
+- **Phase 4, refinement and polish:** UI and UX enhancements (loading states, feedback banners, animations), the unit and integration tests still required, performance considerations and refactoring.
+
+**Staging gate, so there is no downtime for testers or developers:**
+- A **release candidate**: one commit where the full check passes, tagged, and built reproducibly from that tag (by CI or a documented command), never from a developer's working copy.
+- A **staging environment** (config, backend, data) separate from development and production, with test data only and secrets from the environment.
+- A **tester channel** and the install steps.
+- **No downtime for testers:** the previous staged build stays installable until the new one passes its smoke test; a new build goes up beside the old one; backend and data changes stay compatible with the staged build (add first, remove later), or the interface is versioned.
+- **No downtime for developers:** development continues on the main line; unfinished work stays off the tagged commit or behind a switch; testers use the tag, not the head of the main line; tester findings enter the plan as hardening modules or bugs, not as interruptions.
+- A **tester script** (the happy-path steps), a **known-gaps list** (what hardening has not done yet) and where to report.
+- A **rollback** (re-offer the previous staged build) and a **smoke test** the human runs before announcing the build.
+- Creating and pushing the tag, running the smoke test, publishing, distributing and deploying are the human's actions (the locks block the agent), and a CI workflow that builds tags is a deploy-workflow change (full flow, with a named rollback). For a project with no testers or staging, write "not applicable" and name the preview check instead.
+
+**Rules in team mode.** A module is complete when the acceptance criteria the plan names for it are met, and the plan says which paths each module covers (a phase 2 module may be happy-path only). The story closes only when hardening has covered the relevant sad paths, or the plan says why one does not apply; every deferred sad path has an owning hardening module, and the whole-area review at the end of the story lists each one with its owner and flags any without an owner or not done; the module reviewer does not flag a sad path the plan gives to a named later module. On a live product, hardening finishes before a release; the main line holds happy-path-only work for a while.
+
 ## 5. The agents
 
 | Role | Job | Tools | Key limits | Model / effort |
 |---|---|---|---|---|
-| `organizer` | Turn a human-discussed draft into an ordered functionality-based plan | Read, search, write plan file | Writes only the organized plan file; structures and critiques the draft lightly; does not invent requirements, make decisions or write application code | Use the configured default unless the project explicitly sets one |
+| `organizer` | Turn a human-discussed draft into an ordered functionality-based plan (in team mode, four phases and a staging gate) | Read, search, write plan file | Writes only the organized plan file; structures and critiques the draft lightly; does not invent requirements, make decisions or write application code | Use the configured default unless the project explicitly sets one |
 | `builder` | Implement one approved functionality module, test first | Read, search, write, bash | Works only in the approved area/module; follows the happy path and sad paths; does not commit | `sonnet-5.5`, medium |
 | `reviewer` | Check a completed module against the story, spec and rule IDs; has a whole-area mode | Read, search, read-only git | Never edits or commits; quotes rule IDs; checks the diff itself | `sonnet-5.5`, medium |
 
@@ -131,7 +161,7 @@ Put the standing instructions (report format, must-fix vs nice-to-have, "real re
 
 | Agent | Report |
 |---|---|
-| `organizer` | Ordered modules; requirement IDs; goal and acceptance criteria; happy path; sad paths; expected files/areas; tests and dependencies; concise gaps, risks and recommendations; open questions |
+| `organizer` | Ordered modules (in team mode, the four phases and the staging gate); requirement IDs; goal and acceptance criteria; happy path; sad paths; expected files/areas; tests and dependencies; concise gaps, risks and recommendations; open questions |
 | `builder` | What changed in the module; files changed; happy/sad paths covered; each check with its status; anything unverified; deviations from the approved plan |
 | `reviewer` | Numbered findings, each: must-fix or nice-to-have, behaviour change or refactor, file and line, evidence, the fix; then anything left unresolved |
 
@@ -213,7 +243,7 @@ A minimal learning index (`.claude/logs/learning/INDEX.md`) may list generated H
 ## 9. Starting a new project
 
 1. **Sources of truth first:** requirements with IDs (`REQ-01`), spec, standards with rule IDs (`ST-01`) each tagged tool or review, the glossary, and an empty `docs/follow-ups.md` for anything parked on purpose (tracked, because interactive learning files are usually git-ignored). On a brand-new project, add a design step that produces the spec and first ADRs.
-2. **`CLAUDE.md`:** where the AI may write, no unprompted git writes, the human approves, an area map, the fast and full check commands, the flow, the levels.
+2. **`CLAUDE.md`:** where the AI may write, no unprompted git writes, the human approves, the `Mode:` line (`personal` or `team`), an area map, the fast and full check commands, the flow, the levels.
 3. **Rules:** git, comments, testing and one safety rule for your domain (section 10). Scope area rules with `paths:`.
 4. **Agents:** organizer, builder, reviewer, each with narrow limits, a pattern to copy and the report format from section 5.
 5. **Commands and skills:** create `/start-story`, `/organize`, `/review` and `/retro`; install the `/teach` skill. Adapt only the area names and check commands.
@@ -263,6 +293,7 @@ Only four things change: the **areas**, the **safety rule**, and the **fast** an
 
 - **First pilot, on one story** (a mobile-app frontend, six tasks, 2026-10-28 to 2026-10-30). What felt heavy: a Status block that became a log (addressed above). What earned its keep: the mutation check, the whole-area review, and the hooks with their self-test. Learning is optional and on demand, through `/teach` HTML artifacts. Pilot it on a second story, in a different area, before treating the numbers as settled.
 - **Second pilot (a personal portfolio site: styling, 2026-10-27 to 2026-11-09).** 11 code and test commits, 6 modules plus 5 small ones, 0 spikes, two whole-area review rounds. Steps that caught real problems: mutation checks (a test that did not protect its guard, a bound test that read too early, an assertion that never landed), the module review (missing test branches) and the whole-area review (an unignored spike folder, config excludes, a data-versus-content link drift, a standards line that disagreed with lint). Not yet exercised: the organizer on a story with a draft (used once at the end), and `/teach` until late. Retro scores were 4 on most questions and 3 on "understood".
+- **Team mode is untested.** The four phases and the staging gate were designed for a team with testers and have not been piloted. Pilot it on a real team story before trusting the staging checklist.
 - **Architecture rules are checked only by reading**, unless you add a dependency-boundary tool for your language.
 - **One approver:** you approve everything and an AI reviews it, so the two of you can agree on something wrong. Ask an experienced person to look at security, money or data changes early, and at anything marked "needs experienced review".
 - **Hooks are not a sandbox.** They catch mistakes, not a determined bypass.
@@ -278,7 +309,7 @@ Only four things change: the **areas**, the **safety rule**, and the **fast** an
 - Work ONLY inside this workspace. No git writes unless the human asks; never push.
 - Use the words in `docs/glossary.md`; propose new words, add them only after the human's yes.
 - The human is <experience level>: explain in plain words (define terms, an everyday example, why before how, a short summary) and get approval before code.
-- Build one approved functionality module at a time. Verify its happy path and relevant sad paths, run the full check and review it before committing the completed module.
+- Mode: personal (or team: four phases and a staging gate, see the template). Build one approved functionality module at a time. Verify its happy path and relevant sad paths, run the full check and review it before committing the completed module.
 - Use `/teach` on demand to create an interactive HTML learning file; it is not a required development checkpoint.
 ## Area map
 | Area | Stack | Folder |
@@ -384,7 +415,7 @@ Save the result to `.claude/logs/retro/<date>-<story-id>-<area>.md`, worst first
 ---
 description: Structure a discussed draft into an approved, functionality-based build plan
 ---
-Accept the human's discussion notes or draft plan as the source. Do not restart discovery or silently change agreed decisions.
+Input: the human's discussion notes or draft plan, the story id, the decisions made, the constraints and the mode (the `Mode:` line in `CLAUDE.md`). If any is missing, return the question to the main session and stop. Do not restart discovery or silently change agreed decisions.
 Organize the draft into ordered functionality modules. For each module include:
 - Module ID and concise goal
 - Requirement IDs
@@ -397,7 +428,7 @@ Organize the draft into ordered functionality modules. For each module include:
 - Risks, assumptions and open questions
 
 Give minimal feedback only: identify material gaps, ambiguous acceptance criteria, missing failure paths, risky assumptions, dependencies and one or two practical recommendations where useful. Check where CI differs from the local run (environment variables set only in CI, the operating system) and list each difference that could break a test or the build. Preserve the draft's intent. Do not invent requirements or make product/architecture decisions; ask the human where a decision is needed.
-Use `.claude/logs/plans/TEMPLATE.md` as the structure and save a story-specific copy under `.claude/logs/plans/<story-id>-plan.md`. Set a clear status block and wait for explicit human approval. Write no code.
+In team mode, structure the plan as in the team plan template (four phases and a staging gate). Use `.claude/logs/plans/TEMPLATE.md` (personal) or `TEMPLATE-team.md` (team) as the structure and save a story-specific copy under `.claude/logs/plans/<story-id>-plan.md`. Set a clear status block and wait for explicit human approval. Write no code.
 ```
 
 ### Organized plan template (`.claude/logs/plans/TEMPLATE.md`)
@@ -443,6 +474,64 @@ Source draft: <conversation / document / notes>
 <dated history, newest first: approvals, module progress, check results, review outcomes and commits>
 ```
 
+### Team mode plan template (`.claude/logs/plans/TEMPLATE-team.md`)
+
+Use this instead of the plan template above when `Mode: team`. Keep the same Status block, Decisions and Log sections. This is the short form: also add `Mode: team` under the Flow line, a risks and spec-sections field per module, and a "not applicable" line for the staging gate.
+
+```markdown
+## Phase 1: Bare minimum happy path
+- Shortest path, user action to success:
+  1. <user action>
+  2. <expected result>
+- Essential UI element: <name, or not applicable>
+- Essential API endpoint: <name, or not applicable>
+- Essential data action: <name, or not applicable>
+- Excluded on purpose: validation, error handling, edge cases, non-essential styling
+
+## Phase 2: Vertical slice modules (happy path only)
+### M1: <atomic module>
+- Phase: 2 (happy path only)
+- Sad paths deferred to: <phase 3 module ids, or none>
+- Requirement: <REQ-03>
+- Goal: <one sentence>
+- Acceptance criteria:
+  - [ ] <observable result>
+- Expected files/areas: <paths or estimates>
+- First failing test: <name and contract> (or approved alternative check)
+- Dependencies: <module IDs, or none>
+
+## Staging gate (the happy path can be handed to testers)
+- [ ] Release candidate: full check green, tagged <tag>, built from the tag by <CI or command>. Who: <human>
+- [ ] Staging environment separate from development and production, test data only, secrets from the environment
+- [ ] Tester channel and install steps: <where>
+- [ ] No downtime for testers: the previous staged build stays installable until the new one passes its smoke test; changes stay compatible with the staged build
+- [ ] No downtime for developers: work continues on the main line; unfinished work is off the tag or behind a switch; testers use the tag
+- [ ] Tester script (happy-path steps), known-gaps list and where to report
+- [ ] Rollback: re-offer the previous staged build
+- [ ] Smoke test run by the human before announcing
+
+## Phase 3: Validation and edge cases (hardening)
+- Validation rules: <input formats, missing data>
+- Error scenarios: <network failure, unauthorized access, duplicate entries>
+- Edge cases and empty states: <list>
+- Tester findings: <added after staging, or none yet>
+### M<n>: <hardening module>
+- Phase: 3
+- Scope: <which validation, errors or edge cases this module covers>
+- Acceptance criteria:
+  - [ ] <observable result>
+- First failing test: <name and contract>
+
+## Phase 4: Refinement and polish
+- UI and UX: <loading states, feedback banners, animations>
+- Tests still required: <unit and integration>
+- Performance and refactoring: <items>
+### M<n>: <polish module>
+- Phase: 4
+- Acceptance criteria:
+  - [ ] <observable result>
+```
+
 ### Module brief (what the main session sends the builder)
 
 ```markdown
@@ -460,7 +549,7 @@ name: organizer
 description: Structures a human-discussed draft into an ordered functionality-based plan.
 tools: Read, Glob, Grep, Write
 ---
-Accept the discussion draft or notes supplied by the human as the source of truth. Do not restart discovery, silently alter decisions or invent requirements.
+Input you expect: the human's discussion (this conversation or a named file), the story id, the decisions made, the constraints and the mode (the `Mode:` line in `CLAUDE.md`). If any of that is missing or thin, ask and stop. Treat the discussion as the source of truth. Do not restart discovery, silently alter decisions or invent requirements. In team mode, structure the plan as in the team plan template (four phases and a staging gate).
 Read only the project context needed to understand the draft (requirements, spec, glossary, relevant architecture and follow-ups).
 Organize the draft into cohesive functionality modules. Each module must include its goal, requirement IDs, observable acceptance criteria, happy path, relevant sad paths, expected files/areas, first test or approved alternative check, dependencies and risks/open questions.
 Give minimal feedback: call out only meaningful gaps, ambiguous criteria, missing failure cases, risky assumptions, dependencies and one or two useful recommendations.
@@ -481,7 +570,7 @@ tools: Read, Glob, Grep, Write, Edit, Bash
 ---
 Work ONLY in the approved area and module. Do not begin another module until the current one is complete and reviewed.
 Read the organized plan, named files and the pattern first; widen the search only if you find a dependency or a risk, and say so.
-Implement every approved happy-path and relevant sad-path acceptance criterion. Do not add behaviour not in the plan.
+Implement every approved happy-path and relevant sad-path acceptance criterion (in team mode, the paths the plan names for this module). Do not add behaviour not in the plan.
 Stop and report to the main session before: a behaviour change not in the plan, touching anything fixed, changing scope, or guessing.
 Start with ONE failing test at the agreed contract. Watch it fail (`<fast check>`), write only the code it needs, repeat. Run `<full check>` at the end of the module. A test that is green on its first run must be shown able to fail where practical: break the exact line it protects, watch it fail, restore the line and show `git diff` is empty.
 Do not commit. A module is ready for review only when its acceptance criteria and checks are complete.
@@ -506,7 +595,7 @@ effort: medium
 tools: Read, Glob, Grep, Bash
 ---
 Read the organized plan, module acceptance criteria, relevant spec and standards, and inspect the actual diff yourself. Do not rely solely on the builder's report.
-Review happy-path behaviour, every relevant sad path, validation, authorization, state changes, error handling, regression risk and scope control.
+Review happy-path behaviour, every relevant sad path (in team mode, only the paths the plan names for this module; check at the end of the story that hardening covered the rest), validation, authorization, state changes, error handling, regression risk and scope control.
 Make no edits and no commits. The main session runs checks and supplies their real results; do not claim to have run checks.
 Report numbered findings. Each finding must state severity (must-fix or nice-to-have), behaviour change or refactor, file and line, evidence, why it matters, and a recommended fix.
 Flag for the human, rather than recommending, any behaviour change outside the approved module. End with unresolved issues and whether the module is ready to commit.
@@ -636,7 +725,7 @@ Short summaries of the working rules. Where a rule file and `docs/standards.md` 
 ```markdown
 # Git
 - Commit only when the human explicitly asks. Never push, force-push, `reset --hard` or `clean -f` unless asked in that moment.
-- The unit of commit is a **completed functionality module**: happy path and relevant sad paths done, acceptance criteria met, `<full check>` passing, review findings resolved or accepted by the human. One commit per module, in Conventional Commits format (`type(scope): subject`), imperative, explaining why. A short-path change is its own commit. Never commit intermediate work, failing tests or a half-finished module. <If you keep a global commit rule, say here which one wins in this project and whether a commit-splitting skill may be used.>
+- The unit of commit is a **completed functionality module**: happy path and relevant sad paths done (in team mode the plan says which paths a module covers), acceptance criteria met, `<full check>` passing, review findings resolved or accepted by the human. One commit per module, in Conventional Commits format (`type(scope): subject`), imperative, explaining why. A short-path change is its own commit. Never commit intermediate work, failing tests or a half-finished module. <If you keep a global commit rule, say here which one wins in this project and whether a commit-splitting skill may be used.>
 - Before committing, inspect the staged diff and run the full check again. The staged files must belong to the module: no unrelated work, secrets, build output or nested repo.
 - The agent proposes the commit and its message; it runs `git add` and `git commit` only when the human says to. Stage by file path (interactive `git add -p` may not work in an agent shell).
 - No AI attribution in commit messages or pull request descriptions: no `Co-Authored-By` line and no "Generated with ..." line. The human's wish overrides the tool's default.
@@ -647,9 +736,10 @@ Short summaries of the working rules. Where a rule file and `docs/standards.md` 
 
 ```markdown
 # Comments
-- Default to no comments. Names and structure should explain the code.
-- Comment only the why when it is not obvious (a browser quirk, a build workaround).
-- No commented-out code, no TODOs without a name. For content placeholders use `TODO(human)`.
+- Do not put comments in the codebase. Names, structure and tests explain the code.
+- Put the why (a browser quirk, a build workaround, a trade-off) in the commit message, an ADR or the docs, not next to the code.
+- The only allowed exceptions are tool directives that need comment syntax (a lint suppression with its reason, a type-check pragma) and `TODO(human)` placeholders in content.
+- No commented-out code, no TODOs without a name.
 ```
 
 **`testing.md`**
@@ -658,7 +748,7 @@ Short summaries of the working rules. Where a rule file and `docs/standards.md` 
 # Testing
 - Failing test first where practical, and watch it fail before writing code. If a test first makes no sense for a module (a pure layout tweak, a config file), the plan names the alternative check and the human approves it with the plan, never the builder alone.
 - Test behaviour through the contract, not internals. Name the contracts here: <a rendered component, an API response, a schema, a helper function, a config object>.
-- Every module covers its happy path and its relevant sad paths (invalid or missing data, empty state, boundary, denied or failed case), or says why a sad path does not apply.
+- Every module covers its happy path and its relevant sad paths (invalid or missing data, empty state, boundary, denied or failed case), or says why a sad path does not apply. (In team mode the plan says which paths each module covers, and the story must cover its relevant sad paths in the hardening phase before it closes.)
 - Fast check: `<fast check>`. Full check: `<full check>`. The production build is a test.
 - Report real results only, with the status words **passed**, **failed**, **not run** (and why) or **not provable by a test** (and how else it was checked).
 - The red run must fail for the stated reason: quote the failing message in the report. A syntax error or a missing import is not a red for the behaviour under test.
