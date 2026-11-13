@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { TiltCard } from './TiltCard';
 import { useReducedMotion } from './useReducedMotion';
 
@@ -100,6 +102,24 @@ describe('TiltCard', () => {
     await waitFor(() => expect(wrapper.style.transform).not.toMatch(/scale\((?!1\))/));
   });
 
+  it('drops the lifted shadow when reduced motion is switched on while the card is lifted', async () => {
+    mockMedia({ reduced: false, finePointer: true });
+    const card = () => (
+      <TiltCard>
+        <button type="button">Case study</button>
+      </TiltCard>
+    );
+    const view = render(card());
+    const wrapper = view.container.firstElementChild as HTMLElement;
+
+    fireEvent.focus(screen.getByRole('button', { name: 'Case study' }));
+    await waitFor(() => expect(wrapper).toHaveClass('shadow-2xl'));
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    view.rerender(card());
+
+    expect(wrapper).not.toHaveClass('shadow-2xl');
+  });
+
   it('stays lifted when focus moves to another element inside the card', async () => {
     mockMedia({ reduced: false, finePointer: true });
     const view = render(
@@ -129,5 +149,34 @@ describe('TiltCard', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 300));
     expect(wrapper.style.transform).not.toMatch(/rotateY\((?!0deg)/);
+  });
+
+  it('keeps the same DOM nodes when the page hydrates on a fine pointer, so the card stays in place', async () => {
+    mockMedia({ reduced: false, finePointer: true });
+    const card = (
+      <TiltCard>
+        <button type="button">Case study</button>
+      </TiltCard>
+    );
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(card);
+    document.body.appendChild(container);
+    const button = screen.getByRole('button', { name: 'Case study' });
+
+    let root!: ReturnType<typeof hydrateRoot>;
+    try {
+      await act(async () => {
+        root = hydrateRoot(container, card);
+      });
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      });
+
+      expect(screen.getByRole('button', { name: 'Case study' })).toBe(button);
+      expect(document.body.contains(button)).toBe(true);
+    } finally {
+      act(() => root?.unmount());
+      container.remove();
+    }
   });
 });

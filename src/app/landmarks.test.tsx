@@ -7,6 +7,14 @@ describe('page landmarks', () => {
     expect(Object.keys(pageLoaders).length).toBeGreaterThanOrEqual(5);
   });
 
+  it('give every page exactly one h1', async () => {
+    for (const [path, load] of Object.entries(pageLoaders)) {
+      for (const markup of await renderEveryVariant(load)) {
+        expect(markup.match(/<h1[\s>]/g), path).toHaveLength(1);
+      }
+    }
+  });
+
   it('give every page exactly one main landmark, with the skip-link id', async () => {
     for (const [path, load] of Object.entries(pageLoaders)) {
       for (const markup of await renderEveryVariant(load)) {

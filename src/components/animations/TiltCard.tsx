@@ -26,7 +26,7 @@ export function TiltCard({ children }: TiltCardProps) {
   const rotateX = useSpring(useTransform(pointerY, [-1, 1], [MAX_TILT_DEGREES, -MAX_TILT_DEGREES]), SPRING);
   const scale = useSpring(liftTarget, SPRING);
 
-  if (reducedMotion || !finePointer) return <div>{children}</div>;
+  const active = !reducedMotion && finePointer;
 
   function lift() {
     setLifted(true);
@@ -57,12 +57,12 @@ export function TiltCard({ children }: TiltCardProps) {
 
   return (
     <motion.div
-      className={lifted ? 'shadow-2xl' : 'shadow-none'}
-      style={{ rotateX, rotateY, scale, transformPerspective: 1000 }}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={settle}
-      onFocus={lift}
-      onBlur={handleBlur}
+      className={active && lifted ? 'shadow-2xl' : 'shadow-none'}
+      style={active ? { rotateX, rotateY, scale, transformPerspective: 1000 } : undefined}
+      onPointerMove={active ? handlePointerMove : undefined}
+      onPointerLeave={active ? settle : undefined}
+      onFocus={active ? lift : undefined}
+      onBlur={active ? handleBlur : undefined}
     >
       {children}
     </motion.div>

@@ -75,3 +75,36 @@ describe('useReducedMotion', () => {
     expect(media.query.removeEventListener).toHaveBeenCalledWith('change', added);
   });
 });
+
+describe('useReducedMotion in an old browser', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('listens through addListener when the query has no addEventListener, and removes it on unmount', () => {
+    let listener: (() => void) | undefined;
+    const query = {
+      matches: false,
+      addListener: vi.fn((callback: () => void) => {
+        listener = callback;
+      }),
+      removeListener: vi.fn(),
+    };
+    vi.stubGlobal('matchMedia', vi.fn(() => query));
+    const { result, unmount } = renderHook(() => useReducedMotion());
+
+    expect(result.current).toBe(false);
+    query.matches = true;
+    act(() => listener?.());
+    expect(result.current).toBe(true);
+    unmount();
+
+    expect(query.removeListener).toHaveBeenCalledWith(listener);
+  });
+
+  it('does not throw when the query has no way to listen', () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })));
+
+    expect(renderHook(() => useReducedMotion()).result.current).toBe(false);
+  });
+});
