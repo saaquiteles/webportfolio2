@@ -1,14 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import type { FocusEvent, PointerEvent, ReactNode } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { ElevationShadow, LIFT_SPRING, useElevation } from './Elevation';
 import { useFinePointer } from './useFinePointer';
 import { useReducedMotion } from './useReducedMotion';
 
 const MAX_TILT_DEGREES = 10;
-const LIFT_SCALE = 1.03;
-const SPRING = { stiffness: 220, damping: 20, mass: 0.6 };
 
 interface TiltCardProps {
   children: ReactNode;
@@ -17,27 +15,23 @@ interface TiltCardProps {
 export function TiltCard({ children }: TiltCardProps) {
   const reducedMotion = useReducedMotion();
   const finePointer = useFinePointer();
-  const [lifted, setLifted] = useState(false);
 
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
-  const liftTarget = useMotionValue(1);
-  const rotateY = useSpring(useTransform(pointerX, [-1, 1], [-MAX_TILT_DEGREES, MAX_TILT_DEGREES]), SPRING);
-  const rotateX = useSpring(useTransform(pointerY, [-1, 1], [MAX_TILT_DEGREES, -MAX_TILT_DEGREES]), SPRING);
-  const scale = useSpring(liftTarget, SPRING);
+  const rotateY = useSpring(useTransform(pointerX, [-1, 1], [-MAX_TILT_DEGREES, MAX_TILT_DEGREES]), LIFT_SPRING);
+  const rotateX = useSpring(useTransform(pointerY, [-1, 1], [MAX_TILT_DEGREES, -MAX_TILT_DEGREES]), LIFT_SPRING);
+  const { scale, shadowOpacity, raise, lower } = useElevation();
 
   const active = !reducedMotion && finePointer;
 
   function lift() {
-    setLifted(true);
-    liftTarget.set(LIFT_SCALE);
+    raise();
   }
 
   function settle() {
-    setLifted(false);
     pointerX.set(0);
     pointerY.set(0);
-    liftTarget.set(1);
+    lower();
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
@@ -57,13 +51,15 @@ export function TiltCard({ children }: TiltCardProps) {
 
   return (
     <motion.div
-      className={active && lifted ? 'shadow-2xl' : 'shadow-none'}
+      className="relative"
       style={active ? { rotateX, rotateY, scale, transformPerspective: 1000 } : undefined}
       onPointerMove={active ? handlePointerMove : undefined}
       onPointerLeave={active ? settle : undefined}
       onFocus={active ? lift : undefined}
       onBlur={active ? handleBlur : undefined}
     >
+      {/* A new layer drops the shadow in the same render; a motion value would keep painting its last value. */}
+      <ElevationShadow key={active ? 'on' : 'off'} opacity={active ? shadowOpacity : 0} />
       {children}
     </motion.div>
   );

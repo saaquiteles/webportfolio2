@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { TiltCard } from './TiltCard';
@@ -27,6 +27,11 @@ function renderCard() {
   wrapper.getBoundingClientRect = () =>
     ({ left: 0, top: 0, width: 200, height: 100, right: 200, bottom: 100, x: 0, y: 0 }) as DOMRect;
   return wrapper;
+}
+
+function shadowOpacity(wrapper: HTMLElement) {
+  const layer = wrapper.querySelector('[aria-hidden="true"]') as HTMLElement;
+  return Number(layer.style.opacity);
 }
 
 afterEach(() => {
@@ -96,7 +101,7 @@ describe('TiltCard', () => {
     fireEvent.focus(link);
     await waitFor(() => expect(wrapper.style.transform).toMatch(/scale\((?!1\))/));
 
-    expect(wrapper).toHaveClass('shadow-2xl');
+    await waitFor(() => expect(shadowOpacity(wrapper)).toBe(1));
 
     fireEvent.blur(link);
     await waitFor(() => expect(wrapper.style.transform).not.toMatch(/scale\((?!1\))/));
@@ -113,11 +118,44 @@ describe('TiltCard', () => {
     const wrapper = view.container.firstElementChild as HTMLElement;
 
     fireEvent.focus(screen.getByRole('button', { name: 'Case study' }));
-    await waitFor(() => expect(wrapper).toHaveClass('shadow-2xl'));
+    await waitFor(() => expect(shadowOpacity(wrapper)).toBe(1));
     vi.mocked(useReducedMotion).mockReturnValue(true);
     view.rerender(card());
 
-    expect(wrapper).not.toHaveClass('shadow-2xl');
+    expect(shadowOpacity(wrapper)).toBe(0);
+  });
+
+  it('raises the shadow gradually with the lift instead of switching it on', async () => {
+    mockMedia({ reduced: false, finePointer: true });
+    const wrapper = renderCard();
+    const link = screen.getByRole('button', { name: 'Case study' });
+    expect(shadowOpacity(wrapper)).toBe(0);
+
+    const rising: number[] = [];
+    const sample = setInterval(() => rising.push(shadowOpacity(wrapper)), 5);
+    fireEvent.focus(link);
+    await waitFor(() => expect(shadowOpacity(wrapper)).toBe(1));
+    clearInterval(sample);
+    expect(rising.some((value) => value > 0 && value < 1)).toBe(true);
+
+    const falling: number[] = [];
+    const settle = setInterval(() => falling.push(shadowOpacity(wrapper)), 5);
+    fireEvent.blur(link);
+    await waitFor(() => expect(shadowOpacity(wrapper)).toBe(0));
+    clearInterval(settle);
+    expect(falling.some((value) => value > 0 && value < 1)).toBe(true);
+  });
+
+  it('shows no shadow when motion is reduced or there is no fine pointer', async () => {
+    for (const media of [{ reduced: true, finePointer: true }, { reduced: false, finePointer: false }]) {
+      mockMedia(media);
+      const wrapper = renderCard();
+      fireEvent.pointerMove(wrapper, { clientX: 190, clientY: 5 });
+      fireEvent.focus(screen.getByRole('button', { name: 'Case study' }));
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      expect(shadowOpacity(wrapper)).toBe(0);
+      cleanup();
+    }
   });
 
   it('stays lifted when focus moves to another element inside the card', async () => {
