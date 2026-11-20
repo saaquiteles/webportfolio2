@@ -4,7 +4,7 @@ import { pageLoaders, renderEveryVariant } from './render-pages';
 
 describe('page landmarks', () => {
   it('finds the pages to check', () => {
-    expect(Object.keys(pageLoaders).length).toBeGreaterThanOrEqual(5);
+    expect(Object.keys(pageLoaders).length).toBeGreaterThanOrEqual(4);
   });
 
   it('give every page exactly one h1', async () => {

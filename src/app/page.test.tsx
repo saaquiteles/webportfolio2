@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { render, screen } from '@testing-library/react';
 import Home from './page';
+import { projects } from '@/data/projects';
 
 describe('Home page', () => {
   afterEach(() => {
@@ -72,7 +73,36 @@ describe('Home page', () => {
     ).toHaveClass('text-pretty');
   });
 
-  it('lists the featured projects under a Projects heading', () => {
+  it('shows one card per project in data order, the thesis first, in a tilted grid', () => {
+    render(<Home />);
+
+    const cards = screen.getAllByRole('listitem').filter((item) => item.querySelector('article'));
+    expect(cards).toHaveLength(projects.length);
+    expect(cards.map((card) => card.querySelector('h2')?.textContent)).toEqual(
+      projects.map((project) => project.title),
+    );
+    expect(cards[0]).toHaveTextContent('A Vision System That Tells Cockatiels Apart');
+    cards.forEach((card, index) => {
+      expect(card).toHaveClass(index % 2 === 0 ? 'rotate-1' : '-rotate-1');
+    });
+    expect(cards[0].parentElement).toHaveClass('grid', 'grid-cols-1');
+  });
+
+  it('offers a Pick up button on every card', () => {
+    render(<Home />);
+
+    expect(screen.getAllByRole('button', { name: /^Pick up/ })).toHaveLength(projects.length);
+  });
+
+  it('has every Pick up button in the server HTML as hidden, so no dead control shows without JavaScript', () => {
+    const html = renderToString(<Home />);
+    const buttons = html.match(/<button[^>]*>/g) ?? [];
+
+    expect(buttons).toHaveLength(projects.length);
+    buttons.forEach((button) => expect(button).toContain('hidden'));
+  });
+
+  it('lists the projects under a Projects heading', () => {
     render(<Home />);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Projects' })).toBeInTheDocument();

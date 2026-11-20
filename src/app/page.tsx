@@ -9,8 +9,6 @@ import { profile } from '@/data/profile';
 import { projects } from '@/data/projects';
 
 export default function Home() {
-  const featured = projects.filter((project) => project.featured);
-
   return (
     <PageShell>
       <ScrollRuler />
@@ -33,10 +31,10 @@ export default function Home() {
         <p className="max-w-3xl text-lg text-pretty md:text-xl">{profile.tagline}</p>
         <ContactLinks email={profile.email} links={profile.links} emailOnly />
       </section>
-      {featured.length > 0 && (
-        <section aria-labelledby="featured-projects" className="mt-20">
-          <h2 id="featured-projects">Projects</h2>
-          <ProjectGrid projects={featured} />
+      {projects.length > 0 && (
+        <section aria-labelledby="projects" className="mt-20">
+          <h2 id="projects">Projects</h2>
+          <ProjectGrid projects={projects} pickup />
         </section>
       )}
     </PageShell>

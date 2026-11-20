@@ -9,7 +9,7 @@ const PLACEHOLDER = 'TODO(human)';
 
 describe('placeholders', () => {
   it('finds the pages to check', () => {
-    expect(Object.keys(pageLoaders).length).toBeGreaterThanOrEqual(5);
+    expect(Object.keys(pageLoaders).length).toBeGreaterThanOrEqual(4);
   });
 
   it('are not present in any rendered page', async () => {

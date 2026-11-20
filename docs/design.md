@@ -67,7 +67,7 @@ Still a placeholder until the human supplies the text:
 - In the grid the cards alternate `rotate-1` and `-rotate-1` (at most 2 degrees), so they look taped on by hand.
 - Content order: year line (mono, `muted`), title link, summary, tags, then repository and paper links when present.
 - Tags are stickers: a `surface` fill, a 1 px ink border, mono text.
-- The grid is shared by Home (featured projects) and Projects (`ProjectGrid`).
+- Home holds the grid (`ProjectGrid`) with every project and its Pick up button.
 
 ## 3D tilt on project cards
 `TiltCard` (`src/components/animations/TiltCard.tsx`) wraps each card. ADR 0003 is accepted for `TiltCard` only; the rest of that ADR (drawn sketches, cursor, kinetic text) is still Proposed. It is the only file that imports `framer-motion` (`ST-02`).

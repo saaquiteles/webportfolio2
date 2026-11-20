@@ -1,13 +1,15 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import type { Project } from '@/lib/types';
 import { Tape } from './Tape';
 
 interface ProjectCardProps {
   project: Project;
+  action?: ReactNode;
 }
 
 // The title is an h2 because the page supplies the h1 above its list of cards.
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, action }: ProjectCardProps) {
   const { slug, title, summary, year, tags, links } = project;
 
   return (
@@ -44,6 +46,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           )}
         </div>
       )}
+      {action}
     </article>
   );
 }

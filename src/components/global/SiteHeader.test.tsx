@@ -24,15 +24,15 @@ describe('SiteHeader', () => {
 
   // next/link adds the trailing slash from next.config.mjs only in the real build (the built
   // pages link to /about/ and /contact/), so the test environment sees the slashless form.
-  it('links to Home, About, Projects and Contact', () => {
+  it('links to Home, About and Contact only', () => {
     render(<SiteHeader />);
 
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
     expect(within(nav).getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
-    expect(within(nav).getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects');
+    expect(within(nav).queryByRole('link', { name: 'Projects' })).not.toBeInTheDocument();
     expect(within(nav).getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/contact');
-    expect(within(nav).getAllByRole('link')).toHaveLength(4);
+    expect(within(nav).getAllByRole('link')).toHaveLength(3);
   });
 
   it('marks only About as the current page on /about/ and on /about', () => {
@@ -49,14 +49,12 @@ describe('SiteHeader', () => {
     router.pathname = '/about/';
     render(<SiteHeader />);
 
-    for (const name of ['Home', 'About', 'Projects', 'Contact']) {
+    for (const name of ['Home', 'About', 'Contact']) {
       expect(screen.getByRole('link', { name }).className).toContain('aria-[current=page]:underline');
     }
   });
 
-  it('marks Projects and Contact as current on their own pages', () => {
-    expect(currentLinks('/projects/')).toEqual(['Projects']);
-    cleanup();
+  it('marks Contact as current on its own page', () => {
     expect(currentLinks('/contact/')).toEqual(['Contact']);
   });
 

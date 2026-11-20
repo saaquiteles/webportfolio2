@@ -2,15 +2,14 @@
 
 My personal web portfolio: a creative showcase plus a general site (about, projects, contact).
 
-**Status:** in development. The home, about, contact and projects pages and the case studies are written. The styled look (graph-paper notebook, taped cards, and a 3D tilt on the project cards) is done. The blog and the rest of the motion are planned, and the deployment to GitHub Pages is on hold.
+**Status:** in development. The home (with the project index), about and contact pages and the case studies are written. The styled look (graph-paper notebook, taped cards, and a 3D tilt on the project cards) is done. The blog and the rest of the motion are planned, and the deployment to GitHub Pages is on hold.
 
 ## What is in it
 
 | Page | Route |
 |---|---|
-| Home | `/` |
+| Home (showcase and project index) | `/` |
 | About (experience, education, photo) | `/about/` |
-| Projects | `/projects/` |
 | Case study, one per project | `/projects/[slug]/` |
 | Contact (links only, no form) | `/contact/` |
 

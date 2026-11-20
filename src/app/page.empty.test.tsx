@@ -2,21 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 vi.mock('@/data/projects', () => ({
-  projects: [
-    {
-      slug: 'hidden',
-      title: 'Hidden One',
-      summary: 'A summary.',
-      year: 2024,
-      tags: ['Tag'],
-      featured: false,
-    },
-  ],
+  projects: [],
 }));
 
 import Home from './page';
 
-describe('Home page with no featured project', () => {
+describe('Home page with no projects', () => {
   it('renders neither the Projects section nor its heading', () => {
     render(<Home />);
 

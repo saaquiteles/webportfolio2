@@ -71,6 +71,14 @@
     outline: 3px solid var(--color-blueprint);
     outline-offset: 3px;
   }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
