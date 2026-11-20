@@ -10,6 +10,7 @@ const nextConfig = {
   assetPrefix: basePath,
   // Explicit root: Next otherwise guesses it from the nearest lockfile, which can be a parent folder.
   turbopack: { root: import.meta.dirname },
+  experimental: { agentUpgrade: 'security' },
 };
 
 export default nextConfig;
