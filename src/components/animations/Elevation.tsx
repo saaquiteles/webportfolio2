@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import type { MotionValue } from 'framer-motion';
 
@@ -11,12 +12,10 @@ export function useElevation() {
   const scale = useSpring(target, LIFT_SPRING);
   const shadowOpacity = useTransform(scale, [1, LIFT_SCALE], [0, 1]);
 
-  return {
-    scale,
-    shadowOpacity,
-    raise: () => target.set(LIFT_SCALE),
-    lower: () => target.set(1),
-  };
+  const raise = useCallback(() => target.set(LIFT_SCALE), [target]);
+  const lower = useCallback(() => target.set(1), [target]);
+
+  return { scale, shadowOpacity, raise, lower };
 }
 
 interface ElevationShadowProps {

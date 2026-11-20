@@ -23,13 +23,13 @@ interface PickupBoardProps {
 }
 
 export function PickupBoard({ children }: PickupBoardProps) {
-  const [picked, setPicked] = useState<Project | null>(null);
+  const [picked, setPicked] = useState<{ project: Project; card: HTMLElement | null } | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
 
   const board: Board = {
     open(project, trigger) {
       triggerRef.current = trigger;
-      setPicked(project);
+      setPicked({ project, card: trigger.closest('li') });
     },
   };
 
@@ -41,7 +41,7 @@ export function PickupBoard({ children }: PickupBoardProps) {
   return (
     <BoardContext.Provider value={board}>
       {children}
-      {picked && <ProjectOverlay project={picked} onClose={handleClose} />}
+      {picked && <ProjectOverlay project={picked.project} card={picked.card} onClose={handleClose} />}
     </BoardContext.Provider>
   );
 }
