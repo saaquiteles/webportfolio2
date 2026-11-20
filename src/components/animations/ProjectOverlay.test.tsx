@@ -33,7 +33,7 @@ function stubMotion(initiallyReduced: boolean) {
 
 function setBoxes(card: typeof CARD, panel: typeof PANEL) {
   HTMLDialogElement.prototype.getBoundingClientRect = () => box(panel);
-  screen.getAllByRole('article').forEach((article) => {
+  screen.getAllByRole('article', { hidden: true }).forEach((article) => {
     article.closest('li')!.getBoundingClientRect = () => box(card);
   });
 }
@@ -73,13 +73,28 @@ function visibleOpacity(element: HTMLElement, dialog: HTMLElement) {
   return opacity;
 }
 
+let closes: { sheetTransform: string | null; shadow: number | null; hiddenCards: number }[] = [];
+let closeEventLater = false;
+
 beforeEach(() => {
+  closes = [];
+  closeEventLater = false;
   HTMLDialogElement.prototype.showModal = function showModal() {
     this.setAttribute('open', '');
   };
   HTMLDialogElement.prototype.close = function close() {
+    const sheet = sheetOf(this);
+    const layer = sheet?.querySelector('[aria-hidden="true"]') as HTMLElement | null;
+    const hiddenCards = Array.from(document.querySelectorAll('li')).filter((li) => li.style.visibility === 'hidden').length;
+    closes.push({
+      sheetTransform: sheet?.style.transform ?? null,
+      shadow: layer ? Number(layer.style.opacity) : null,
+      hiddenCards,
+    });
     this.removeAttribute('open');
-    this.dispatchEvent(new Event('close'));
+    // A browser fires the close event in a later task, not inside close().
+    if (closeEventLater) setTimeout(() => this.dispatchEvent(new Event('close')), 0);
+    else this.dispatchEvent(new Event('close'));
   };
 });
 
@@ -128,7 +143,7 @@ describe('Project overlay flight', () => {
     others.forEach((other) => expect(other.style.visibility).toBe(''));
   });
 
-  it('closes cleanly in the middle of the flight: the card shows again and focus returns to the button', async () => {
+  it('shows the card again before focus returns when the browser closes the dialog mid-flight', async () => {
     stubMotion(false);
     renderGrid();
     const { card, button } = pickUp();
@@ -140,7 +155,7 @@ describe('Project overlay flight', () => {
     button.addEventListener('focus', () => {
       hiddenWhenFocused = card.style.visibility;
     });
-    fireEvent(dialog, new Event('cancel', { cancelable: true }));
+    fireEvent(dialog, new Event('close'));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(card.style.visibility).toBe('');
@@ -155,7 +170,7 @@ describe('Project overlay flight', () => {
     await waitFor(() => expect(sheetOf(screen.getByRole('dialog'))).not.toBeNull());
 
     fireEvent.click(screen.getByRole('button', { name: 'Put back' }));
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), { timeout: LANDING_TIMEOUT });
     expect(card.style.visibility).toBe('');
 
     pickUp();
@@ -274,7 +289,7 @@ describe('Project overlay flight', () => {
 
     close(dialog);
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), { timeout: LANDING_TIMEOUT });
     screen.getAllByRole('article').forEach((article) => {
       expect(article.closest('li')!.style.visibility).toBe('');
     });
@@ -319,3 +334,276 @@ describe('Project overlay flight', () => {
   });
 });
 
+async function pickUpAndLand() {
+  const picked = pickUp();
+  const dialog = screen.getByRole('dialog');
+  await waitFor(() => expect(sheetOf(dialog)).not.toBeNull());
+  await waitFor(() => expect(sheetOf(dialog)).toBeNull(), { timeout: LANDING_TIMEOUT });
+  return { ...picked, dialog };
+}
+
+function expectPutBack(card: HTMLElement, button: HTMLElement) {
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  screen.getAllByRole('article').forEach((article) => {
+    expect(article.closest('li')!.style.visibility).toBe('');
+  });
+  expect(card.style.visibility).toBe('');
+  expect(button).toHaveFocus();
+}
+
+function putBack() {
+  fireEvent.click(screen.getByRole('button', { name: 'Put back' }));
+}
+
+describe('Project overlay put back', () => {
+  it.each([
+    ['Escape', (dialog: HTMLElement) => fireEvent(dialog, new Event('cancel', { cancelable: true }))],
+    ['the Put back button', () => putBack()],
+    ['a click on the backdrop', (dialog: HTMLElement) => fireEvent.click(dialog)],
+  ])('flies the sheet back and closes the dialog only after it lands, when closed by %s', async (_name, close) => {
+    stubMotion(false);
+    renderGrid();
+    const { card, button, dialog } = await pickUpAndLand();
+
+    close(dialog);
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(sheetOf(dialog)).not.toBeNull();
+    expect(closes).toHaveLength(0);
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), { timeout: LANDING_TIMEOUT });
+    expect(closes).toHaveLength(1);
+    expect(closes[0].sheetTransform).not.toBeNull();
+    expectPutBack(card, button);
+  });
+
+  it('ignores a second press while the note is flying back', async () => {
+    stubMotion(false);
+    renderGrid();
+    const { card, button, dialog } = await pickUpAndLand();
+
+    putBack();
+    setBoxes({ ...CARD, width: 0, height: 0 }, PANEL);
+    fireEvent(dialog, new Event('cancel', { cancelable: true }));
+    fireEvent.click(dialog);
+    putBack();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(closes).toHaveLength(0);
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), { timeout: LANDING_TIMEOUT });
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(closes).toHaveLength(1);
+    expectPutBack(card, button);
+  });
+
+  it('lands on the card box measured again at close time', async () => {
+    stubMotion(false);
+    renderGrid();
+    await pickUpAndLand();
+    const moved = { left: 400, top: 50, width: 250, height: 150 };
+    setBoxes(moved, PANEL);
+
+    putBack();
+    await waitFor(() => expect(closes).toHaveLength(1), { timeout: LANDING_TIMEOUT });
+
+    const transform = closes[0].sheetTransform!;
+    const [, x, y] = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(transform)!.map(Number);
+    expect(x).toBeCloseTo(moved.left + moved.width / 2 - (PANEL.left + PANEL.width / 2), -1);
+    expect(y).toBeCloseTo(moved.top + moved.height / 2 - (PANEL.top + PANEL.height / 2), -1);
+    expect(Number(/scale\((-?[\d.]+),/.exec(transform)![1])).toBeCloseTo(moved.width / PANEL.width, 1);
+  });
+
+  it('turns the sheet to the resting tilt of the card it returns to', async () => {
+    stubMotion(false);
+    renderGrid();
+    const real = window.getComputedStyle.bind(window);
+    const li = screen.getByRole('heading', { level: 2, name: project.title }).closest('li')!;
+    const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) =>
+      element === li ? ({ rotate: '-1deg' } as CSSStyleDeclaration) : real(element, pseudo),
+    );
+    try {
+      await pickUpAndLand();
+
+      putBack();
+      await waitFor(() => expect(closes).toHaveLength(1), { timeout: LANDING_TIMEOUT });
+
+      expect(Number(/rotateZ\((-?[\d.]+)deg/.exec(closes[0].sheetTransform!)![1])).toBeCloseTo(-1, 0);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('has shrunk the shadow to almost nothing by the landing frame', async () => {
+    stubMotion(false);
+    renderGrid();
+    await pickUpAndLand();
+
+    putBack();
+    await waitFor(() => expect(closes).toHaveLength(1), { timeout: LANDING_TIMEOUT });
+
+    expect(closes[0].shadow).toBeLessThan(0.1);
+  });
+
+  it('reverses from where the sheet is when closed during the opening flight, with no jump', async () => {
+    stubMotion(false);
+    renderGrid();
+    const { card, button } = pickUp();
+    const dialog = screen.getByRole('dialog');
+    await waitFor(() => expect(translateOf(sheetOf(dialog) ?? document.body).x).toBeLessThan(-100));
+    const sheet = sheetOf(dialog)!;
+    const before = translateOf(sheet);
+    const scaleBefore = scaleXOf(sheet);
+
+    putBack();
+
+    const after = translateOf(sheet);
+    expect(Math.abs(after.x - before.x)).toBeLessThan(5);
+    expect(Math.abs(after.y - before.y)).toBeLessThan(5);
+    expect(Math.abs(scaleXOf(sheet) - scaleBefore)).toBeLessThan(0.05);
+    expect(closes).toHaveLength(0);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+    expect(translateOf(sheet).x).toBeLessThan(-100);
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), { timeout: LANDING_TIMEOUT });
+    expectPutBack(card, button);
+  });
+
+  it('resets at once, with no return flight, when the browser closes the dialog by itself', async () => {
+    stubMotion(false);
+    renderGrid();
+    const { card, button, dialog } = await pickUpAndLand();
+    putBack();
+
+    fireEvent(dialog, new Event('close'));
+
+    expectPutBack(card, button);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(closes).toHaveLength(0);
+  });
+
+  it('closes at once with no sheet when motion is reduced', () => {
+    stubMotion(true);
+    renderGrid();
+    const { card, button } = pickUp();
+
+    putBack();
+
+    expectPutBack(card, button);
+    expect(closes[0].sheetTransform).toBeNull();
+  });
+
+  it('closes at once when the card has no size at close time', async () => {
+    stubMotion(false);
+    renderGrid();
+    const { card, button } = await pickUpAndLand();
+    setBoxes({ ...CARD, width: 0, height: 0 }, PANEL);
+
+    putBack();
+
+    expectPutBack(card, button);
+  });
+
+  it('finishes at once when motion turns reduced during the return', async () => {
+    const motion = stubMotion(false);
+    renderGrid();
+    const { card, button } = await pickUpAndLand();
+    putBack();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    motion.setReduced(true);
+
+    expectPutBack(card, button);
+  });
+
+  it('leaves the card visible and raises no warning when the page unmounts during the return', async () => {
+    stubMotion(false);
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderGrid();
+    const { card } = await pickUpAndLand();
+    putBack();
+
+    cleanup();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    expect(card.style.visibility).toBe('');
+    expect(closes).toHaveLength(0);
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
+  });
+
+  it('hides the details as soon as the sheet leaves the panel', async () => {
+    stubMotion(false);
+    renderGrid();
+    const { dialog } = await pickUpAndLand();
+    const summary = within(dialog).getByText(project.summary);
+    await waitFor(() => expect(visibleOpacity(summary, dialog)).toBe(1));
+
+    putBack();
+
+    await waitFor(() => expect(visibleOpacity(summary, dialog)).toBe(0));
+    expect(sheetOf(dialog)).not.toBeNull();
+  });
+
+  it.each([
+    ['the return lands', async () => putBack(), 'dialog'],
+    ['motion turns reduced during the return', async (motion: ReturnType<typeof stubMotion>) => {
+      putBack();
+      motion.setReduced(true);
+    }, 'dialog'],
+    ['the card has no size', async () => {
+      setBoxes({ ...CARD, width: 0, height: 0 }, PANEL);
+      putBack();
+    }, 'dialog'],
+  ])('shows the card again before the dialog is closed, when %s', async (_name, act1) => {
+    closeEventLater = true;
+    const motion = stubMotion(false);
+    renderGrid();
+    const { card, button } = await pickUpAndLand();
+
+    await act1(motion);
+    await waitFor(() => expect(closes).toHaveLength(1), { timeout: LANDING_TIMEOUT });
+
+    expect(closes[0].hiddenCards).toBe(0);
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(card.style.visibility).toBe('');
+    expect(button).toHaveFocus();
+  });
+
+  it('keeps the details hidden for the whole return when closed while they are still fading in', async () => {
+    stubMotion(false);
+    renderGrid();
+    const picked = pickUp();
+    const dialog = screen.getByRole('dialog');
+    const summary = within(dialog).getByText(project.summary);
+    await waitFor(() => expect(sheetOf(dialog)).not.toBeNull());
+    await waitFor(() => expect(sheetOf(dialog)).toBeNull(), { timeout: LANDING_TIMEOUT });
+    await waitFor(() => expect(visibleOpacity(summary, dialog)).toBeGreaterThan(0));
+    expect(visibleOpacity(summary, dialog)).toBeLessThan(1);
+
+    putBack();
+
+    const seen: number[] = [];
+    while (closes.length === 0) {
+      seen.push(visibleOpacity(summary, dialog));
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 16));
+      });
+    }
+    expect(seen.length).toBeGreaterThan(5);
+    expect(Math.max(...seen.slice(2))).toBe(0);
+    expect(picked.card.style.visibility).toBe('');
+  });
+
+  it('is home within the time budget', async () => {
+    stubMotion(false);
+    renderGrid();
+    await pickUpAndLand();
+
+    const startedAt = performance.now();
+    putBack();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), { timeout: LANDING_TIMEOUT });
+
+    expect(performance.now() - startedAt).toBeLessThan(3000);
+  });
+});
