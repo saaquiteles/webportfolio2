@@ -1,8 +1,10 @@
 'use client';
 
+import { useRef } from 'react';
 import type { FocusEvent, PointerEvent, ReactNode } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ElevationShadow, LIFT_SPRING, useElevation } from './Elevation';
+import { useMakeRoom } from './NeighbourField';
 import { useFinePointer } from './useFinePointer';
 import { useReducedMotion } from './useReducedMotion';
 
@@ -23,15 +25,19 @@ export function TiltCard({ children }: TiltCardProps) {
   const { scale, shadowOpacity, raise, lower } = useElevation();
 
   const active = !reducedMotion && finePointer;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const room = useMakeRoom(cardRef, active);
 
   function lift() {
     raise();
+    if (cardRef.current) room.lift(cardRef.current);
   }
 
   function settle() {
     pointerX.set(0);
     pointerY.set(0);
     lower();
+    if (cardRef.current) room.settle(cardRef.current);
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
@@ -51,8 +57,9 @@ export function TiltCard({ children }: TiltCardProps) {
 
   return (
     <motion.div
+      ref={cardRef}
       className="relative"
-      style={active ? { rotateX, rotateY, scale, transformPerspective: 1000 } : undefined}
+      style={active ? { x: room.x, y: room.y, rotateX, rotateY, scale, transformPerspective: 1000 } : undefined}
       onPointerMove={active ? handlePointerMove : undefined}
       onPointerLeave={active ? settle : undefined}
       onFocus={active ? lift : undefined}

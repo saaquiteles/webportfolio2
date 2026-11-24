@@ -7,9 +7,14 @@ import { ProjectOverlay } from './ProjectOverlay';
 
 interface Board {
   open: (project: Project, trigger: HTMLElement) => void;
+  isOpen: boolean;
 }
 
 const BoardContext = createContext<Board | null>(null);
+
+export function useBoardOpen(): boolean {
+  return useContext(BoardContext)?.isOpen ?? false;
+}
 
 const subscribeNever = () => () => {};
 
@@ -27,6 +32,7 @@ export function PickupBoard({ children }: PickupBoardProps) {
   const triggerRef = useRef<HTMLElement | null>(null);
 
   const board: Board = {
+    isOpen: picked !== null,
     open(project, trigger) {
       triggerRef.current = trigger;
       setPicked({ project, card: trigger.closest('li') });

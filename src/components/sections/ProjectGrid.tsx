@@ -1,4 +1,5 @@
 import type { Project } from '@/lib/types';
+import { NeighbourField } from '@/components/animations/NeighbourField';
 import { PickupBoard, PickupButton } from '@/components/animations/PickupBoard';
 import { TiltCard } from '@/components/animations/TiltCard';
 import { ProjectCard } from './ProjectCard';
@@ -26,5 +27,6 @@ export function ProjectGrid({ projects, pickup = false }: ProjectGridProps) {
     </ul>
   );
 
-  return pickup ? <PickupBoard>{list}</PickupBoard> : list;
+  const field = <NeighbourField>{list}</NeighbourField>;
+  return pickup ? <PickupBoard>{field}</PickupBoard> : field;
 }
