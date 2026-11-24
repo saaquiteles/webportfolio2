@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import Contact from './page';
+import Contact, { metadata } from './page';
 
 describe('Contact page', () => {
+  it('sets the page title to Contact', () => {
+    expect(metadata.title).toBe('Contact');
+  });
+
   it('has one level-1 heading "Contact" and a main landmark', () => {
     render(<Contact />);
 

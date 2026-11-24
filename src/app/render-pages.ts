@@ -6,7 +6,7 @@ type PageModule = {
   generateStaticParams?: () => Record<string, string>[];
 };
 
-export const pageLoaders = import.meta.glob<PageModule>('./**/page.tsx');
+export const pageLoaders = import.meta.glob<PageModule>('./**/{page,not-found}.tsx');
 
 export async function renderEveryVariant(load: () => Promise<PageModule>) {
   const { default: Page, generateStaticParams } = await load();

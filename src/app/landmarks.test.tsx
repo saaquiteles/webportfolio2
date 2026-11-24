@@ -4,7 +4,13 @@ import { pageLoaders, renderEveryVariant } from './render-pages';
 
 describe('page landmarks', () => {
   it('finds the pages to check', () => {
-    expect(Object.keys(pageLoaders).length).toBeGreaterThanOrEqual(4);
+    expect(Object.keys(pageLoaders).sort()).toEqual([
+      './about/page.tsx',
+      './contact/page.tsx',
+      './not-found.tsx',
+      './page.tsx',
+      './projects/[slug]/page.tsx',
+    ]);
   });
 
   it('give every page exactly one h1', async () => {

@@ -1,9 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { caseStudies } from '#site/content';
-import Page, { generateStaticParams } from './page';
+import { projects } from '@/data/projects';
+import Page, { generateMetadata, generateStaticParams } from './page';
 
 describe('Case study page', () => {
+  it('titles the page with the case study title and describes it with the project summary', async () => {
+    const project = projects.find((p) => p.slug === '3d-card-game')!;
+
+    expect(await generateMetadata({ params: Promise.resolve({ slug: '3d-card-game' }) })).toEqual({
+      title: '3D Card Game',
+      description: project.summary,
+    });
+  });
+
+  it('gives an empty metadata object for an unknown slug', async () => {
+    expect(await generateMetadata({ params: Promise.resolve({ slug: 'nope' }) })).toEqual({});
+  });
+
+  it('links back to the project list on Home, above the only h1', async () => {
+    render(await Page({ params: Promise.resolve({ slug: '3d-card-game' }) }));
+
+    const back = screen.getByRole('link', { name: 'Back to all projects' });
+    expect(back).toHaveAttribute('href', '/#projects');
+    const h1 = screen.getByRole('heading', { level: 1 });
+    expect(back.compareDocumentPosition(h1) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getAllByRole('main')).toHaveLength(1);
+  });
+
   it('generates one static page per case study', () => {
     const params = generateStaticParams();
 

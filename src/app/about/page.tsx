@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { PageShell } from '@/components/global/PageShell';
 import { EducationList } from '@/components/sections/EducationList';
 import { ExperienceList } from '@/components/sections/ExperienceList';
@@ -5,6 +6,8 @@ import { ProfilePhoto } from '@/components/sections/ProfilePhoto';
 import { HighlightList } from '@/components/sections/HighlightList';
 import { education, experience, highlights } from '@/data/experience';
 import { profile } from '@/data/profile';
+
+export const metadata: Metadata = { title: 'About' };
 
 export default function About() {
   return (

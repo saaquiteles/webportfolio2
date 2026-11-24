@@ -5,8 +5,11 @@ import { bricolage, inter, jetbrainsMono } from './fonts';
 import RootLayout, { metadata } from './layout';
 
 describe('RootLayout', () => {
-  it('uses the profile name as the page title', () => {
-    expect(metadata.title).toBe('Sean Argie A. Quiteles');
+  it('uses the profile name as the default title and as the end of every page title', () => {
+    expect(metadata.title).toEqual({
+      default: 'Sean Argie A. Quiteles',
+      template: '%s · Sean Argie A. Quiteles',
+    });
   });
 
   it('uses the headline as the page description, with no placeholder left', () => {

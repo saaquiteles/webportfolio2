@@ -7,7 +7,7 @@ import { bricolage, inter, jetbrainsMono } from './fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: profile.name,
+  title: { default: profile.name, template: `%s · ${profile.name}` },
   description: profile.headline,
 };
 

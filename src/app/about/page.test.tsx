@@ -1,9 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import About from './page';
+import About, { metadata } from './page';
 import { profile } from '@/data/profile';
 
 describe('About page', () => {
+  it('sets the page title to About', () => {
+    expect(metadata.title).toBe('About');
+  });
+
   afterEach(() => {
     vi.unstubAllEnvs();
   });
