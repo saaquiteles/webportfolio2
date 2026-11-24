@@ -70,10 +70,20 @@ Still a placeholder until the human supplies the text:
 - Home holds the grid (`ProjectGrid`) with every project and its Pick up button.
 
 ## 3D tilt on project cards
-`TiltCard` (`src/components/animations/TiltCard.tsx`) wraps each card. ADR 0003 is accepted for `TiltCard` only; the rest of that ADR (drawn sketches, cursor, kinetic text) is still Proposed. It is the only file that imports `framer-motion` (`ST-02`).
-- With a fine pointer, the card tilts toward the pointer in 3D (at most 10 degrees) and its shadow lifts. It settles when the pointer leaves.
+`TiltCard` (`src/components/animations/TiltCard.tsx`) wraps each card. ADR 0003 is partly accepted: `TiltCard`, `ScrollRuler` and `KineticHeadline`; the crosshair cursor, the word swap and scroll-driven drawing are still Proposed. `framer-motion` stays inside `src/components/animations/` (`ST-02`).
+- With a fine pointer, the card tilts toward the pointer in 3D (at most 10 degrees) and its shadow grows with the lift (`Elevation`: one spring drives the lift and the shadow's opacity, so the shadow never switches on in one frame). It settles when the pointer leaves.
 - Keyboard focus on the title link gives an equivalent lift, and the focus ring stays visible.
 - With reduced motion, or on touch (no fine pointer), the visitor gets the static card with no transform (`A11Y-03`).
+
+## Pick up a project note (S7, ADR 0028 Accepted)
+On Home each project card has a "Pick up" button. It is in the static HTML as `hidden` and is shown only after the page hydrates, so a visitor without JavaScript never sees a dead control. The title link still opens the case study.
+- **Overlay.** Pick up opens a native `dialog` (`ProjectOverlay`) with the project's year, title, summary, tags, repository and paper links, and a "Read the full case study" link. It shows only data that already exists. "Put back", Escape and a click on the backdrop close it; a click inside the panel does not. Focus moves to "Put back" on open and returns to the Pick up button on close. The page behind is inert and its scroll is locked in CSS (`html:has(dialog[open])`, with `scrollbar-gutter: stable` on `html`). No history entry is added.
+- **Flight (pick up).** A paper sheet inside the dialog starts at the card's measured place. The card dips, one tape end peels to about 50 degrees, the sheet lifts with a growing shadow, swings toward the viewer with a small overshoot and lands in the panel (about 0.8 s after the click). The details fade in after it lands, so text never scales. The grid card goes invisible but keeps its space.
+- **Flight (put back).** The sheet flies back to the card's current place, measured again at close time, turns to the card's resting tilt, its shadow shrinks and the tape presses flat. The dialog closes only after it lands (about 0.8 s). Extra presses during the return are ignored, a close during the opening reverses from where the sheet is, and a bare browser `close` event resets everything at once.
+- **Neighbours make room.** When a card is lifted by hover or focus, the other cards ease up to 6 px away from it (measured from the real card centres, so it is vertical in one column) and drift back. It is translate only, on the same wrapper as the tilt (`NeighbourField` and `useMakeRoom`), so the grid items and their tilt classes are unchanged. Nothing moves under reduced motion or touch, and the field pauses while the overlay is open (it reads that from `PickupBoard`). After the overlay closes, the focused Pick up button lifts its card but the neighbours stay at rest until the next lift.
+- **Only transforms and opacity**, springs, `framer-motion` plus CSS 3D. No React Three Fiber and no new dependency.
+- **Reduced motion:** the overlay opens and closes at once, with no flight (the pickup is still available). **Touch:** the cards do not tilt, lift or make room, but the flight still plays when Pick up is tapped (a tap is not a hover). **No layout or zero-size card:** the overlay opens at once.
+- Files: `PickupBoard` (button and open state), `ProjectOverlay` (dialog and both flights), `Elevation` (lift and shadow spring), `NeighbourField` (the neighbours' room, `useMakeRoom`), `TiltCard` (tilt, lift and the card's part in the neighbour field), `useMediaQuery` (the shared media-query hook under the reduced-motion and fine-pointer hooks), and `ProjectDetail` (the overlay's content), in `src/components/animations/` and `src/components/sections/`.
 
 ## About photo
 The profile photo is a taped print: a `surface` frame with `border-2`, a slight `rotate-1` and tape on top. The file and its alt text are the ones the human approved.
@@ -93,6 +103,13 @@ Built (S6, M1 to M5):
 | Headline settle | `KineticHeadline`: the letters settle into place with a CSS animation (`kinetic-settle`). The full sentence stays in the page for screen readers. |
 | Pointer depth on the hero | `PointerDepthField` with `PointerDepthLayer`: the headline drifts 4 px, the name tag 8 px and the arrow 12 px with the pointer. Translate only. |
 
+Built (S7, physical interactions part 1; described under "Pick up a project note" above):
+| Piece | What it does |
+|---|---|
+| Shadow follows the lift | `Elevation`: the card's shadow grows and shrinks with the lift spring. |
+| Pick up and put back | `PickupBoard` and `ProjectOverlay`: the note flies from its card into an overlay and back. |
+| Neighbours make room | `NeighbourField`: the cards next to a lifted card ease up to 6 px away. |
+
 Not built yet (see "Next motion story" in `docs/follow-ups.md`):
 | Piece | Plan |
 |---|---|
@@ -107,8 +124,8 @@ All `framer-motion` code lives in wrappers under `src/components/animations/` (`
 ## Fallbacks
 | Situation | Behaviour |
 |---|---|
-| `prefers-reduced-motion` (`A11Y-03`) | The finished static state: the arrow is fully drawn, the headline is in place, the ruler is hidden, there is no tilt and no depth drift. |
-| Touch device or no fine pointer | The static hero and static cards: no tilt, no depth effect. The scroll ruler stays. |
+| `prefers-reduced-motion` (`A11Y-03`) | The finished static state: the arrow is fully drawn, the headline is in place, the ruler is hidden, there is no tilt and no depth drift. Pick up still opens the overlay, instantly and with no flight. |
+| Touch device or no fine pointer | The static hero and static cards: no tilt, no depth effect, no shadow change. The scroll ruler stays. Pick up still works. |
 | Keyboard focus (`A11Y-02`) | Every hover effect also triggers on focus, with a visible focus ring, except the pointer depth effect. That one is decorative: it carries no information and no action, so a keyboard visitor loses nothing. |
 
 ## Risks to watch

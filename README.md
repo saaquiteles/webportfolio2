@@ -2,7 +2,7 @@
 
 My personal web portfolio: a creative showcase plus a general site (about, projects, contact).
 
-**Status:** in development. The home (with the project index), about and contact pages and the case studies are written. The styled look (graph-paper notebook, taped cards, and a 3D tilt on the project cards) is done. The blog and the rest of the motion are planned, and the deployment to GitHub Pages is on hold.
+**Status:** in development. The home (with the project index), about and contact pages and the case studies are written. The styled look (graph-paper notebook and taped cards) is done, and so is the first motion: the settling headline, the self-drawing arrow, pointer depth on the hero, the scroll ruler, the 3D tilt on the project cards, and picking a project note up into an overlay and putting it back. The blog, page transitions and the later physical interactions are planned, and the deployment to GitHub Pages is on hold.
 
 ## What is in it
 
@@ -17,7 +17,7 @@ Projects are typed data in `src/data/projects.ts` plus one MDX case study each i
 
 ## Built with
 
-Next.js (App Router, static export), TypeScript, Tailwind CSS v4, Velite with MDX, Framer Motion (project-card tilt only), Vitest and Testing Library, ESLint.
+Next.js (App Router, static export), TypeScript, Tailwind CSS v4, Velite with MDX, Framer Motion (the card tilt, the project pickup and the small motion pieces), Vitest and Testing Library, ESLint.
 
 ## Getting started
 
@@ -37,7 +37,7 @@ npm run publish-review   # the diff against origin/main of everything that becom
 | Folder | What lives there |
 |---|---|
 | `src/app` | Pages and layout |
-| `src/components` | `global/` (header, footer), `sections/` (page parts) and `animations/` (the card tilt) |
+| `src/components` | `global/` (header, footer), `sections/` (page parts) and `animations/` (the motion pieces: tilt, pickup overlay, hero effects) |
 | `src/data` | Profile, experience and project data |
 | `src/lib` | Shared types and small helpers |
 | `content/projects` | MDX case studies |

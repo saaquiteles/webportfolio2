@@ -1,6 +1,6 @@
 # ADR 0027: Home holds the project index, so the Projects page goes
 
-Status: Proposed. Raised on 2026-11-20, when the human saw that the Projects column on Home and the Projects tab show the same cards.
+Status: Accepted by the human on 2026-11-24. Raised on 2026-11-20, when the human saw that the Projects column on Home and the Projects tab show the same cards.
 
 ## Decision
 Show every project on Home, and remove the `/projects/` page and its tab. Case studies stay at `/projects/[slug]/`.
