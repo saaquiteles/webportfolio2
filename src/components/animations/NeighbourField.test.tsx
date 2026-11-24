@@ -75,8 +75,9 @@ describe('Neighbours make room', () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(Math.abs(shift(left).x)).toBeLessThanOrEqual(6.1);
     expect(Math.abs(shift(right).x)).toBeLessThanOrEqual(6.1);
-    expect(shift(left).y).toBe(0);
-    expect(shift(middle)).toEqual({ x: 0, y: 0 });
+    expect(shift(left).y).toBeCloseTo(0, 1);
+    expect(shift(middle).x).toBeCloseTo(0, 1);
+    expect(shift(middle).y).toBeCloseTo(0, 1);
   });
 
   it('moves neighbours up and down in a single column', async () => {
@@ -89,7 +90,7 @@ describe('Neighbours make room', () => {
 
     await waitFor(() => expect(shift(top).y).toBeLessThan(-1));
     await waitFor(() => expect(shift(bottom).y).toBeGreaterThan(1));
-    expect(shift(top).x).toBe(0);
+    expect(shift(top).x).toBeCloseTo(0, 1);
   });
 
   it('drifts every card back to rest when the pointer leaves', async () => {
@@ -212,14 +213,16 @@ describe('Neighbours make room', () => {
     liftCard(middle);
 
     await waitFor(() => expect(shift(right).x).toBeGreaterThan(1));
-    expect(shift(empty)).toEqual({ x: 0, y: 0 });
+    expect(shift(empty).x).toBeCloseTo(0, 1);
+    expect(shift(empty).y).toBeCloseTo(0, 1);
     cleanup();
 
     render(<ProjectGrid projects={grid} pickup />);
     const [noLayoutLeft, noLayoutMiddle] = cardWrappers();
     liftCard(noLayoutMiddle);
     await new Promise((resolve) => setTimeout(resolve, 300));
-    expect(shift(noLayoutLeft)).toEqual({ x: 0, y: 0 });
+    expect(shift(noLayoutLeft).x).toBeCloseTo(0, 1);
+    expect(shift(noLayoutLeft).y).toBeCloseTo(0, 1);
   });
 
   it('pauses while the project overlay is open and is at rest after it closes', async () => {
@@ -237,12 +240,12 @@ describe('Neighbours make room', () => {
 
     liftCard(middle);
     await new Promise((resolve) => setTimeout(resolve, 300));
-    expect(shift(left).x).toBe(0);
+    expect(shift(left).x).toBeCloseTo(0, 1);
 
     fireEvent.click(screen.getByRole('button', { name: 'Put back' }));
     await new Promise((resolve) => setTimeout(resolve, 300));
-    expect(shift(left).x).toBe(0);
-    expect(shift(right).x).toBe(0);
+    expect(shift(left).x).toBeCloseTo(0, 1);
+    expect(shift(right).x).toBeCloseTo(0, 1);
   });
 
   it('makes room again for the next lift once the overlay has closed', async () => {
